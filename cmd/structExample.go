@@ -1,0 +1,34 @@
+package main
+
+type ardrone3 struct { //ardrone3 type
+	id       uint8 //id of type uint8
+	piloting struct {
+		id uint8
+
+		flattrim struct {
+			id      uint8
+			title   string
+			desc    string
+			support string
+			result  string
+		}
+
+		takeoff struct {
+			id      uint8
+			title   string
+			desc    string
+			support string
+			result  string
+		}
+	}
+}
+
+func ape() {
+	drone := ardrone3{}
+	drone.id = 1
+	drone.piloting.id = 0
+	drone.piloting.flattrim.title = "Do a flat trim"
+	drone.piloting.flattrim.desc = "Do a flat trim of the accelerometer/gyro.\n Could be useful when the drone is sliding in hover mode."
+	drone.piloting.flattrim.support = "0901;090c;090e"
+	drone.piloting.flattrim.result = "Accelerometer and gyroscope are calibrated then event [FlatTrimChanged](#1-4-0) is triggered."
+}
