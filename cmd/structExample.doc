@@ -1,3 +1,6 @@
+/*
+This package takes the tokens produced by the lexml package and creates a Go struct of the parsed values
+*/
 package main
 
 type ardrone3 struct { //ardrone3 type
