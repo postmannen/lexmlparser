@@ -34,46 +34,38 @@ var depthMap map[int]string = map[int]string{
 
 //Start will start the lexml parser. Takes a channel of tokens as it's input.
 func Start(tCh chan lexml.Token) {
-	depth := 0             //used to indicate what level or sub level we are in the struct/tag
-	literal := []string{}  //used for a single literal
-	literals := []string{} //used for storing all the literals
+	b := NewBuffer(10)
+	b.Start(tCh)
 
-	for v := range tCh {
+	depth := 0 //used to indicate what level or sub level we are in the struct/tag
+
+	for v := range b.ChOut {
 		switch v.TokenType {
 		case "tokenStartTag":
+
 			if depth == 0 {
-				fmt.Printf("type %v struct {\n", v.TokenText)
-				literals = append(literals, fmt.Sprintf("var %v %v", v.TokenText, v.TokenText))
-				literal = append(literal, fmt.Sprintf("%v", v.TokenText))
 			}
 			if depth > 0 {
-				fmt.Printf("%v %v struct {\n", depthMap[depth], v.TokenText)
-				literal = append(literal, v.TokenText)
 			}
 			depth++
 		case "tokenEndTag":
 			depth--
-			fmt.Printf("%v }\n", depthMap[depth])
-			literal = literal[:depth]
 		case "tokenArgumentFound":
 		case "tokenArgumentName":
 			depth++
-			fmt.Printf("%v %v", depthMap[depth], v.TokenText)
-			literal = append(literal, v.TokenText)
 			depth--
 		case "tokenArgumentValue":
-			fmt.Printf(" %v\n", "string")
-			literal = append(literal, v.TokenText)
-			literals = append(literals, createLiteral(literal))
-			literal = literal[:depth]
-
+			if strings.Contains(strings.ToLower(v.TokenText), "state") {
+				if b.Slice[2].TokenText == "id" {
+					fmt.Println(v.TokenText)
+				}
+			}
 		case "tokenDescription":
 		case "tokenEOF":
 		case "tokenJustText":
 		}
-	}
-	for _, lit := range literals {
-		fmt.Println(lit)
+
+		b.ReadNext()
 	}
 }
 
