@@ -1,4 +1,5 @@
 /*
+Package lexmlparser ,
 	This package takes the tokens produced by the lexml package and creates a Go struct of the parsed values
 
 	tokenStartTag      TokenType = "tokenStartTag"      // <tag> || <
@@ -18,7 +19,7 @@ import (
 	"github.com/postmannen/lexml"
 )
 
-var depthMap map[int]string = map[int]string{
+var depthMap = map[int]string{
 	0: "",
 	1: "	",
 	2: "		",
@@ -31,39 +32,46 @@ var depthMap map[int]string = map[int]string{
 	9: "									",
 }
 
-//Start will start the lexml parser. Takes a channel of tokens as it's input.
+// Start will start the lexml parser. Takes a channel of tokens as it's input.
 func Start(tCh chan lexml.Token) {
-	//Create a buffered reader of the channel. The .Next method will move to the next value from input channel.
-	b := NewBuffer(30)
-	b.Start(tCh)
+	// Create a buffered reader of the channel. The .Next method will move to
+	// the next value from input channel. The buffered reader will let us
+	// look at the values that are comming ahead of where we are right now.
+	buf := NewBuffer(30)
+	buf.Start(tCh)
 
 	depth := 0 //used to indicate what level or sub level we are in the struct/tag
 
 	var project string
 	var class []string
 
-	for v := range b.ChOut {
+	for v := range buf.ChOut {
 		switch v.TokenType {
 		case "tokenStartTag":
+			//project tag
 			if depth == 0 {
 				if v.TokenText == "project" {
-					project = b.Slice[2].TokenText
+					project = buf.Slice[2].TokenText
 					//fmt.Println("found project token, make a project struct", project)
 				}
 			}
+
+			//class tag
 			if depth == 1 {
 				if v.TokenText == "class" {
-					class = append(class, b.Slice[2].TokenText)
+					class = append(class, buf.Slice[2].TokenText)
 					//fmt.Printf("func (t %v) ", b.Slice[3].TokenText)
 				}
 			}
 
+			//cmd tag
 			if depth == 2 {
 				if v.TokenText == "cmd" {
-					fmt.Printf("func (t %v) %v(YYYY,YYYY) {\n", class[len(class)-1], b.Slice[2].TokenText)
+					fmt.Printf("\nfunc (t %v) %v", class[len(class)-1], buf.Slice[2].TokenText)
 				}
 			}
 
+			//arg tag
 			if depth == 3 {
 				if v.TokenText == "arg" {
 					type arg struct {
@@ -71,17 +79,19 @@ func Start(tCh chan lexml.Token) {
 						argType string
 					}
 					args := []arg{}
-					for i := 1; b.Slice[i].TokenType != "tokenEndTag"; i++ {
-						if b.Slice[i].TokenText == "name" {
-							a := arg{name: b.Slice[i+1].TokenText, argType: b.Slice[i+3].TokenText}
+					for i := 1; buf.Slice[i].TokenType != "tokenEndTag"; i++ {
+						if buf.Slice[i].TokenText == "name" {
+							a := arg{name: buf.Slice[i+1].TokenText, argType: buf.Slice[i+3].TokenText}
 							args = append(args, a)
-							//fmt.Println("argument name = ", b.Slice[i+1].TokenText)
-							//fmt.Println("argument type = ", b.Slice[i+3].TokenText)
 						}
 
 					}
+					//print all the args, TODO: move this one to tokenEndTag
 					if len(args) != 0 {
-						fmt.Println(args)
+						fmt.Print("(")
+						for _, a := range args {
+							fmt.Printf("%v %v\n", a.name, a.argType)
+						}
 					}
 				}
 			}
@@ -89,13 +99,7 @@ func Start(tCh chan lexml.Token) {
 			depth++
 		case "tokenEndTag":
 			depth--
-			if depth == 1 {
-
-			}
-
 		case "tokenArgumentName":
-			depth++
-			depth--
 		case "tokenArgumentValue":
 			//if strings.Contains(strings.ToLower(v.TokenText), "state") {
 			//	if b.Slice[2].TokenText == "id" {
@@ -107,7 +111,7 @@ func Start(tCh chan lexml.Token) {
 		case "tokenJustText":
 		}
 
-		b.ReadNext()
+		buf.ReadNext()
 	}
 
 	fmt.Println("------------------------------------")

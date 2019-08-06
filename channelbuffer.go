@@ -1,7 +1,8 @@
 /*
- Make a buffered reader of channel.
- Will keep the next input values read in a buffer where size if defined by b.size.
- Will release a new value with the readNext method.
+Package lexmlparser ,
+Make a buffered reader of channel.
+Will keep the next input values read in a buffer where size if defined by b.size.
+Will release a new value with the readNext method.
 */
 package lexmlparser
 
@@ -9,8 +10,8 @@ import (
 	"github.com/postmannen/lexml"
 )
 
-//buffer is a buffer
-type buffer struct {
+//Buffer is a buffer
+type Buffer struct {
 	ChOut          chan lexml.Token //ChOut, the channel out to be read by client
 	Slice          []lexml.Token    //Slice which is the actual buffer
 	confirmNewRead chan bool        //used to wait for confirmation of grabbing the next value from input channel.
@@ -18,8 +19,8 @@ type buffer struct {
 }
 
 //NewBuffer creates a new buffer, takes the buffer size as an input argument, and returns a *buffer.
-func NewBuffer(m int) *buffer {
-	return &buffer{
+func NewBuffer(m int) *Buffer {
+	return &Buffer{
 		ChOut:          make(chan lexml.Token),
 		confirmNewRead: make(chan bool),
 		size:           m,
@@ -27,7 +28,7 @@ func NewBuffer(m int) *buffer {
 }
 
 //Start will start filling the buffer, to continue filling buffer  use the readNext method.
-func (b *buffer) Start(chIn chan lexml.Token) {
+func (b *Buffer) Start(chIn chan lexml.Token) {
 	go func() {
 		for len(b.Slice) < b.size-1 {
 			v, ok := <-chIn
@@ -78,6 +79,6 @@ func (b *buffer) Start(chIn chan lexml.Token) {
 //ReadNext will, relese the lock on the go routine inside the start method,
 //and let it read another value from the incomming channel and put it
 //into the buffer.
-func (b *buffer) ReadNext() {
+func (b *Buffer) ReadNext() {
 	b.confirmNewRead <- true
 }
