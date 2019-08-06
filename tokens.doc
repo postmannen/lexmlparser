@@ -1,0 +1,7 @@
+	tokenStartTag      TokenType = "tokenStartTag"      // <tag> || <
+	tokenEndTag        TokenType = "tokenEndTag"        // </tag> || />
+	tokenArgumentName  TokenType = "tokenArgumentName"  // name is infront of a = sign
+	tokenArgumentValue TokenType = "tokenArgumentValue" // value is after a = sign
+	tokenDescription   TokenType = "tokenDescription"   // Description, just text between tags
+	tokenEOF           TokenType = "tokenEOF"           //End Of File
+	tokenJustText      TokenType = "tokenJustText"      //just text, no start or end tag
