@@ -19,12 +19,23 @@ import (
 	"github.com/postmannen/lexml"
 )
 
+// Define all the toke types.
+const tokenStartTag lexml.TokenType = "tokenStartTag"           // <tag> || <
+const tokenEndTag lexml.TokenType = "tokenEndTag"               // </tag> || />
+const tokenArgumentName lexml.TokenType = "tokenArgumentName"   // name is infront of a = sign
+const tokenArgumentValue lexml.TokenType = "tokenArgumentValue" // value is after a = sign
+const tokenDescription lexml.TokenType = "tokenDescription"     // Description, just text between tags
+const tokenEOF lexml.TokenType = "tokenEOF"                     //End Of File
+const tokenJustText lexml.TokenType = "tokenJustText"           //just text, no start or end tag
+
+const tokenChannelbufferSize = 40
+
 // Start will start the lexml parser. Takes a channel of tokens as it's input.
 func Start(tCh chan lexml.Token) {
 	// Create a buffered reader of the channel. The .Next method will move to
 	// the next value from input channel. The buffered reader will let us
 	// look at the values that are comming ahead of where we are right now.
-	buf := NewBuffer(30)
+	buf := NewBuffer(tokenChannelbufferSize)
 	buf.Start(tCh)
 
 	tagStack := newTagStack()
@@ -57,26 +68,60 @@ func Start(tCh chan lexml.Token) {
 	// and we can pick one value at a time.
 	for v := range buf.ChOut {
 		switch v.TokenType {
+		// Everything we want parse into something else starts with
+		// a start tag. If a start tag is found we should check
+		// for tags between startTag -> endTag for the type we are
+		// looking for.
+		//
 		// Check all the start tags.
-		case "tokenStartTag":
+		case tokenStartTag:
 			fmt.Println("startTag-------------------------------------------------------", v)
 			fmt.Printf("depth = %v, startTag found : %v, adding to depth.\n", depth, v.TokenText)
 			depth++
 			tagStack.push(buf.Slice[2].TokenText)
 			fmt.Println("Depth is now = ", depth)
 
-		case "tokenEndTag":
+			//Check for tags between the start tag, and the next end/start tag.
+			tmpBuf := func(buf *Buffer) []lexml.Token {
+				endTagPosition := 0
+
+				for i, v := range buf.Slice {
+					// If it is the first position in slice, just continue with
+					// the next iteration.
+					if i == 0 {
+						continue
+					}
+
+					fmt.Printf("token at position%v = %v, text = %v\n", i, v.TokenType, v.TokenText)
+
+					// Check for a start or end tag. We also need to check if there are a
+					// start tag after the first start tag at position 0 in the buffer,
+					// since there can be child tags below the current tag, and then the
+					// endTag for the current tag will not come until after all the child
+					// tags in the xml.
+					if v.TokenType == tokenEndTag || v.TokenType == tokenStartTag {
+						fmt.Printf("found tokenEndTag or tokenStartTag at %v position in slice\n", i)
+						endTagPosition = i
+						break
+					}
+				}
+				fmt.Println("endTagPosition = ", endTagPosition)
+
+				return buf.Slice[:endTagPosition]
+			}(buf)
+
+			for _, v := range tmpBuf {
+				fmt.Printf("tmpBuf : %+v\n", v)
+			}
+
+		// Check all the end tags
+		case tokenEndTag:
 			fmt.Println("endTag-------------------------------------------------------", v)
 			fmt.Printf("depth = %v, endtag found : %v, subtracting to depth.\n", depth, v.TokenText)
 
 			depth--
 			tagStack.pop()
 			fmt.Println("Depth is now = ", depth)
-		case "tokenArgumentName":
-		case "tokenArgumentValue":
-		case "tokenDescription":
-		case "tokenEOF":
-		case "tokenJustText":
 		}
 
 		// Read the next token from the buffered channel.
@@ -109,19 +154,6 @@ func createLiteral(s []string) string {
 
 }
 
-var depthMap = map[int]string{
-	0: "",
-	1: "	",
-	2: "		",
-	3: "			",
-	4: "				",
-	5: "					",
-	6: "						",
-	7: "							",
-	8: "								",
-	9: "									",
-}
-
 // tagStack will keep track of where we are working in the iteration,
 type tagStack struct {
 	data []string
@@ -151,4 +183,17 @@ func (s *tagStack) pop() {
 	s.data = append(s.data[0:0], s.data[:last-1]...)
 	fmt.Println("DEBUG: After pop:", s)
 
+}
+
+var depthMap = map[int]string{
+	0: "",
+	1: "	",
+	2: "		",
+	3: "			",
+	4: "				",
+	5: "					",
+	6: "						",
+	7: "							",
+	8: "								",
+	9: "									",
 }
