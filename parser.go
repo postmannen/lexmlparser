@@ -113,7 +113,7 @@ func Start(tCh chan lexml.Token) {
 						// Check if there is a tokenDescription tag
 						for _, v := range tmpBuf1 {
 							if v.TokenType == tokenDescription {
-								fmt.Printf("	// %v\n", v.TokenText)
+								fmt.Printf("// %v\n", v.TokenText)
 								break
 							}
 						}
@@ -125,13 +125,13 @@ func Start(tCh chan lexml.Token) {
 						// Check if there is a tokenDescription tag
 						for _, v := range tmpBuf1 {
 							if v.TokenType == tokenDescription {
-								fmt.Printf("	// %v\n", v.TokenText)
+								fmt.Printf("// %v\n", v.TokenText)
 								break
 							}
 						}
 
 						name := tmpBuf1[2]
-						fmt.Printf("	const %v classDef = %v\n", lowerFirst(name.TokenText), id)
+						fmt.Printf("const %v classDef = %v\n", lowerFirst(name.TokenText), id)
 
 					case "cmd":
 						// The startToken..if found, is located in the 0'th position of the buffer.
@@ -141,7 +141,7 @@ func Start(tCh chan lexml.Token) {
 									continue
 								}
 								if v.TokenType == tokenArgumentName {
-									fmt.Printf("	// %v : ", v.TokenText)
+									fmt.Printf("// %v : ", v.TokenText)
 								}
 								if v.TokenType == tokenArgumentValue {
 									fmt.Printf("%v, \n", v.TokenText)
@@ -150,12 +150,12 @@ func Start(tCh chan lexml.Token) {
 						}
 
 						name := tmpBuf1[2]
-						fmt.Printf("	const %v cmdDef = %v\n", lowerFirst(name.TokenText), id)
+						fmt.Printf("const %v cmdDef = %v\n", lowerFirst(name.TokenText), id)
 						fmt.Println()
 
 						// Create the struct type command which will hold the decode methods
 						// for the command
-						fmt.Printf("	type %v command\n", serializeSlice(tagStack.data))
+						fmt.Printf("type %v command\n", serializeSlice(tagStack.data))
 						fmt.Println()
 
 						// Create the decode function for the command type
