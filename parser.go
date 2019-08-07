@@ -15,6 +15,8 @@ package lexmlparser
 import (
 	"fmt"
 	"strings"
+	"unicode"
+	"unicode/utf8"
 
 	"github.com/postmannen/lexml"
 )
@@ -68,6 +70,7 @@ func Start(tCh chan lexml.Token) {
 	// and we can pick one value at a time.
 	for v := range buf.ChOut {
 		switch v.TokenType {
+
 		// Everything we want parse into something else starts with
 		// a start tag. If a start tag is found we should check
 		// for tags between startTag -> endTag for the type we are
@@ -75,34 +78,37 @@ func Start(tCh chan lexml.Token) {
 		//
 		// Check all the start tags.
 		case tokenStartTag:
-			fmt.Println("startTag-------------------------------------------------------", v)
-			fmt.Printf("depth = %v, startTag found : %v, adding to depth.\n", depth, v.TokenText)
+			//*fmt.Println("startTag-------------------------------------------------------", v)
+			//*fmt.Printf("depth = %v, startTag found : %v, adding to depth.\n", depth, v.TokenText)
 			depth++
 			tagStack.push(buf.Slice[2].TokenText)
-			fmt.Println("Depth is now = ", depth)
+			//*fmt.Println("Depth is now = ", depth)
 
 			// Get the first 2 sequences of tokens that have a start and stop tag in the buffer.
 			tmpBuf1, tmpBuf2 := newPartialBuffer(buf)
 
-			fmt.Println()
-			for _, v := range tmpBuf1 {
-				fmt.Printf("*** tmpBuf1 : %v\n", v)
-			}
-
-			fmt.Println()
-			for _, v := range tmpBuf2 {
-				fmt.Printf("*** tmpBuf2 : %v\n", v)
-			}
+			//Remove later, just for showing values
+			//fmt.Println()
+			//for _, v := range tmpBuf1 {
+			//	fmt.Printf("*** tmpBuf1 : %v\n", v)
+			//}
+			//
+			////Remove later, just for showing values
+			//fmt.Println()
+			//for _, v := range tmpBuf2 {
+			//	fmt.Printf("*** tmpBuf2 : %v\n", v)
+			//}
 
 			// Range the buffer for this specific token
 			for i, v := range tmpBuf1 {
-				fmt.Printf("tmpBuf : %+v\n", v)
+				//*fmt.Printf("tmpBuf : %+v\n", v)
 				// If there is an id value we will know that it is a project/class/cmd tag.
 				if v.TokenText == "id" {
 					id := tmpBuf1[i+1].TokenText
 
 					//Check if it is either project, class or cmd tag.
 					switch tmpBuf1[0].TokenText {
+
 					case "project":
 						// Check if there is a tokenDescription tag
 						for _, v := range tmpBuf1 {
@@ -113,7 +119,8 @@ func Start(tCh chan lexml.Token) {
 						}
 
 						name := tmpBuf1[2]
-						fmt.Printf("	const %v projectDef = %v\n", name.TokenText, id)
+						fmt.Printf("	const %v projectDef = %v\n", lowerFirst(name.TokenText), id)
+
 					case "class":
 						// Check if there is a tokenDescription tag
 						for _, v := range tmpBuf1 {
@@ -124,20 +131,57 @@ func Start(tCh chan lexml.Token) {
 						}
 
 						name := tmpBuf1[2]
-						fmt.Printf("	const %v classDef = %v\n", name.TokenText, id)
+						fmt.Printf("	const %v classDef = %v\n", lowerFirst(name.TokenText), id)
+
 					case "cmd":
+						// The startToken..if found, is located in the 0'th position of the buffer.
 						if tmpBuf2[0].TokenType == tokenStartTag && tmpBuf2[0].TokenText == "comment" {
 							for i, v := range tmpBuf2 {
 								if i == 0 {
 									continue
 								}
-
-								fmt.Printf("	// %v\n", v.TokenText)
+								if v.TokenType == tokenArgumentName {
+									fmt.Printf("	// %v : ", v.TokenText)
+								}
+								if v.TokenType == tokenArgumentValue {
+									fmt.Printf("%v, \n", v.TokenText)
+								}
 							}
 						}
 
 						name := tmpBuf1[2]
-						fmt.Printf("	const %v cmdDef = %v\n", name.TokenText, id)
+						fmt.Printf("	const %v cmdDef = %v\n", lowerFirst(name.TokenText), id)
+						fmt.Println()
+
+						// Create the struct type command which will hold the decode methods
+						// for the command
+						fmt.Printf("	type %v command\n", serializeSlice(tagStack.data))
+						fmt.Println()
+
+						// Create the decode function for the command type
+						fmt.Printf("func (a %v) decode() {\n", serializeSlice(tagStack.data))
+						fmt.Printf("//TODO: .............\n")
+						txt := `fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)`
+						fmt.Println(txt)
+						txt = `fmt.Printf("%+v\n", a)`
+						fmt.Println(txt)
+						fmt.Printf("}\n")
+
+						//create the variable of the command type
+						var varName string
+						for i, v := range tagStack.data {
+							if i != 0 { // we do not want the first value
+								varName += v
+							}
+						}
+
+						fmt.Println()
+						fmt.Printf("var %v = %v {\n", varName, serializeSlice(tagStack.data))
+						fmt.Printf("project: %v,\n", lowerFirst(tagStack.data[0]))
+						fmt.Printf("class: %v,\n", lowerFirst(tagStack.data[1]))
+						fmt.Printf("cmd: %v,\n", lowerFirst(tagStack.data[2]))
+						fmt.Printf("}\n")
+						fmt.Println()
 					}
 
 				}
@@ -145,20 +189,37 @@ func Start(tCh chan lexml.Token) {
 
 		// Check all the end tags
 		case tokenEndTag:
-			fmt.Println("endTag-------------------------------------------------------", v)
-			fmt.Printf("depth = %v, endtag found : %v, subtracting to depth.\n", depth, v.TokenText)
+			//*fmt.Println("endTag-------------------------------------------------------", v)
+			//*fmt.Printf("depth = %v, endtag found : %v, subtracting to depth.\n", depth, v.TokenText)
 
 			depth--
 			tagStack.pop()
-			fmt.Println("Depth is now = ", depth)
+			//*fmt.Println("Depth is now = ", depth)
 		}
 
 		// Read the next token from the buffered channel.
 		buf.ReadNext()
 	}
 
-	fmt.Println()
+	//*fmt.Println()
 
+}
+
+func lowerFirst(s string) string {
+	if s == "" {
+		return ""
+	}
+	r, n := utf8.DecodeRuneInString(s)
+	return string(unicode.ToLower(r)) + s[n:]
+}
+
+func serializeSlice(s []string) string {
+	var output string
+	for _, v := range s {
+		output += v
+	}
+
+	return output
 }
 
 // newPartialBuffer takes a *lexml.Buffer as input, and returns the first two
@@ -239,19 +300,19 @@ func newTagStack() *tagStack {
 // push will add another item to the end of the stack with a normal append
 func (s *tagStack) push(d string) {
 	s.data = append(s.data, d)
-	fmt.Println("DEBUG: Put on stack : ", s)
+	//*fmt.Println("DEBUG: Put on stack : ", s)
 }
 
 // pop will remove the last element of the stack
 func (s *tagStack) pop() {
-	fmt.Println("DEBUG: Before pop:", s)
+	//*fmt.Println("DEBUG: Before pop:", s)
 	last := len(s.data)
 	// ---
 	if len(s.data) == 0 {
 		return
 	}
 	s.data = append(s.data[0:0], s.data[:last-1]...)
-	fmt.Println("DEBUG: After pop:", s)
+	//*fmt.Println("DEBUG: After pop:", s)
 
 }
 
