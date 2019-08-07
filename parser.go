@@ -176,12 +176,14 @@ func Start(tCh chan lexml.Token) {
 						}
 
 						fmt.Println()
-						fmt.Printf("var %v = %v {\n", varName, serializeSlice(tagStack.data))
+						fmt.Printf("var %v = %v {\n", lowerFirst(varName), serializeSlice(tagStack.data))
 						fmt.Printf("project: %v,\n", lowerFirst(tagStack.data[0]))
 						fmt.Printf("class: %v,\n", lowerFirst(tagStack.data[1]))
 						fmt.Printf("cmd: %v,\n", lowerFirst(tagStack.data[2]))
 						fmt.Printf("}\n")
 						fmt.Println()
+
+						// TODO : Implement Map for storing the different commands for lookup.
 					}
 
 				}
