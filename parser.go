@@ -28,7 +28,7 @@ const tokenDescription lexml.TokenType = "tokenDescription"     // Description, 
 const tokenEOF lexml.TokenType = "tokenEOF"                     //End Of File
 const tokenJustText lexml.TokenType = "tokenJustText"           //just text, no start or end tag
 
-const tokenChannelbufferSize = 40
+const tokenChannelbufferSize = 60
 
 // Start will start the lexml parser. Takes a channel of tokens as it's input.
 func Start(tCh chan lexml.Token) {
@@ -81,37 +81,66 @@ func Start(tCh chan lexml.Token) {
 			tagStack.push(buf.Slice[2].TokenText)
 			fmt.Println("Depth is now = ", depth)
 
-			//Check for tags between the start tag, and the next end/start tag.
-			tmpBuf := func(buf *Buffer) []lexml.Token {
-				endTagPosition := 0
+			// Get the first 2 sequences of tokens that have a start and stop tag in the buffer.
+			tmpBuf1, tmpBuf2 := newPartialBuffer(buf)
 
-				for i, v := range buf.Slice {
-					// If it is the first position in slice, just continue with
-					// the next iteration.
-					if i == 0 {
-						continue
-					}
+			fmt.Println()
+			for _, v := range tmpBuf1 {
+				fmt.Printf("*** tmpBuf1 : %v\n", v)
+			}
 
-					fmt.Printf("token at position%v = %v, text = %v\n", i, v.TokenType, v.TokenText)
+			fmt.Println()
+			for _, v := range tmpBuf2 {
+				fmt.Printf("*** tmpBuf2 : %v\n", v)
+			}
 
-					// Check for a start or end tag. We also need to check if there are a
-					// start tag after the first start tag at position 0 in the buffer,
-					// since there can be child tags below the current tag, and then the
-					// endTag for the current tag will not come until after all the child
-					// tags in the xml.
-					if v.TokenType == tokenEndTag || v.TokenType == tokenStartTag {
-						fmt.Printf("found tokenEndTag or tokenStartTag at %v position in slice\n", i)
-						endTagPosition = i
-						break
-					}
-				}
-				fmt.Println("endTagPosition = ", endTagPosition)
-
-				return buf.Slice[:endTagPosition]
-			}(buf)
-
-			for _, v := range tmpBuf {
+			// Range the buffer for this specific token
+			for i, v := range tmpBuf1 {
 				fmt.Printf("tmpBuf : %+v\n", v)
+				// If there is an id value we will know that it is a project/class/cmd tag.
+				if v.TokenText == "id" {
+					id := tmpBuf1[i+1].TokenText
+
+					//Check if it is either project, class or cmd tag.
+					switch tmpBuf1[0].TokenText {
+					case "project":
+						// Check if there is a tokenDescription tag
+						for _, v := range tmpBuf1 {
+							if v.TokenType == tokenDescription {
+								fmt.Printf("	// %v\n", v.TokenText)
+								break
+							}
+						}
+
+						name := tmpBuf1[2]
+						fmt.Printf("	const %v projectDef = %v\n", name.TokenText, id)
+					case "class":
+						// Check if there is a tokenDescription tag
+						for _, v := range tmpBuf1 {
+							if v.TokenType == tokenDescription {
+								fmt.Printf("	// %v\n", v.TokenText)
+								break
+							}
+						}
+
+						name := tmpBuf1[2]
+						fmt.Printf("	const %v classDef = %v\n", name.TokenText, id)
+					case "cmd":
+						if tmpBuf2[0].TokenType == tokenStartTag && tmpBuf2[0].TokenText == "comment" {
+							for i, v := range tmpBuf2 {
+								if i == 0 {
+									continue
+								}
+
+								fmt.Printf("	// %v\n", v.TokenText)
+							}
+						}
+
+						name := tmpBuf1[2]
+						fmt.Printf("	const %v cmdDef = %v\n", name.TokenText, id)
+					}
+
+				}
 			}
 
 		// Check all the end tags
@@ -130,6 +159,47 @@ func Start(tCh chan lexml.Token) {
 
 	fmt.Println()
 
+}
+
+// newPartialBuffer takes a *lexml.Buffer as input, and returns the first two
+// portions of that buffer forming a start -> stop token sequence.
+func newPartialBuffer(buf *Buffer) (firstBuffer []lexml.Token, secondBuffer []lexml.Token) {
+	endTagPosition1 := 0
+	endTagPosition2 := 0
+	buf1 := buf.Slice
+
+	for i, v := range buf1 {
+		// If it is the first position in slice, just continue with the next iteration.
+		if i == 0 {
+			continue
+		}
+
+		// Check for a start or end tag. We also need to check if there are a
+		// start tag after the first start tag at position 0 in the buffer,
+		if v.TokenType == tokenEndTag || v.TokenType == tokenStartTag {
+			endTagPosition1 = i
+			break
+		}
+	}
+
+	buf2 := buf1[endTagPosition1:]
+
+	// Get next series of tokens betweem a start and stop tag
+	for i, v := range buf2 {
+		// If it is the first position in slice, just continue with the next iteration.
+		if i == 0 {
+			continue
+		}
+
+		// Check for a start or end tag. We also need to check if there are a
+		// start tag after the first start tag at position 0 in the buffer,
+		if v.TokenType == tokenEndTag || v.TokenType == tokenStartTag {
+			endTagPosition2 = i
+			break
+		}
+	}
+
+	return buf1[:endTagPosition1], buf2[:endTagPosition2]
 }
 
 //createLiterals will create a literal string. Takes []string and return a string to the caller.
