@@ -19,19 +19,6 @@ import (
 	"github.com/postmannen/lexml"
 )
 
-var depthMap = map[int]string{
-	0: "",
-	1: "	",
-	2: "		",
-	3: "			",
-	4: "				",
-	5: "					",
-	6: "						",
-	7: "							",
-	8: "								",
-	9: "									",
-}
-
 // Start will start the lexml parser. Takes a channel of tokens as it's input.
 func Start(tCh chan lexml.Token) {
 	// Create a buffered reader of the channel. The .Next method will move to
@@ -40,94 +27,62 @@ func Start(tCh chan lexml.Token) {
 	buf := NewBuffer(30)
 	buf.Start(tCh)
 
-	depth := 0 //used to indicate what level or sub level we are in the struct/tag
+	tagStack := newTagStack()
 
-	var project string
-	var class []string
+	// Depth is used to indicate what level or sub level we are in the struct/tag
+	// to keep track of if we are working on a tag within another tag, and so on.
+	// We add 1 to the depth for each tag we find, and subtract by 1 for each
+	// closing tag.
+	depth := 0
 
+	fmt.Println("package main")
+	fmt.Println()
+
+	fmt.Println("import (")
+	fmt.Println(`	"fmt"`)
+	fmt.Println(")")
+	fmt.Println()
+	fmt.Println("type projectDef uint8 ")
+	fmt.Println("type classDef uint8")
+	fmt.Println("type cmdDef uint16")
+	fmt.Println()
+	fmt.Println("type command struct {")
+	fmt.Println("	project projectDef")
+	fmt.Println("	class   classDef")
+	fmt.Println("	cmd     cmdDef")
+	fmt.Println("}")
+	fmt.Println()
+
+	// Range over the ChOut of buf, where ChOut is an unbuffered channel,
+	// and we can pick one value at a time.
 	for v := range buf.ChOut {
 		switch v.TokenType {
+		// Check all the start tags.
 		case "tokenStartTag":
-			//project tag
-			if depth == 0 {
-				if v.TokenText == "project" {
-					project = buf.Slice[2].TokenText
-					//fmt.Println("found project token, make a project struct", project)
-				}
-			}
-
-			//class tag
-			if depth == 1 {
-				if v.TokenText == "class" {
-					class = append(class, buf.Slice[2].TokenText)
-					//fmt.Printf("func (t %v) ", b.Slice[3].TokenText)
-				}
-			}
-
-			//cmd tag
-			if depth == 2 {
-				if v.TokenText == "cmd" {
-					fmt.Printf("\nfunc (t %v) %v", class[len(class)-1], buf.Slice[2].TokenText)
-				}
-			}
-
-			//arg tag
-			if depth == 3 {
-				if v.TokenText == "arg" {
-					type arg struct {
-						name    string
-						argType string
-					}
-					args := []arg{}
-					for i := 1; buf.Slice[i].TokenType != "tokenEndTag"; i++ {
-						if buf.Slice[i].TokenText == "name" {
-							a := arg{name: buf.Slice[i+1].TokenText, argType: buf.Slice[i+3].TokenText}
-							args = append(args, a)
-						}
-
-					}
-					//print all the args, TODO: move this one to tokenEndTag
-					if len(args) != 0 {
-						fmt.Print("(")
-						for _, a := range args {
-							fmt.Printf("%v %v\n", a.name, a.argType)
-						}
-					}
-				}
-			}
-
+			fmt.Println("startTag-------------------------------------------------------", v)
+			fmt.Printf("depth = %v, startTag found : %v, adding to depth.\n", depth, v.TokenText)
 			depth++
+			tagStack.push(buf.Slice[2].TokenText)
+			fmt.Println("Depth is now = ", depth)
+
 		case "tokenEndTag":
+			fmt.Println("endTag-------------------------------------------------------", v)
+			fmt.Printf("depth = %v, endtag found : %v, subtracting to depth.\n", depth, v.TokenText)
+
 			depth--
+			tagStack.pop()
+			fmt.Println("Depth is now = ", depth)
 		case "tokenArgumentName":
 		case "tokenArgumentValue":
-			//if strings.Contains(strings.ToLower(v.TokenText), "state") {
-			//	if b.Slice[2].TokenText == "id" {
-			//		fmt.Println(v.TokenText)
-			//	}
-			//}
 		case "tokenDescription":
 		case "tokenEOF":
 		case "tokenJustText":
 		}
 
+		// Read the next token from the buffered channel.
 		buf.ReadNext()
 	}
 
-	fmt.Println("------------------------------------")
-	//create the main type
-	fmt.Printf("type %v struct {\n", project)
-	{
-		for _, v := range class {
-			fmt.Printf("\t%v\n", v)
-		}
-	}
-	fmt.Println("}")
-
-	//create the class types, like Piloting, PCMD etc....
-	for _, v := range class {
-		fmt.Printf("type %v struct {}\n", v)
-	}
 	fmt.Println()
 
 }
@@ -151,5 +106,49 @@ func createLiteral(s []string) string {
 		}
 	}
 	return tmpString
+
+}
+
+var depthMap = map[int]string{
+	0: "",
+	1: "	",
+	2: "		",
+	3: "			",
+	4: "				",
+	5: "					",
+	6: "						",
+	7: "							",
+	8: "								",
+	9: "									",
+}
+
+// tagStack will keep track of where we are working in the iteration,
+type tagStack struct {
+	data []string
+}
+
+// newTagStack is a push/pop storage for tags.
+func newTagStack() *tagStack {
+	return &tagStack{
+		//data: make([]string, 0, 100),
+	}
+}
+
+// push will add another item to the end of the stack with a normal append
+func (s *tagStack) push(d string) {
+	s.data = append(s.data, d)
+	fmt.Println("DEBUG: Put on stack : ", s)
+}
+
+// pop will remove the last element of the stack
+func (s *tagStack) pop() {
+	fmt.Println("DEBUG: Before pop:", s)
+	last := len(s.data)
+	// ---
+	if len(s.data) == 0 {
+		return
+	}
+	s.data = append(s.data[0:0], s.data[:last-1]...)
+	fmt.Println("DEBUG: After pop:", s)
 
 }
