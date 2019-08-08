@@ -40,6 +40,8 @@ func Start(tCh chan lexml.Token) {
 	buf := NewBuffer(tokenChannelbufferSize)
 	buf.Start(tCh)
 
+	var mapVariables []string
+
 	tagStack := newTagStack()
 
 	// Depth is used to indicate what level or sub level we are in the struct/tag
@@ -134,8 +136,11 @@ func Start(tCh chan lexml.Token) {
 						fmt.Printf("const %v classDef = %v\n", lowerFirst(name.TokenText), id)
 
 					case "cmd":
+						//TODO : Implement detection of duplicate commands !!!
+
 						// The startToken..if found, is located in the 0'th position of the buffer.
 						if tmpBuf2[0].TokenType == tokenStartTag && tmpBuf2[0].TokenText == "comment" {
+							// Create the comments above the const declaration.
 							for i, v := range tmpBuf2 {
 								if i == 0 {
 									continue
@@ -183,7 +188,9 @@ func Start(tCh chan lexml.Token) {
 						fmt.Printf("}\n")
 						fmt.Println()
 
-						// TODO : Implement Map for storing the different commands for lookup.
+						// store the variable name in a slice so we can use it
+						// to create the map[command]decoder map later.
+						mapVariables = append(mapVariables, varName)
 					}
 
 				}
@@ -203,7 +210,17 @@ func Start(tCh chan lexml.Token) {
 		buf.ReadNext()
 	}
 
-	//*fmt.Println()
+	// Map for storing the different commands for lookup.
+	fmt.Println("type decoder interface {")
+	fmt.Println("decode()")
+	fmt.Println("}")
+	fmt.Println()
+	fmt.Println("var commandMap = map[command]decoder {")
+	for _, v := range mapVariables {
+		fmt.Printf("command(%v) : %v,\n", lowerFirst(v), lowerFirst(v))
+	}
+	fmt.Println("}")
+	fmt.Println()
 
 }
 
