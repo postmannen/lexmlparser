@@ -34,15 +34,16 @@ const tokenChannelbufferSize = 60
 
 // Start will start the lexml parser. Takes a channel of tokens as it's input.
 func Start(tCh chan lexml.Token) {
+
 	// Create a buffered reader of the channel. The .Next method will move to
 	// the next value from input channel. The buffered reader will let us
 	// look at the values that are comming ahead of where we are right now.
 	buf := NewBuffer(tokenChannelbufferSize)
 	buf.Start(tCh)
 
-	// mapVariables are the collection of the tags used to form a map value in the
+	// variablesForMap are the collection of the tags used to form a map value in the
 	// parsed output. Essentially it will contains a command variable.
-	var mapVariables []string
+	var variablesForMap []string
 
 	var commandConstantMap = map[string]bool{}
 
@@ -130,7 +131,7 @@ func Start(tCh chan lexml.Token) {
 						}
 
 						name := tmpBuf1[2]
-						fmt.Printf("	const %v projectDef = %v\n", lowerFirst(name.TokenText), id)
+						fmt.Printf("	const %v projectDef = %v\n", lowerFirstCharacter(name.TokenText), id)
 
 					case "class":
 						// Check if there is a tokenDescription tag
@@ -142,7 +143,7 @@ func Start(tCh chan lexml.Token) {
 						}
 
 						name := tmpBuf1[2]
-						fmt.Printf("const %v classDef = %v\n", lowerFirst(name.TokenText), id)
+						fmt.Printf("const %v classDef = %v\n", lowerFirstCharacter(name.TokenText), id)
 
 					case "cmd":
 						// TODO : Implement detection of duplicate commands !!!
@@ -151,6 +152,7 @@ func Start(tCh chan lexml.Token) {
 						if tmpBuf2[0].TokenType == tokenStartTag && tmpBuf2[0].TokenText == "comment" {
 							// Create the comments above the const declaration.
 							for i, v := range tmpBuf2 {
+								// We do not want the first value since it is a start tag.
 								if i == 0 {
 									continue
 								}
@@ -165,10 +167,12 @@ func Start(tCh chan lexml.Token) {
 
 						// Create the variable of the current project->class->command
 						// content in the tagStack.
-						var varName string
+						var variableName string
 						for i, v := range tagStack.data {
-							if i != 0 { // we do not want the first value
-								varName += v
+							// We do not want the first value naming the project
+							// in the variableName value, only class+command.
+							if i != 0 {
+								variableName += v
 							}
 						}
 
@@ -184,16 +188,17 @@ func Start(tCh chan lexml.Token) {
 						// Store the const to check for duplicates on later iterations.
 						commandConstantMap[cmdConstname.TokenText] = true
 
-						fmt.Printf("const %v cmdDef = %v\n", lowerFirst(cmdConstname.TokenText), id)
+						constName := lowerFirstCharacter(cmdConstname.TokenText)
+						fmt.Printf("const %v cmdDef = %v\n", constName, id)
 						fmt.Println()
 
 						// Create the struct type command which will hold the decode methods
 						// for the command
-						fmt.Printf("type %v command\n", serializeSlice(tagStack.data))
+						fmt.Printf("type %v command\n", concatenateSlice(tagStack.data))
 						fmt.Println()
 
 						// Create the decode function for the command type
-						fmt.Printf("func (a %v) decode() {\n", serializeSlice(tagStack.data))
+						fmt.Printf("func (a %v) decode() {\n", concatenateSlice(tagStack.data))
 						fmt.Printf("//TODO: .............\n")
 						txt := `fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)`
 						fmt.Println(txt)
@@ -201,17 +206,21 @@ func Start(tCh chan lexml.Token) {
 						fmt.Println(txt)
 						fmt.Printf("}\n")
 
+						project := lowerFirstCharacter(tagStack.data[0])
+						class := lowerFirstCharacter(tagStack.data[1])
+						command := lowerFirstCharacter(tagStack.data[2])
+
 						fmt.Println()
-						fmt.Printf("var %v = %v {\n", lowerFirst(varName), serializeSlice(tagStack.data))
-						fmt.Printf("project: %v,\n", lowerFirst(tagStack.data[0]))
-						fmt.Printf("class: %v,\n", lowerFirst(tagStack.data[1]))
-						fmt.Printf("cmd: %v,\n", lowerFirst(tagStack.data[2]))
+						fmt.Printf("var %v = %v {\n", lowerFirstCharacter(variableName), concatenateSlice(tagStack.data))
+						fmt.Printf("project: %v,\n", project)
+						fmt.Printf("class: %v,\n", class)
+						fmt.Printf("cmd: %v,\n", command)
 						fmt.Printf("}\n")
 						fmt.Println()
 
 						// store the variable name in a slice so we can use it
 						// to create the map[command]decoder map later.
-						mapVariables = append(mapVariables, varName)
+						variablesForMap = append(variablesForMap, variableName)
 					}
 
 				}
@@ -237,15 +246,18 @@ func Start(tCh chan lexml.Token) {
 	fmt.Println("}")
 	fmt.Println()
 	fmt.Println("var commandMap = map[command]decoder {")
-	for _, v := range mapVariables {
-		fmt.Printf("command(%v) : %v,\n", lowerFirst(v), lowerFirst(v))
+
+	for _, v := range variablesForMap {
+		fmt.Printf("command(%v) : %v,\n", lowerFirstCharacter(v), lowerFirstCharacter(v))
 	}
 	fmt.Println("}")
 	fmt.Println()
 
 }
 
-func lowerFirst(s string) string {
+// lowerFirstCharacer, turns the first character of a string
+// to lowercase.
+func lowerFirstCharacter(s string) string {
 	if s == "" {
 		return ""
 	}
@@ -253,7 +265,9 @@ func lowerFirst(s string) string {
 	return string(unicode.ToLower(r)) + s[n:]
 }
 
-func serializeSlice(s []string) string {
+// concatenateSlice will take all the string elements of
+// a slice, and return them as a single string.
+func concatenateSlice(s []string) string {
 	var output string
 	for _, v := range s {
 		output += v
