@@ -40,8 +40,15 @@ func Start(tCh chan lexml.Token) {
 	buf := NewBuffer(tokenChannelbufferSize)
 	buf.Start(tCh)
 
+	// mapVariables are the collection of the tags used to form a map value in the
+	// parsed output. Essentially it will contains a command variable.
 	var mapVariables []string
 
+	var commandConstantMap = map[string]bool{}
+
+	// Create a stack with push/pop functions for storing tags.
+	// The contents of the tag stack is used to create names
+	// that consists of several tag names.
 	tagStack := newTagStack()
 
 	// Depth is used to indicate what level or sub level we are in the struct/tag
@@ -82,6 +89,8 @@ func Start(tCh chan lexml.Token) {
 		case tokenStartTag:
 			//*fmt.Println("startTag-------------------------------------------------------", v)
 			//*fmt.Printf("depth = %v, startTag found : %v, adding to depth.\n", depth, v.TokenText)
+			//
+			// Push the name of the tag found on the tag Stack.
 			depth++
 			tagStack.push(buf.Slice[2].TokenText)
 			//*fmt.Println("Depth is now = ", depth)
@@ -136,7 +145,7 @@ func Start(tCh chan lexml.Token) {
 						fmt.Printf("const %v classDef = %v\n", lowerFirst(name.TokenText), id)
 
 					case "cmd":
-						//TODO : Implement detection of duplicate commands !!!
+						// TODO : Implement detection of duplicate commands !!!
 
 						// The startToken..if found, is located in the 0'th position of the buffer.
 						if tmpBuf2[0].TokenType == tokenStartTag && tmpBuf2[0].TokenText == "comment" {
@@ -154,8 +163,28 @@ func Start(tCh chan lexml.Token) {
 							}
 						}
 
-						name := tmpBuf1[2]
-						fmt.Printf("const %v cmdDef = %v\n", lowerFirst(name.TokenText), id)
+						// Create the variable of the current project->class->command
+						// content in the tagStack.
+						var varName string
+						for i, v := range tagStack.data {
+							if i != 0 { // we do not want the first value
+								varName += v
+							}
+						}
+
+						cmdConstname := tmpBuf1[2]
+
+						// Check if there have been any previous use of the same const.
+						// If seen before, add DUPLICATE at the end of const name.
+						_, ok := commandConstantMap[cmdConstname.TokenText]
+						if ok {
+							cmdConstname.TokenText += "DUPLICATE"
+						}
+
+						// Store the const to check for duplicates on later iterations.
+						commandConstantMap[cmdConstname.TokenText] = true
+
+						fmt.Printf("const %v cmdDef = %v\n", lowerFirst(cmdConstname.TokenText), id)
 						fmt.Println()
 
 						// Create the struct type command which will hold the decode methods
@@ -171,14 +200,6 @@ func Start(tCh chan lexml.Token) {
 						txt = `fmt.Printf("%+v\n", a)`
 						fmt.Println(txt)
 						fmt.Printf("}\n")
-
-						//create the variable of the command type
-						var varName string
-						for i, v := range tagStack.data {
-							if i != 0 { // we do not want the first value
-								varName += v
-							}
-						}
 
 						fmt.Println()
 						fmt.Printf("var %v = %v {\n", lowerFirst(varName), serializeSlice(tagStack.data))

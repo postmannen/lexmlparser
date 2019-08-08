@@ -2088,7 +2088,7 @@ cmd: wifiSecurityChanged,
 // desc : Wifi security type., 
 // support : 0901;090c;090e, 
 // triggered : by [SetWifiSecurityType](#1-9-1)., 
-const wifiSecurity cmdDef = 2
+const wifiSecurityDUPLICATE cmdDef = 2
 
 type ardrone3NetworkSettingsStatewifiSecurity command
 
@@ -3026,7 +3026,7 @@ const cameraState classDef = 25
 // desc : Camera orientation., 
 // support : 0901;090c;090e, 
 // triggered : by [SetCameraOrientation](#1-1-0)., 
-const orientation cmdDef = 0
+const orientationDUPLICATE cmdDef = 0
 
 type ardrone3CameraStateOrientation command
 
@@ -3066,7 +3066,7 @@ cmd: defaultCameraOrientation,
 // desc : Camera orientation with float arguments., 
 // support : 0901;090c;090e, 
 // triggered : by [SetCameraOrientationV2](#1-1-1), 
-const orientationV2 cmdDef = 2
+const orientationV2DUPLICATE cmdDef = 2
 
 type ardrone3CameraStateOrientationV2 command
 
