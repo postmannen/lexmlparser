@@ -289,6 +289,8 @@ func printTopDeclarations() {
 	fmt.Println()
 }
 
+// printMapDeclaration will print the whole map structure which
+// maps all the command variables to it's type.
 func (p *parser) printMapDeclaration() {
 	// Map for storing the different commands for lookup.
 	fmt.Println("type decoder interface {")
