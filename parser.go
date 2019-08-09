@@ -76,20 +76,7 @@ func Start(tCh chan lexml.Token) {
 	fmt.Println("package main")
 	fmt.Println()
 
-	fmt.Println("import (")
-	fmt.Println(`	"fmt"`)
-	fmt.Println(")")
-	fmt.Println()
-	fmt.Println("type projectDef uint8 ")
-	fmt.Println("type classDef uint8")
-	fmt.Println("type cmdDef uint16")
-	fmt.Println()
-	fmt.Println("type command struct {")
-	fmt.Println("	project projectDef")
-	fmt.Println("	class   classDef")
-	fmt.Println("	cmd     cmdDef")
-	fmt.Println("}")
-	fmt.Println()
+	printTopDeclarations()
 
 	// Range over the ChOut of buf, where ChOut is an unbuffered channel,
 	// and we can pick one value at a time.
@@ -280,6 +267,25 @@ func lowerFirstCharacter(s string) string {
 	}
 	r, n := utf8.DecodeRuneInString(s)
 	return string(unicode.ToLower(r)) + s[n:]
+}
+
+// printTopDeclarations will print things like package ...., func main,
+// imports, etc....
+func printTopDeclarations() {
+	fmt.Println("import (")
+	fmt.Println(`	"fmt"`)
+	fmt.Println(")")
+	fmt.Println()
+	fmt.Println("type projectDef uint8 ")
+	fmt.Println("type classDef uint8")
+	fmt.Println("type cmdDef uint16")
+	fmt.Println()
+	fmt.Println("type command struct {")
+	fmt.Println("	project projectDef")
+	fmt.Println("	class   classDef")
+	fmt.Println("	cmd     cmdDef")
+	fmt.Println("}")
+	fmt.Println()
 }
 
 // concatenateSlice will take all the string elements of
