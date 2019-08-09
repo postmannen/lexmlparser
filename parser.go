@@ -32,31 +32,46 @@ const tokenJustText lexml.TokenType = "tokenJustText"           //just text, no 
 
 const tokenChannelbufferSize = 60
 
+type parser struct {
+	// variablesForMap is a slice and are the collection of the tags used to form a map value
+	// in the parsed output (and not a map value in this code here).
+	// Essentially it will contains a command variable, and will be used at the end of the
+	// code to create the key/values of the map structure in the output.
+	variablesForMap []string
+	// commandConstants is a store for all the constants parsed, and are used in the code
+	// to check if a constant with the same name has previosly beeing parsed to avoid
+	// duplicated
+	commandConstants map[string]bool
+	// tagStack , are a push/pop storage for stack values.
+	// The contents of the tag stack is used to create names
+	// that consists of several tag names.
+	tagStack *tagStack
+	// depth is used to indicate what level or sub level we are in the struct/tag
+	// to keep track of if we are working on a tag within another tag, and so on.
+	// We add 1 to the depth for each tag we find, and subtract by 1 for each
+	// closing tag.
+	depth int
+}
+
+func newParser() *parser {
+	return &parser{
+		variablesForMap:  []string{},
+		commandConstants: map[string]bool{},
+		tagStack:         newTagStack(),
+		depth:            0,
+	}
+}
+
 // Start will start the lexml parser. Takes a channel of tokens as it's input.
 func Start(tCh chan lexml.Token) {
+	// Create a new parser
+	p := newParser()
 
 	// Create a buffered reader of the channel. The .Next method will move to
 	// the next value from input channel. The buffered reader will let us
 	// look at the values that are comming ahead of where we are right now.
 	buf := NewBuffer(tokenChannelbufferSize)
 	buf.Start(tCh)
-
-	// variablesForMap are the collection of the tags used to form a map value in the
-	// parsed output. Essentially it will contains a command variable.
-	var variablesForMap []string
-
-	var commandConstantMap = map[string]bool{}
-
-	// Create a stack with push/pop functions for storing tags.
-	// The contents of the tag stack is used to create names
-	// that consists of several tag names.
-	tagStack := newTagStack()
-
-	// Depth is used to indicate what level or sub level we are in the struct/tag
-	// to keep track of if we are working on a tag within another tag, and so on.
-	// We add 1 to the depth for each tag we find, and subtract by 1 for each
-	// closing tag.
-	depth := 0
 
 	fmt.Println("package main")
 	fmt.Println()
@@ -92,8 +107,8 @@ func Start(tCh chan lexml.Token) {
 			//*fmt.Printf("depth = %v, startTag found : %v, adding to depth.\n", depth, v.TokenText)
 			//
 			// Push the name of the tag found on the tag Stack.
-			depth++
-			tagStack.push(buf.Slice[2].TokenText)
+			p.depth++
+			p.tagStack.push(buf.Slice[2].TokenText)
 			//*fmt.Println("Depth is now = ", depth)
 
 			// Get the first 2 sequences of tokens that have a start and stop tag in the buffer.
@@ -168,7 +183,7 @@ func Start(tCh chan lexml.Token) {
 						// Create the variable of the current project->class->command
 						// content in the tagStack.
 						var variableName string
-						for i, v := range tagStack.data {
+						for i, v := range p.tagStack.data {
 							// We do not want the first value naming the project
 							// in the variableName value, only class+command.
 							if i != 0 {
@@ -180,13 +195,13 @@ func Start(tCh chan lexml.Token) {
 
 						// Check if there have been any previous use of the same const.
 						// If seen before, add DUPLICATE at the end of const name.
-						_, ok := commandConstantMap[cmdConstname.TokenText]
+						_, ok := p.commandConstants[cmdConstname.TokenText]
 						if ok {
 							cmdConstname.TokenText += "DUPLICATE"
 						}
 
 						// Store the const to check for duplicates on later iterations.
-						commandConstantMap[cmdConstname.TokenText] = true
+						p.commandConstants[cmdConstname.TokenText] = true
 
 						constName := lowerFirstCharacter(cmdConstname.TokenText)
 						fmt.Printf("const %v cmdDef = %v\n", constName, id)
@@ -194,11 +209,11 @@ func Start(tCh chan lexml.Token) {
 
 						// Create the struct type command which will hold the decode methods
 						// for the command
-						fmt.Printf("type %v command\n", concatenateSlice(tagStack.data))
+						fmt.Printf("type %v command\n", concatenateSlice(p.tagStack.data))
 						fmt.Println()
 
 						// Create the decode function for the command type
-						fmt.Printf("func (a %v) decode() {\n", concatenateSlice(tagStack.data))
+						fmt.Printf("func (a %v) decode() {\n", concatenateSlice(p.tagStack.data))
 						fmt.Printf("//TODO: .............\n")
 						txt := `fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)`
 						fmt.Println(txt)
@@ -206,12 +221,12 @@ func Start(tCh chan lexml.Token) {
 						fmt.Println(txt)
 						fmt.Printf("}\n")
 
-						project := lowerFirstCharacter(tagStack.data[0])
-						class := lowerFirstCharacter(tagStack.data[1])
-						command := lowerFirstCharacter(tagStack.data[2])
+						project := lowerFirstCharacter(p.tagStack.data[0])
+						class := lowerFirstCharacter(p.tagStack.data[1])
+						command := lowerFirstCharacter(p.tagStack.data[2])
 
 						fmt.Println()
-						fmt.Printf("var %v = %v {\n", lowerFirstCharacter(variableName), concatenateSlice(tagStack.data))
+						fmt.Printf("var %v = %v {\n", lowerFirstCharacter(variableName), concatenateSlice(p.tagStack.data))
 						fmt.Printf("project: %v,\n", project)
 						fmt.Printf("class: %v,\n", class)
 						fmt.Printf("cmd: %v,\n", command)
@@ -220,7 +235,7 @@ func Start(tCh chan lexml.Token) {
 
 						// store the variable name in a slice so we can use it
 						// to create the map[command]decoder map later.
-						variablesForMap = append(variablesForMap, variableName)
+						p.variablesForMap = append(p.variablesForMap, variableName)
 					}
 
 				}
@@ -231,8 +246,8 @@ func Start(tCh chan lexml.Token) {
 			//*fmt.Println("endTag-------------------------------------------------------", v)
 			//*fmt.Printf("depth = %v, endtag found : %v, subtracting to depth.\n", depth, v.TokenText)
 
-			depth--
-			tagStack.pop()
+			p.depth--
+			p.tagStack.pop()
 			//*fmt.Println("Depth is now = ", depth)
 		}
 
@@ -247,7 +262,9 @@ func Start(tCh chan lexml.Token) {
 	fmt.Println()
 	fmt.Println("var commandMap = map[command]decoder {")
 
-	for _, v := range variablesForMap {
+	// Will go through the slice and pick out one variable
+	// at a time and create the map value
+	for _, v := range p.variablesForMap {
 		fmt.Printf("command(%v) : %v,\n", lowerFirstCharacter(v), lowerFirstCharacter(v))
 	}
 	fmt.Println("}")
