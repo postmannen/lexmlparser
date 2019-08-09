@@ -124,105 +124,11 @@ func Start(tCh chan lexml.Token) {
 					switch tmpBuf1[0].TokenText {
 
 					case "project":
-						// Check if there is a tokenDescription tag
-						for _, v := range tmpBuf1 {
-							if v.TokenType == tokenDescription {
-								fmt.Printf("// %v\n", v.TokenText)
-								break
-							}
-						}
-
-						name := tmpBuf1[2]
-						fmt.Printf("	const %v projectDef = %v\n", lowerFirstCharacter(name.TokenText), id)
-
+						p.doTagProject(tmpBuf1, tmpBuf2, id)
 					case "class":
-						// Check if there is a tokenDescription tag
-						for _, v := range tmpBuf1 {
-							if v.TokenType == tokenDescription {
-								fmt.Printf("// %v\n", v.TokenText)
-								break
-							}
-						}
-
-						name := tmpBuf1[2]
-						fmt.Printf("const %v classDef = %v\n", lowerFirstCharacter(name.TokenText), id)
-
+						p.doTagClass(tmpBuf1, tmpBuf2, id)
 					case "cmd":
-						// TODO : Implement detection of duplicate commands !!!
-
-						// The startToken..if found, is located in the 0'th position of the buffer.
-						if tmpBuf2[0].TokenType == tokenStartTag && tmpBuf2[0].TokenText == "comment" {
-							// Create the comments above the const declaration.
-							for i, v := range tmpBuf2 {
-								// We do not want the first value since it is a start tag.
-								if i == 0 {
-									continue
-								}
-								if v.TokenType == tokenArgumentName {
-									fmt.Printf("// %v : ", v.TokenText)
-								}
-								if v.TokenType == tokenArgumentValue {
-									fmt.Printf("%v, \n", v.TokenText)
-								}
-							}
-						}
-
-						// Create the variable of the current project->class->command
-						// content in the tagStack.
-						var variableName string
-						for i, v := range p.tagStack.data {
-							// We do not want the first value naming the project
-							// in the variableName value, only class+command.
-							if i != 0 {
-								variableName += v
-							}
-						}
-
-						cmdConstname := tmpBuf1[2]
-
-						// Check if there have been any previous use of the same const.
-						// If seen before, add DUPLICATE at the end of const name.
-						_, ok := p.commandConstants[cmdConstname.TokenText]
-						if ok {
-							cmdConstname.TokenText += "DUPLICATE"
-						}
-
-						// Store the const to check for duplicates on later iterations.
-						p.commandConstants[cmdConstname.TokenText] = true
-
-						constName := lowerFirstCharacter(cmdConstname.TokenText)
-						fmt.Printf("const %v cmdDef = %v\n", constName, id)
-						fmt.Println()
-
-						// Create the struct type command which will hold the decode methods
-						// for the command
-						fmt.Printf("type %v command\n", concatenateSlice(p.tagStack.data))
-						fmt.Println()
-
-						// Create the decode function for the command type
-						fmt.Printf("func (a %v) decode() {\n", concatenateSlice(p.tagStack.data))
-						fmt.Printf("//TODO: .............\n")
-						txt := `fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)`
-						fmt.Println(txt)
-						txt = `fmt.Printf("%+v\n", a)`
-						fmt.Println(txt)
-						fmt.Printf("}\n")
-
-						project := lowerFirstCharacter(p.tagStack.data[0])
-						class := lowerFirstCharacter(p.tagStack.data[1])
-						command := lowerFirstCharacter(p.tagStack.data[2])
-
-						fmt.Println()
-						fmt.Printf("var %v = %v {\n", lowerFirstCharacter(variableName), concatenateSlice(p.tagStack.data))
-						fmt.Printf("project: %v,\n", project)
-						fmt.Printf("class: %v,\n", class)
-						fmt.Printf("cmd: %v,\n", command)
-						fmt.Printf("}\n")
-						fmt.Println()
-
-						// store the variable name in a slice so we can use it
-						// to create the map[command]decoder map later.
-						p.variablesForMap = append(p.variablesForMap, variableName)
+						p.doTagCommand(tmpBuf1, tmpBuf2, id)
 					}
 
 				}
@@ -257,6 +163,110 @@ func Start(tCh chan lexml.Token) {
 	fmt.Println("}")
 	fmt.Println()
 
+}
+
+func (p *parser) doTagProject(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id string) {
+	for _, v := range tmpBuf1 {
+		if v.TokenType == tokenDescription {
+			fmt.Printf("// %v\n", v.TokenText)
+			break
+		}
+	}
+
+	name := tmpBuf1[2]
+	fmt.Printf("	const %v projectDef = %v\n", lowerFirstCharacter(name.TokenText), id)
+}
+
+func (p *parser) doTagClass(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id string) {
+	// Check if there is a tokenDescription tag
+	for _, v := range tmpBuf1 {
+		if v.TokenType == tokenDescription {
+			fmt.Printf("// %v\n", v.TokenText)
+			break
+		}
+	}
+
+	name := tmpBuf1[2]
+	fmt.Printf("const %v classDef = %v\n", lowerFirstCharacter(name.TokenText), id)
+
+}
+
+func (p *parser) doTagCommand(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id string) {
+	// TODO : Implement detection of duplicate commands !!!
+
+	// The startToken..if found, is located in the 0'th position of the buffer.
+	if tmpBuf2[0].TokenType == tokenStartTag && tmpBuf2[0].TokenText == "comment" {
+		// Create the comments above the const declaration.
+		for i, v := range tmpBuf2 {
+			// We do not want the first value since it is a start tag.
+			if i == 0 {
+				continue
+			}
+			if v.TokenType == tokenArgumentName {
+				fmt.Printf("// %v : ", v.TokenText)
+			}
+			if v.TokenType == tokenArgumentValue {
+				fmt.Printf("%v, \n", v.TokenText)
+			}
+		}
+	}
+
+	// Create the variable of the current project->class->command
+	// content in the tagStack.
+	var variableName string
+	for i, v := range p.tagStack.data {
+		// We do not want the first value naming the project
+		// in the variableName value, only class+command.
+		if i != 0 {
+			variableName += v
+		}
+	}
+
+	cmdConstname := tmpBuf1[2]
+
+	// Check if there have been any previous use of the same const.
+	// If seen before, add DUPLICATE at the end of const name.
+	_, ok := p.commandConstants[cmdConstname.TokenText]
+	if ok {
+		cmdConstname.TokenText += "DUPLICATE"
+	}
+
+	// Store the const to check for duplicates on later iterations.
+	p.commandConstants[cmdConstname.TokenText] = true
+
+	constName := lowerFirstCharacter(cmdConstname.TokenText)
+	fmt.Printf("const %v cmdDef = %v\n", constName, id)
+	fmt.Println()
+
+	// Create the struct type command which will hold the decode methods
+	// for the command
+	fmt.Printf("type %v command\n", concatenateSlice(p.tagStack.data))
+	fmt.Println()
+
+	// Create the decode function for the command type
+	fmt.Printf("func (a %v) decode() {\n", concatenateSlice(p.tagStack.data))
+	fmt.Printf("//TODO: .............\n")
+	txt := `fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)`
+	fmt.Println(txt)
+	txt = `fmt.Printf("%+v\n", a)`
+	fmt.Println(txt)
+	fmt.Printf("}\n")
+
+	project := lowerFirstCharacter(p.tagStack.data[0])
+	class := lowerFirstCharacter(p.tagStack.data[1])
+	command := lowerFirstCharacter(p.tagStack.data[2])
+
+	fmt.Println()
+	fmt.Printf("var %v = %v {\n", lowerFirstCharacter(variableName), concatenateSlice(p.tagStack.data))
+	fmt.Printf("project: %v,\n", project)
+	fmt.Printf("class: %v,\n", class)
+	fmt.Printf("cmd: %v,\n", command)
+	fmt.Printf("}\n")
+	fmt.Println()
+
+	// store the variable name in a slice so we can use it
+	// to create the map[command]decoder map later.
+	p.variablesForMap = append(p.variablesForMap, variableName)
 }
 
 // lowerFirstCharacer, turns the first character of a string
