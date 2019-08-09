@@ -185,6 +185,8 @@ func (p *parser) doTagClass(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id str
 func (p *parser) doTagCommand(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id string) {
 	// TODO : Implement detection of duplicate commands !!!
 
+	// Check if there are comments to be printed for the command.
+	//
 	// The startToken..if found, is located in the 0'th position of the buffer.
 	if tmpBuf2[0].TokenType == tokenStartTag && tmpBuf2[0].TokenText == "comment" {
 		// Create the comments above the const declaration.
@@ -202,7 +204,7 @@ func (p *parser) doTagCommand(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id s
 		}
 	}
 
-	// Create the variable of the current project->class->command
+	// Create the variable name of the current project->class->command
 	// content in the tagStack.
 	var variableName string
 	for i, v := range p.tagStack.data {
@@ -213,6 +215,7 @@ func (p *parser) doTagCommand(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id s
 		}
 	}
 
+	// The name of the command const is found at slice pos [2].
 	cmdConstname := tmpBuf1[2]
 
 	// Check if there have been any previous use of the same const.
