@@ -412,16 +412,3 @@ func (s *tagStack) pop() {
 	//*fmt.Println("DEBUG: After pop:", s)
 
 }
-
-var depthMap = map[int]string{
-	0: "",
-	1: "	",
-	2: "		",
-	3: "			",
-	4: "				",
-	5: "					",
-	6: "						",
-	7: "							",
-	8: "								",
-	9: "									",
-}
