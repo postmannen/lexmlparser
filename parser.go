@@ -90,50 +90,7 @@ func Start(tCh chan lexml.Token) {
 		//
 		// Check all the start tags.
 		case tokenStartTag:
-			//*fmt.Println("startTag-------------------------------------------------------", v)
-			//*fmt.Printf("depth = %v, startTag found : %v, adding to depth.\n", depth, v.TokenText)
-			//
-			// Push the name of the tag found on the tag Stack.
-			p.depth++
-			p.tagStack.push(buf.Slice[2].TokenText)
-			//*fmt.Println("Depth is now = ", depth)
-
-			// Get the first 2 sequences of tokens that have a start and stop tag in the buffer.
-			tmpBuf1, tmpBuf2 := newPartialBuffer(buf)
-
-			//Remove later, just for showing values
-			//fmt.Println()
-			//for _, v := range tmpBuf1 {
-			//	fmt.Printf("*** tmpBuf1 : %v\n", v)
-			//}
-			//
-			////Remove later, just for showing values
-			//fmt.Println()
-			//for _, v := range tmpBuf2 {
-			//	fmt.Printf("*** tmpBuf2 : %v\n", v)
-			//}
-
-			// Range the buffer for this specific token
-			for i, v := range tmpBuf1 {
-				//*fmt.Printf("tmpBuf : %+v\n", v)
-				// If there is an id value we will know that it is a project/class/cmd tag.
-				if v.TokenText == "id" {
-					id := tmpBuf1[i+1].TokenText
-
-					//Check if it is either project, class or cmd tag.
-					switch tmpBuf1[0].TokenText {
-
-					case "project":
-						p.doTagProject(tmpBuf1, tmpBuf2, id)
-					case "class":
-						p.doTagClass(tmpBuf1, tmpBuf2, id)
-					case "cmd":
-						p.doTagCommand(tmpBuf1, tmpBuf2, id)
-					}
-
-				}
-			}
-
+			p.doTokenTagStart(buf)
 		// Check all the end tags
 		case tokenEndTag:
 			//*fmt.Println("endTag-------------------------------------------------------", v)
@@ -148,20 +105,54 @@ func Start(tCh chan lexml.Token) {
 		buf.ReadNext()
 	}
 
-	// Map for storing the different commands for lookup.
-	fmt.Println("type decoder interface {")
-	fmt.Println("decode()")
-	fmt.Println("}")
-	fmt.Println()
-	fmt.Println("var commandMap = map[command]decoder {")
+	p.printMapDeclaration()
 
-	// Will go through the slice and pick out one variable
-	// at a time and create the map value
-	for _, v := range p.variablesForMap {
-		fmt.Printf("command(%v) : %v,\n", lowerFirstCharacter(v), lowerFirstCharacter(v))
+}
+
+func (p *parser) doTokenTagStart(buf *Buffer) {
+	//*fmt.Println("startTag-------------------------------------------------------", v)
+	//*fmt.Printf("depth = %v, startTag found : %v, adding to depth.\n", depth, v.TokenText)
+	//
+	// Push the name of the tag found on the tag Stack.
+	p.depth++
+	p.tagStack.push(buf.Slice[2].TokenText)
+	//*fmt.Println("Depth is now = ", depth)
+
+	// Get the first 2 sequences of tokens that have a start and stop tag in the buffer.
+	tmpBuf1, tmpBuf2 := newPartialBuffer(buf)
+
+	//Remove later, just for showing values
+	//fmt.Println()
+	//for _, v := range tmpBuf1 {
+	//	fmt.Printf("*** tmpBuf1 : %v\n", v)
+	//}
+	//
+	////Remove later, just for showing values
+	//fmt.Println()
+	//for _, v := range tmpBuf2 {
+	//	fmt.Printf("*** tmpBuf2 : %v\n", v)
+	//}
+
+	// Range the buffer for this specific token
+	for i, v := range tmpBuf1 {
+		//*fmt.Printf("tmpBuf : %+v\n", v)
+		// If there is an id value we will know that it is a project/class/cmd tag.
+		if v.TokenText == "id" {
+			id := tmpBuf1[i+1].TokenText
+
+			//Check if it is either project, class or cmd tag.
+			switch tmpBuf1[0].TokenText {
+
+			case "project":
+				p.doTagProject(tmpBuf1, tmpBuf2, id)
+			case "class":
+				p.doTagClass(tmpBuf1, tmpBuf2, id)
+			case "cmd":
+				p.doTagCommand(tmpBuf1, tmpBuf2, id)
+			}
+
+		}
 	}
-	fmt.Println("}")
-	fmt.Println()
 
 }
 
@@ -294,6 +285,23 @@ func printTopDeclarations() {
 	fmt.Println("	project projectDef")
 	fmt.Println("	class   classDef")
 	fmt.Println("	cmd     cmdDef")
+	fmt.Println("}")
+	fmt.Println()
+}
+
+func (p *parser) printMapDeclaration() {
+	// Map for storing the different commands for lookup.
+	fmt.Println("type decoder interface {")
+	fmt.Println("decode()")
+	fmt.Println("}")
+	fmt.Println()
+	fmt.Println("var commandMap = map[command]decoder {")
+
+	// Will go through the slice and pick out one variable
+	// at a time and create the map value
+	for _, v := range p.variablesForMap {
+		fmt.Printf("command(%v) : %v,\n", lowerFirstCharacter(v), lowerFirstCharacter(v))
+	}
 	fmt.Println("}")
 	fmt.Println()
 }
