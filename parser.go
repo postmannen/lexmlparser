@@ -32,6 +32,7 @@ const tokenJustText lexml.TokenType = "tokenJustText"           //just text, no 
 
 const tokenChannelbufferSize = 60
 
+// parser will hard the state of the parsing variables.
 type parser struct {
 	// variablesForMap is a slice and are the collection of the tags used to form a map value
 	// in the parsed output (and not a map value in this code here).
@@ -53,6 +54,8 @@ type parser struct {
 	depth int
 }
 
+// newParser will return a new *parser struct that will hold the state of the
+// parsing while parsing.
 func newParser() *parser {
 	return &parser{
 		variablesForMap:  []string{},
@@ -109,6 +112,7 @@ func Start(tCh chan lexml.Token) {
 
 }
 
+// doTokenTagStart will do all the parsing of a tagStart.
 func (p *parser) doTokenTagStart(buf *Buffer) {
 	//*fmt.Println("startTag-------------------------------------------------------", v)
 	//*fmt.Printf("depth = %v, startTag found : %v, adding to depth.\n", depth, v.TokenText)
@@ -156,6 +160,7 @@ func (p *parser) doTokenTagStart(buf *Buffer) {
 
 }
 
+// doTagProject will do all the parsing of a project tag.
 func (p *parser) doTagProject(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id string) {
 	for _, v := range tmpBuf1 {
 		if v.TokenType == tokenDescription {
@@ -168,6 +173,7 @@ func (p *parser) doTagProject(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id s
 	fmt.Printf("	const %v projectDef = %v\n", lowerFirstCharacter(name.TokenText), id)
 }
 
+// doTagClass will do all the parsing of a class tag.
 func (p *parser) doTagClass(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id string) {
 	// Check if there is a tokenDescription tag
 	for _, v := range tmpBuf1 {
@@ -182,6 +188,7 @@ func (p *parser) doTagClass(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id str
 
 }
 
+// doTagCommand will do all the parsing of a command tag
 func (p *parser) doTagCommand(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id string) {
 	// TODO : Implement detection of duplicate commands !!!
 
