@@ -52,7 +52,31 @@ type parser struct {
 	// We add 1 to the depth for each tag we find, and subtract by 1 for each
 	// closing tag.
 	depth int
+	// droneTypesToGoTypes is a map used to know how to map the types found in the xml like
+	// u8/i8/float etc to they're go equivalent.
+	droneTypesToGoTypes map[string]goType
 }
+
+type goType struct {
+	name   string
+	length int
+}
+
+/*
+u8 1 unsigned 8bit value
+i8 1 signed 8bit value
+u16 2 unsigned 16bit value
+i16 2 signed 16bit value
+u32 4 unsigned 32bit value
+i32 4 signed 32bit value
+u64 8 unsigned 64bit value
+i64 8 signed 64bit value
+float 4 IEEE-754 single precision
+double 8 IEEE-754 double precision
+string * Null terminated string (C-String)
+(Variable size)
+enum 4 Per command defined enum
+*/
 
 // newParser will return a new *parser struct that will hold the state of the
 // parsing while parsing.
@@ -62,6 +86,20 @@ func newParser() *parser {
 		commandConstants: map[string]bool{},
 		tagStack:         newTagStack(),
 		depth:            0,
+		droneTypesToGoTypes: map[string]goType{
+			"u8":     goType{name: "uint8", length: 1},
+			"i8":     goType{name: "int8", length: 1},
+			"u16":    goType{name: "uint16", length: 2},
+			"i16":    goType{name: "int16", length: 2},
+			"u32":    goType{name: "uint32", length: 4},
+			"i32":    goType{name: "int32", length: 4},
+			"u64":    goType{name: "uint64", length: 8},
+			"i64":    goType{name: "int64", length: 8},
+			"float":  goType{name: "float32", length: 4},
+			"double": goType{name: "float64", length: 8},
+			"string": goType{name: "string", length: 0},
+			"enum":   goType{name: "uint32", length: 4},
+		},
 	}
 }
 
