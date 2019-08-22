@@ -422,10 +422,17 @@ func concatenateSlice(s []string) string {
 	return output
 }
 
+type argument struct {
+	name   string
+	goType string
+	length int
+}
+
 // newArgBufferForCmd Will create a buffer starting at a cmd startTag, and ending
 // at a cmd stopTag, so it will be simpler to parse out the arguments for a specific
 // cmd.
 func (p *parser) newArgBufferForCmd(buf *Buffer) (argBuffer []lexml.Token, err error) {
+
 	cmdStartTagFound := false
 	//find the position of start of cmd
 	for i, v := range buf.Slice {
