@@ -422,15 +422,18 @@ func concatenateSlice(s []string) string {
 	return output
 }
 
+// newArgBufferForCmd Will create a buffer starting at a cmd startTag, and ending
+// at a cmd stopTag, so it will be simpler to parse out the arguments for a specific
+// cmd.
 func (p *parser) newArgBufferForCmd(buf *Buffer) (argBuffer []lexml.Token, err error) {
+	cmdStartTagFound := false
 	//find the position of start of cmd
 	for i, v := range buf.Slice {
 		if v.TokenType == tokenStartTag && v.TokenText == "cmd" {
-			fmt.Printf("....... cmd start token found %+v, position = %v \n", v.TokenText, i)
+			cmdStartTagFound = true
 		}
 
-		if v.TokenType == tokenEndTag && v.TokenText == "cmd" {
-			fmt.Printf("....... cmd end token found %+v, position = %v \n", v.TokenText, i)
+		if cmdStartTagFound && v.TokenType == tokenEndTag && v.TokenText == "cmd" {
 			// We need to add 1, since the end tag for cmd is on the next position in slice.
 			return buf.Slice[0 : i+1], nil
 		}
