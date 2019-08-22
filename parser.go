@@ -117,6 +117,8 @@ func Start(tCh chan lexml.Token) {
 	fmt.Println("package main")
 	fmt.Println()
 
+	printBuiltinFunctions()
+
 	printTopDeclarations()
 
 	// Range over the ChOut of buf, where ChOut is an unbuffered channel,
@@ -282,6 +284,17 @@ func (p *parser) doTagCommand(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id s
 	fmt.Printf("type %v command\n", concatenateSlice(p.tagStack.data))
 	fmt.Println()
 
+	// TODO: -----------Put in the argument checking and parsing here--------------------
+	// TODO: Store all the arguments in an argument struct with fields needed, since we need to
+	// iterate it here, and we also need to iterate it in the creation of the decode method below.
+	// TODO: Get all the names and types of the arguments in the tmpBuf1 buffer
+
+	// TODO: Write out the name of the type, it's the same name as the command type + "Argument"
+
+	// TODO: Write out the name of the arguments and the Go equivalent of the type for the fields.
+
+	// ----------------------------------------------------------------------------------
+
 	// Create the decode function for the command type
 	fmt.Printf("func (a %v) decode() {\n", concatenateSlice(p.tagStack.data))
 	fmt.Printf("//TODO: .............\n")
@@ -289,6 +302,9 @@ func (p *parser) doTagCommand(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id s
 	fmt.Println(txt)
 	txt = `fmt.Printf("%+v\n", a)`
 	fmt.Println(txt)
+	// TODO: ------------Create an argument struct, and parser here----------------------
+
+	// ----------------------------------------------------------------------------------
 	fmt.Printf("}\n")
 
 	project := lowerFirstCharacter(p.tagStack.data[0])
@@ -316,6 +332,34 @@ func lowerFirstCharacter(s string) string {
 	}
 	r, n := utf8.DecodeRuneInString(s)
 	return string(unicode.ToLower(r)) + s[n:]
+}
+
+func printBuiltinFunctions() {
+	text := `
+	// lenStringData takes a []byte which is the data for the arguments, and returns
+	// the position of the 0 terminator for the string.
+	// The []byte given as input will start looking from the beginning of the slice,
+	// so the input slice should be sliced to start from the offset of the string.
+	func lenStringData(b []byte) (int, error) {
+		// Figure out the length of the string
+		for i := 0; i < cap(b); i++ {
+			//fmt.Printf("%+v, of type %T\n", b[i], b[i])
+
+			//fmt.Println("i = ", i)
+			if b[i] == 0 {
+				//fmt.Println("lengthString = ", i)
+
+				// add 1 to jump to the 0
+				return i + 1, nil
+			}
+
+		}
+
+		err := fmt.Errorf("no string bytes found, returning 0")
+		return 0, err
+	}
+	`
+	fmt.Println(text)
 }
 
 // printTopDeclarations will print things like package ...., func main,
