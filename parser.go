@@ -18,6 +18,8 @@ import (
 	"unicode"
 	"unicode/utf8"
 
+	"github.com/go-acme/lego/log"
+
 	"github.com/postmannen/lexml"
 )
 
@@ -30,7 +32,8 @@ const tokenDescription lexml.TokenType = "tokenDescription"     // Description, 
 const tokenEOF lexml.TokenType = "tokenEOF"                     //End Of File
 const tokenJustText lexml.TokenType = "tokenJustText"           //just text, no start or end tag
 
-const tokenChannelbufferSize = 60
+// tokenChannelbufferSize is set way too big. I believe 30-35 would be ok for this xml.
+const tokenChannelbufferSize = 100
 
 // parser will hard the state of the parsing variables.
 type parser struct {
@@ -192,7 +195,15 @@ func (p *parser) doTokenTagStart(buf *Buffer) {
 			case "class":
 				p.doTagClass(tmpBuf1, tmpBuf2, id)
 			case "cmd":
-				p.doTagCommand(tmpBuf1, tmpBuf2, id)
+				// We need a buffer of all the arguments that belong to that specific cmd,
+				// since the use of the arguments will be mixed with the cmd in the
+				// generated output text.
+				argBuf, err := p.newArgBufferForCmd(buf)
+				if err != nil {
+					log.Println("error: newArgBufferForCmd: ", err)
+				}
+
+				p.doTagCommand(tmpBuf1, tmpBuf2, id, argBuf)
 			}
 
 		}
@@ -229,7 +240,7 @@ func (p *parser) doTagClass(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id str
 }
 
 // doTagCommand will do all the parsing of a command tag
-func (p *parser) doTagCommand(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id string) {
+func (p *parser) doTagCommand(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id string, argBuf []lexml.Token) {
 	// TODO : Implement detection of duplicate commands !!!
 
 	// Check if there are comments to be printed for the command.
@@ -409,6 +420,23 @@ func concatenateSlice(s []string) string {
 	}
 
 	return output
+}
+
+func (p *parser) newArgBufferForCmd(buf *Buffer) (argBuffer []lexml.Token, err error) {
+	//find the position of start of cmd
+	for i, v := range buf.Slice {
+		if v.TokenType == tokenStartTag && v.TokenText == "cmd" {
+			fmt.Printf("....... cmd start token found %+v, position = %v \n", v.TokenText, i)
+		}
+
+		if v.TokenType == tokenEndTag && v.TokenText == "cmd" {
+			fmt.Printf("....... cmd end token found %+v, position = %v \n", v.TokenText, i)
+			// We need to add 1, since the end tag for cmd is on the next position in slice.
+			return buf.Slice[0 : i+1], nil
+		}
+	}
+
+	return nil, fmt.Errorf("error: did not find the end of a cmd tag in buffer while parsing for arguments")
 }
 
 // newPartialBuffer takes a *lexml.Buffer as input, and returns the first two
