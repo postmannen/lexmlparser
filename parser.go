@@ -203,6 +203,8 @@ func (p *parser) doTokenTagStart(buf *Buffer) {
 					log.Println("error: newArgBufferForCmd: ", err)
 				}
 
+				fmt.Printf("------------ARGBUFFER----------- %+v\n", argBuf)
+
 				p.doTagCommand(tmpBuf1, tmpBuf2, id, argBuf)
 			}
 
@@ -240,7 +242,7 @@ func (p *parser) doTagClass(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id str
 }
 
 // doTagCommand will do all the parsing of a command tag
-func (p *parser) doTagCommand(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id string, argBuf []lexml.Token) {
+func (p *parser) doTagCommand(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id string, argBuf []argument) {
 	// TODO : Implement detection of duplicate commands !!!
 
 	// Check if there are comments to be printed for the command.
@@ -422,31 +424,55 @@ func concatenateSlice(s []string) string {
 	return output
 }
 
+// ---------------------------------------HERE----------------------------------------
 type argument struct {
-	name   string
-	goType string
-	length int
+	name    string
+	xmlType string
+	goType  string
+	length  int
 }
 
 // newArgBufferForCmd Will create a buffer starting at a cmd startTag, and ending
 // at a cmd stopTag, so it will be simpler to parse out the arguments for a specific
 // cmd.
-func (p *parser) newArgBufferForCmd(buf *Buffer) (argBuffer []lexml.Token, err error) {
+func (p *parser) newArgBufferForCmd(buf *Buffer) (argBuffer []argument, err error) {
+	//fmt.Println("---buf---", buf)
 
-	cmdStartTagFound := false
+	foundCMDStartTag := false
 	//find the position of start of cmd
 	for i, v := range buf.Slice {
 		if v.TokenType == tokenStartTag && v.TokenText == "cmd" {
-			cmdStartTagFound = true
+			foundCMDStartTag = true
 		}
 
-		if cmdStartTagFound && v.TokenType == tokenEndTag && v.TokenText == "cmd" {
-			// We need to add 1, since the end tag for cmd is on the next position in slice.
-			return buf.Slice[0 : i+1], nil
+		if foundCMDStartTag && v.TokenType == tokenEndTag && v.TokenText == "cmd" {
+			// When reached the end of the cmd, we are done with all arguments,
+			// and can return the argument slice []argument
+			return argBuffer, nil
+		}
+
+		if buf.Slice[i].TokenText == "arg" && buf.Slice[i+1].TokenText == "name" {
+			a := argument{}
+			a.name = buf.Slice[i+2].TokenText
+			typ := buf.Slice[i+4].TokenText
+			v, ok := p.droneTypesToGoTypes[typ]
+			if ok {
+				a.xmlType = typ
+				a.goType = v.name
+				a.length = v.length
+			}
+
+			argBuffer = append(argBuffer, a)
+
+			//fmt.Println("--------------------a.name---------------------------", a)
 		}
 	}
 
-	return nil, fmt.Errorf("error: did not find the end of a cmd tag in buffer while parsing for arguments")
+	if !foundCMDStartTag {
+		return nil, fmt.Errorf("no start tags to parse arguments inside found")
+	}
+
+	return argBuffer, nil
 }
 
 // newPartialBuffer takes a *lexml.Buffer as input, and returns the first two
