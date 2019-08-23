@@ -26,6 +26,9 @@ const takeOff cmdDef = 1
 
 type ardrone3PilotingTakeOff command
 
+type ardrone3PilotingTakeOffArguments struct {
+}
+
 func (a ardrone3PilotingTakeOff) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -45,6 +48,15 @@ cmd: takeOff,
 const pCMD cmdDef = 2
 
 type ardrone3PilotingPCMD command
+
+type ardrone3PilotingPCMDArguments struct {
+flag uint8
+roll int8
+pitch int8
+yaw int8
+gaz int8
+timestampAndSeqNum uint32
+}
 
 func (a ardrone3PilotingPCMD) decode() {
 //TODO: .............
@@ -66,6 +78,9 @@ const landing cmdDef = 3
 
 type ardrone3PilotingLanding command
 
+type ardrone3PilotingLandingArguments struct {
+}
+
 func (a ardrone3PilotingLanding) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -85,6 +100,9 @@ cmd: landing,
 const emergency cmdDef = 4
 
 type ardrone3PilotingEmergency command
+
+type ardrone3PilotingEmergencyArguments struct {
+}
 
 func (a ardrone3PilotingEmergency) decode() {
 //TODO: .............
@@ -106,6 +124,10 @@ const navigateHome cmdDef = 5
 
 type ardrone3PilotingNavigateHome command
 
+type ardrone3PilotingNavigateHomeArguments struct {
+start uint8
+}
+
 func (a ardrone3PilotingNavigateHome) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -123,6 +145,10 @@ cmd: navigateHome,
 const autoTakeOffMode cmdDef = 6
 
 type ardrone3PilotingAutoTakeOffMode command
+
+type ardrone3PilotingAutoTakeOffModeArguments struct {
+state uint8
+}
 
 func (a ardrone3PilotingAutoTakeOffMode) decode() {
 //TODO: .............
@@ -144,6 +170,13 @@ const moveBy cmdDef = 7
 
 type ardrone3PilotingmoveBy command
 
+type ardrone3PilotingmoveByArguments struct {
+dX float32
+dY float32
+dZ float32
+dPsi float32
+}
+
 func (a ardrone3PilotingmoveBy) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -163,6 +196,10 @@ cmd: moveBy,
 const userTakeOff cmdDef = 8
 
 type ardrone3PilotingUserTakeOff command
+
+type ardrone3PilotingUserTakeOffArguments struct {
+state uint8
+}
 
 func (a ardrone3PilotingUserTakeOff) decode() {
 //TODO: .............
@@ -184,6 +221,10 @@ const circle cmdDef = 9
 
 type ardrone3PilotingCircle command
 
+type ardrone3PilotingCircleArguments struct {
+direction uint32
+}
+
 func (a ardrone3PilotingCircle) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -203,6 +244,14 @@ cmd: circle,
 const moveTo cmdDef = 10
 
 type ardrone3PilotingmoveTo command
+
+type ardrone3PilotingmoveToArguments struct {
+latitude float64
+longitude float64
+altitude float64
+orientation_mode uint32
+heading float32
+}
 
 func (a ardrone3PilotingmoveTo) decode() {
 //TODO: .............
@@ -224,6 +273,9 @@ const cancelMoveTo cmdDef = 11
 
 type ardrone3PilotingCancelMoveTo command
 
+type ardrone3PilotingCancelMoveToArguments struct {
+}
+
 func (a ardrone3PilotingCancelMoveTo) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -243,6 +295,12 @@ cmd: cancelMoveTo,
 const startPilotedPOI cmdDef = 12
 
 type ardrone3PilotingStartPilotedPOI command
+
+type ardrone3PilotingStartPilotedPOIArguments struct {
+latitude float64
+longitude float64
+altitude float64
+}
 
 func (a ardrone3PilotingStartPilotedPOI) decode() {
 //TODO: .............
@@ -264,6 +322,9 @@ const stopPilotedPOI cmdDef = 13
 
 type ardrone3PilotingStopPilotedPOI command
 
+type ardrone3PilotingStopPilotedPOIArguments struct {
+}
+
 func (a ardrone3PilotingStopPilotedPOI) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -282,6 +343,9 @@ cmd: stopPilotedPOI,
 const cancelMoveBy cmdDef = 14
 
 type ardrone3PilotingCancelMoveBy command
+
+type ardrone3PilotingCancelMoveByArguments struct {
+}
 
 func (a ardrone3PilotingCancelMoveBy) decode() {
 //TODO: .............
@@ -305,6 +369,10 @@ const flip cmdDef = 0
 
 type ardrone3AnimationsFlip command
 
+type ardrone3AnimationsFlipArguments struct {
+direction uint32
+}
+
 func (a ardrone3AnimationsFlip) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -327,6 +395,11 @@ const orientation cmdDef = 0
 
 type ardrone3CameraOrientation command
 
+type ardrone3CameraOrientationArguments struct {
+tilt int8
+pan int8
+}
+
 func (a ardrone3CameraOrientation) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -346,6 +419,11 @@ cmd: orientation,
 const orientationV2 cmdDef = 1
 
 type ardrone3CameraOrientationV2 command
+
+type ardrone3CameraOrientationV2Arguments struct {
+tilt float32
+pan float32
+}
 
 func (a ardrone3CameraOrientationV2) decode() {
 //TODO: .............
@@ -367,6 +445,11 @@ const velocity cmdDef = 2
 
 type ardrone3CameraVelocity command
 
+type ardrone3CameraVelocityArguments struct {
+tilt float32
+pan float32
+}
+
 func (a ardrone3CameraVelocity) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -387,6 +470,10 @@ const picture cmdDef = 0
 
 type ardrone3MediaRecordPicture command
 
+type ardrone3MediaRecordPictureArguments struct {
+mass_storage_id uint8
+}
+
 func (a ardrone3MediaRecordPicture) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -404,6 +491,11 @@ cmd: picture,
 const video cmdDef = 1
 
 type ardrone3MediaRecordVideo command
+
+type ardrone3MediaRecordVideoArguments struct {
+record uint32
+mass_storage_id uint8
+}
 
 func (a ardrone3MediaRecordVideo) decode() {
 //TODO: .............
@@ -425,6 +517,9 @@ const pictureV2 cmdDef = 2
 
 type ardrone3MediaRecordPictureV2 command
 
+type ardrone3MediaRecordPictureV2Arguments struct {
+}
+
 func (a ardrone3MediaRecordPictureV2) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -444,6 +539,10 @@ cmd: pictureV2,
 const videoV2 cmdDef = 3
 
 type ardrone3MediaRecordVideoV2 command
+
+type ardrone3MediaRecordVideoV2Arguments struct {
+record uint32
+}
 
 func (a ardrone3MediaRecordVideoV2) decode() {
 //TODO: .............
@@ -465,6 +564,11 @@ const pictureStateChanged cmdDef = 0
 
 type ardrone3MediaRecordStatePictureStateChanged command
 
+type ardrone3MediaRecordStatePictureStateChangedArguments struct {
+state uint8
+mass_storage_id uint8
+}
+
 func (a ardrone3MediaRecordStatePictureStateChanged) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -482,6 +586,11 @@ cmd: pictureStateChanged,
 const videoStateChanged cmdDef = 1
 
 type ardrone3MediaRecordStateVideoStateChanged command
+
+type ardrone3MediaRecordStateVideoStateChangedArguments struct {
+state uint32
+mass_storage_id uint8
+}
 
 func (a ardrone3MediaRecordStateVideoStateChanged) decode() {
 //TODO: .............
@@ -503,6 +612,11 @@ const pictureStateChangedV2 cmdDef = 2
 
 type ardrone3MediaRecordStatePictureStateChangedV2 command
 
+type ardrone3MediaRecordStatePictureStateChangedV2Arguments struct {
+state uint32
+error uint32
+}
+
 func (a ardrone3MediaRecordStatePictureStateChangedV2) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -523,6 +637,11 @@ const videoStateChangedV2 cmdDef = 3
 
 type ardrone3MediaRecordStateVideoStateChangedV2 command
 
+type ardrone3MediaRecordStateVideoStateChangedV2Arguments struct {
+state uint32
+error uint32
+}
+
 func (a ardrone3MediaRecordStateVideoStateChangedV2) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -542,6 +661,11 @@ cmd: videoStateChangedV2,
 const videoResolutionState cmdDef = 4
 
 type ardrone3MediaRecordStateVideoResolutionState command
+
+type ardrone3MediaRecordStateVideoResolutionStateArguments struct {
+streaming uint32
+recording uint32
+}
 
 func (a ardrone3MediaRecordStateVideoResolutionState) decode() {
 //TODO: .............
@@ -565,6 +689,11 @@ const pictureEventChanged cmdDef = 0
 
 type ardrone3MediaRecordEventPictureEventChanged command
 
+type ardrone3MediaRecordEventPictureEventChangedArguments struct {
+event uint32
+error uint32
+}
+
 func (a ardrone3MediaRecordEventPictureEventChanged) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -584,6 +713,11 @@ cmd: pictureEventChanged,
 const videoEventChanged cmdDef = 1
 
 type ardrone3MediaRecordEventVideoEventChanged command
+
+type ardrone3MediaRecordEventVideoEventChangedArguments struct {
+event uint32
+error uint32
+}
 
 func (a ardrone3MediaRecordEventVideoEventChanged) decode() {
 //TODO: .............
@@ -607,6 +741,10 @@ const flyingStateChanged cmdDef = 1
 
 type ardrone3PilotingStateFlyingStateChanged command
 
+type ardrone3PilotingStateFlyingStateChangedArguments struct {
+state uint32
+}
+
 func (a ardrone3PilotingStateFlyingStateChanged) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -626,6 +764,10 @@ cmd: flyingStateChanged,
 const alertStateChanged cmdDef = 2
 
 type ardrone3PilotingStateAlertStateChanged command
+
+type ardrone3PilotingStateAlertStateChangedArguments struct {
+state uint32
+}
 
 func (a ardrone3PilotingStateAlertStateChanged) decode() {
 //TODO: .............
@@ -647,6 +789,11 @@ const navigateHomeStateChanged cmdDef = 3
 
 type ardrone3PilotingStateNavigateHomeStateChanged command
 
+type ardrone3PilotingStateNavigateHomeStateChangedArguments struct {
+state uint32
+reason uint32
+}
+
 func (a ardrone3PilotingStateNavigateHomeStateChanged) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -666,6 +813,12 @@ cmd: navigateHomeStateChanged,
 const positionChanged cmdDef = 4
 
 type ardrone3PilotingStatePositionChanged command
+
+type ardrone3PilotingStatePositionChangedArguments struct {
+latitude float64
+longitude float64
+altitude float64
+}
 
 func (a ardrone3PilotingStatePositionChanged) decode() {
 //TODO: .............
@@ -687,6 +840,12 @@ const speedChanged cmdDef = 5
 
 type ardrone3PilotingStateSpeedChanged command
 
+type ardrone3PilotingStateSpeedChangedArguments struct {
+speedX float32
+speedY float32
+speedZ float32
+}
+
 func (a ardrone3PilotingStateSpeedChanged) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -707,6 +866,12 @@ const attitudeChanged cmdDef = 6
 
 type ardrone3PilotingStateAttitudeChanged command
 
+type ardrone3PilotingStateAttitudeChangedArguments struct {
+roll float32
+pitch float32
+yaw float32
+}
+
 func (a ardrone3PilotingStateAttitudeChanged) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -724,6 +889,10 @@ cmd: attitudeChanged,
 const autoTakeOffModeChanged cmdDef = 7
 
 type ardrone3PilotingStateAutoTakeOffModeChanged command
+
+type ardrone3PilotingStateAutoTakeOffModeChangedArguments struct {
+state uint8
+}
 
 func (a ardrone3PilotingStateAutoTakeOffModeChanged) decode() {
 //TODO: .............
@@ -745,6 +914,10 @@ const altitudeChanged cmdDef = 8
 
 type ardrone3PilotingStateAltitudeChanged command
 
+type ardrone3PilotingStateAltitudeChangedArguments struct {
+altitude float64
+}
+
 func (a ardrone3PilotingStateAltitudeChanged) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -764,6 +937,15 @@ cmd: altitudeChanged,
 const gpsLocationChanged cmdDef = 9
 
 type ardrone3PilotingStateGpsLocationChanged command
+
+type ardrone3PilotingStateGpsLocationChangedArguments struct {
+latitude float64
+longitude float64
+altitude float64
+latitude_accuracy int8
+longitude_accuracy int8
+altitude_accuracy int8
+}
 
 func (a ardrone3PilotingStateGpsLocationChanged) decode() {
 //TODO: .............
@@ -785,6 +967,10 @@ const landingStateChanged cmdDef = 10
 
 type ardrone3PilotingStateLandingStateChanged command
 
+type ardrone3PilotingStateLandingStateChangedArguments struct {
+state uint32
+}
+
 func (a ardrone3PilotingStateLandingStateChanged) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -804,6 +990,10 @@ cmd: landingStateChanged,
 const airSpeedChanged cmdDef = 11
 
 type ardrone3PilotingStateAirSpeedChanged command
+
+type ardrone3PilotingStateAirSpeedChangedArguments struct {
+airSpeed float32
+}
 
 func (a ardrone3PilotingStateAirSpeedChanged) decode() {
 //TODO: .............
@@ -825,6 +1015,15 @@ const moveToChanged cmdDef = 12
 
 type ardrone3PilotingStatemoveToChanged command
 
+type ardrone3PilotingStatemoveToChangedArguments struct {
+latitude float64
+longitude float64
+altitude float64
+orientation_mode uint32
+heading float32
+status uint32
+}
+
 func (a ardrone3PilotingStatemoveToChanged) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -844,6 +1043,10 @@ cmd: moveToChanged,
 const motionState cmdDef = 13
 
 type ardrone3PilotingStateMotionState command
+
+type ardrone3PilotingStateMotionStateArguments struct {
+state uint32
+}
 
 func (a ardrone3PilotingStateMotionState) decode() {
 //TODO: .............
@@ -865,6 +1068,13 @@ const pilotedPOI cmdDef = 14
 
 type ardrone3PilotingStatePilotedPOI command
 
+type ardrone3PilotingStatePilotedPOIArguments struct {
+latitude float64
+longitude float64
+altitude float64
+status uint32
+}
+
 func (a ardrone3PilotingStatePilotedPOI) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -885,6 +1095,10 @@ const returnHomeBatteryCapacity cmdDef = 15
 
 type ardrone3PilotingStateReturnHomeBatteryCapacity command
 
+type ardrone3PilotingStateReturnHomeBatteryCapacityArguments struct {
+status uint32
+}
+
 func (a ardrone3PilotingStateReturnHomeBatteryCapacity) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -903,6 +1117,18 @@ cmd: returnHomeBatteryCapacity,
 const moveByChanged cmdDef = 16
 
 type ardrone3PilotingStatemoveByChanged command
+
+type ardrone3PilotingStatemoveByChangedArguments struct {
+dXAsked float32
+dYAsked float32
+dZAsked float32
+dPsiAsked float32
+dX float32
+dY float32
+dZ float32
+dPsi float32
+status uint32
+}
 
 func (a ardrone3PilotingStatemoveByChanged) decode() {
 //TODO: .............
@@ -924,6 +1150,11 @@ const hoveringWarning cmdDef = 17
 
 type ardrone3PilotingStateHoveringWarning command
 
+type ardrone3PilotingStateHoveringWarningArguments struct {
+no_gps_too_dark uint8
+no_gps_too_high uint8
+}
+
 func (a ardrone3PilotingStateHoveringWarning) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -944,6 +1175,11 @@ const forcedLandingAutoTrigger cmdDef = 18
 
 type ardrone3PilotingStateForcedLandingAutoTrigger command
 
+type ardrone3PilotingStateForcedLandingAutoTriggerArguments struct {
+reason uint32
+delay uint32
+}
+
 func (a ardrone3PilotingStateForcedLandingAutoTrigger) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -963,6 +1199,10 @@ cmd: forcedLandingAutoTrigger,
 const windStateChanged cmdDef = 19
 
 type ardrone3PilotingStateWindStateChanged command
+
+type ardrone3PilotingStateWindStateChangedArguments struct {
+state uint32
+}
 
 func (a ardrone3PilotingStateWindStateChanged) decode() {
 //TODO: .............
@@ -986,6 +1226,14 @@ const moveByEnd cmdDef = 0
 
 type ardrone3PilotingEventmoveByEnd command
 
+type ardrone3PilotingEventmoveByEndArguments struct {
+dX float32
+dY float32
+dZ float32
+dPsi float32
+error uint32
+}
+
 func (a ardrone3PilotingEventmoveByEnd) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -1008,6 +1256,10 @@ const wifiScan cmdDef = 0
 
 type ardrone3NetworkWifiScan command
 
+type ardrone3NetworkWifiScanArguments struct {
+band uint32
+}
+
 func (a ardrone3NetworkWifiScan) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -1027,6 +1279,9 @@ cmd: wifiScan,
 const wifiAuthChannel cmdDef = 1
 
 type ardrone3NetworkWifiAuthChannel command
+
+type ardrone3NetworkWifiAuthChannelArguments struct {
+}
 
 func (a ardrone3NetworkWifiAuthChannel) decode() {
 //TODO: .............
@@ -1050,6 +1305,13 @@ const wifiScanListChanged cmdDef = 0
 
 type ardrone3NetworkStateWifiScanListChanged command
 
+type ardrone3NetworkStateWifiScanListChangedArguments struct {
+ssid string
+rssi int16
+band uint32
+channel uint8
+}
+
 func (a ardrone3NetworkStateWifiScanListChanged) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -1069,6 +1331,9 @@ cmd: wifiScanListChanged,
 const allWifiScanChanged cmdDef = 1
 
 type ardrone3NetworkStateAllWifiScanChanged command
+
+type ardrone3NetworkStateAllWifiScanChangedArguments struct {
+}
 
 func (a ardrone3NetworkStateAllWifiScanChanged) decode() {
 //TODO: .............
@@ -1090,6 +1355,12 @@ const wifiAuthChannelListChanged cmdDef = 2
 
 type ardrone3NetworkStateWifiAuthChannelListChanged command
 
+type ardrone3NetworkStateWifiAuthChannelListChangedArguments struct {
+band uint32
+channel uint8
+in_or_out uint8
+}
+
 func (a ardrone3NetworkStateWifiAuthChannelListChanged) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -1109,6 +1380,9 @@ cmd: wifiAuthChannelListChanged,
 const allWifiAuthChannelChanged cmdDef = 3
 
 type ardrone3NetworkStateAllWifiAuthChannelChanged command
+
+type ardrone3NetworkStateAllWifiAuthChannelChangedArguments struct {
+}
 
 func (a ardrone3NetworkStateAllWifiAuthChannelChanged) decode() {
 //TODO: .............
@@ -1132,6 +1406,10 @@ const maxAltitude cmdDef = 0
 
 type ardrone3PilotingSettingsMaxAltitude command
 
+type ardrone3PilotingSettingsMaxAltitudeArguments struct {
+current float32
+}
+
 func (a ardrone3PilotingSettingsMaxAltitude) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -1152,6 +1430,10 @@ const maxTilt cmdDef = 1
 
 type ardrone3PilotingSettingsMaxTilt command
 
+type ardrone3PilotingSettingsMaxTiltArguments struct {
+current float32
+}
+
 func (a ardrone3PilotingSettingsMaxTilt) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -1169,6 +1451,10 @@ cmd: maxTilt,
 const absolutControl cmdDef = 2
 
 type ardrone3PilotingSettingsAbsolutControl command
+
+type ardrone3PilotingSettingsAbsolutControlArguments struct {
+on uint8
+}
 
 func (a ardrone3PilotingSettingsAbsolutControl) decode() {
 //TODO: .............
@@ -1190,6 +1476,10 @@ const maxDistance cmdDef = 3
 
 type ardrone3PilotingSettingsMaxDistance command
 
+type ardrone3PilotingSettingsMaxDistanceArguments struct {
+value float32
+}
+
 func (a ardrone3PilotingSettingsMaxDistance) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -1209,6 +1499,10 @@ cmd: maxDistance,
 const noFlyOverMaxDistance cmdDef = 4
 
 type ardrone3PilotingSettingsNoFlyOverMaxDistance command
+
+type ardrone3PilotingSettingsNoFlyOverMaxDistanceArguments struct {
+shouldNotFlyOver uint8
+}
 
 func (a ardrone3PilotingSettingsNoFlyOverMaxDistance) decode() {
 //TODO: .............
@@ -1230,6 +1524,10 @@ const setAutonomousFlightMaxHorizontalSpeed cmdDef = 5
 
 type ardrone3PilotingSettingssetAutonomousFlightMaxHorizontalSpeed command
 
+type ardrone3PilotingSettingssetAutonomousFlightMaxHorizontalSpeedArguments struct {
+value float32
+}
+
 func (a ardrone3PilotingSettingssetAutonomousFlightMaxHorizontalSpeed) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -1249,6 +1547,10 @@ cmd: setAutonomousFlightMaxHorizontalSpeed,
 const setAutonomousFlightMaxVerticalSpeed cmdDef = 6
 
 type ardrone3PilotingSettingssetAutonomousFlightMaxVerticalSpeed command
+
+type ardrone3PilotingSettingssetAutonomousFlightMaxVerticalSpeedArguments struct {
+value float32
+}
 
 func (a ardrone3PilotingSettingssetAutonomousFlightMaxVerticalSpeed) decode() {
 //TODO: .............
@@ -1270,6 +1572,10 @@ const setAutonomousFlightMaxHorizontalAcceleration cmdDef = 7
 
 type ardrone3PilotingSettingssetAutonomousFlightMaxHorizontalAcceleration command
 
+type ardrone3PilotingSettingssetAutonomousFlightMaxHorizontalAccelerationArguments struct {
+value float32
+}
+
 func (a ardrone3PilotingSettingssetAutonomousFlightMaxHorizontalAcceleration) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -1289,6 +1595,10 @@ cmd: setAutonomousFlightMaxHorizontalAcceleration,
 const setAutonomousFlightMaxVerticalAcceleration cmdDef = 8
 
 type ardrone3PilotingSettingssetAutonomousFlightMaxVerticalAcceleration command
+
+type ardrone3PilotingSettingssetAutonomousFlightMaxVerticalAccelerationArguments struct {
+value float32
+}
 
 func (a ardrone3PilotingSettingssetAutonomousFlightMaxVerticalAcceleration) decode() {
 //TODO: .............
@@ -1310,6 +1620,10 @@ const setAutonomousFlightMaxRotationSpeed cmdDef = 9
 
 type ardrone3PilotingSettingssetAutonomousFlightMaxRotationSpeed command
 
+type ardrone3PilotingSettingssetAutonomousFlightMaxRotationSpeedArguments struct {
+value float32
+}
+
 func (a ardrone3PilotingSettingssetAutonomousFlightMaxRotationSpeed) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -1329,6 +1643,10 @@ cmd: setAutonomousFlightMaxRotationSpeed,
 const bankedTurn cmdDef = 10
 
 type ardrone3PilotingSettingsBankedTurn command
+
+type ardrone3PilotingSettingsBankedTurnArguments struct {
+value uint8
+}
 
 func (a ardrone3PilotingSettingsBankedTurn) decode() {
 //TODO: .............
@@ -1350,6 +1668,10 @@ const minAltitude cmdDef = 11
 
 type ardrone3PilotingSettingsMinAltitude command
 
+type ardrone3PilotingSettingsMinAltitudeArguments struct {
+current float32
+}
+
 func (a ardrone3PilotingSettingsMinAltitude) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -1369,6 +1691,10 @@ cmd: minAltitude,
 const circlingDirection cmdDef = 12
 
 type ardrone3PilotingSettingsCirclingDirection command
+
+type ardrone3PilotingSettingsCirclingDirectionArguments struct {
+value uint32
+}
 
 func (a ardrone3PilotingSettingsCirclingDirection) decode() {
 //TODO: .............
@@ -1390,6 +1716,10 @@ const circlingRadius cmdDef = 13
 
 type ardrone3PilotingSettingsCirclingRadius command
 
+type ardrone3PilotingSettingsCirclingRadiusArguments struct {
+value uint16
+}
+
 func (a ardrone3PilotingSettingsCirclingRadius) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -1409,6 +1739,10 @@ cmd: circlingRadius,
 const circlingAltitude cmdDef = 14
 
 type ardrone3PilotingSettingsCirclingAltitude command
+
+type ardrone3PilotingSettingsCirclingAltitudeArguments struct {
+value uint16
+}
 
 func (a ardrone3PilotingSettingsCirclingAltitude) decode() {
 //TODO: .............
@@ -1430,6 +1764,10 @@ const pitchMode cmdDef = 15
 
 type ardrone3PilotingSettingsPitchMode command
 
+type ardrone3PilotingSettingsPitchModeArguments struct {
+value uint32
+}
+
 func (a ardrone3PilotingSettingsPitchMode) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -1449,6 +1787,10 @@ cmd: pitchMode,
 const setMotionDetectionMode cmdDef = 16
 
 type ardrone3PilotingSettingsSetMotionDetectionMode command
+
+type ardrone3PilotingSettingsSetMotionDetectionModeArguments struct {
+enable uint8
+}
 
 func (a ardrone3PilotingSettingsSetMotionDetectionMode) decode() {
 //TODO: .............
@@ -1472,6 +1814,12 @@ const maxAltitudeChanged cmdDef = 0
 
 type ardrone3PilotingSettingsStateMaxAltitudeChanged command
 
+type ardrone3PilotingSettingsStateMaxAltitudeChangedArguments struct {
+current float32
+min float32
+max float32
+}
+
 func (a ardrone3PilotingSettingsStateMaxAltitudeChanged) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -1492,6 +1840,12 @@ const maxTiltChanged cmdDef = 1
 
 type ardrone3PilotingSettingsStateMaxTiltChanged command
 
+type ardrone3PilotingSettingsStateMaxTiltChangedArguments struct {
+current float32
+min float32
+max float32
+}
+
 func (a ardrone3PilotingSettingsStateMaxTiltChanged) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -1509,6 +1863,10 @@ cmd: maxTiltChanged,
 const absolutControlChanged cmdDef = 2
 
 type ardrone3PilotingSettingsStateAbsolutControlChanged command
+
+type ardrone3PilotingSettingsStateAbsolutControlChangedArguments struct {
+on uint8
+}
 
 func (a ardrone3PilotingSettingsStateAbsolutControlChanged) decode() {
 //TODO: .............
@@ -1530,6 +1888,12 @@ const maxDistanceChanged cmdDef = 3
 
 type ardrone3PilotingSettingsStateMaxDistanceChanged command
 
+type ardrone3PilotingSettingsStateMaxDistanceChangedArguments struct {
+current float32
+min float32
+max float32
+}
+
 func (a ardrone3PilotingSettingsStateMaxDistanceChanged) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -1549,6 +1913,10 @@ cmd: maxDistanceChanged,
 const noFlyOverMaxDistanceChanged cmdDef = 4
 
 type ardrone3PilotingSettingsStateNoFlyOverMaxDistanceChanged command
+
+type ardrone3PilotingSettingsStateNoFlyOverMaxDistanceChangedArguments struct {
+shouldNotFlyOver uint8
+}
 
 func (a ardrone3PilotingSettingsStateNoFlyOverMaxDistanceChanged) decode() {
 //TODO: .............
@@ -1570,6 +1938,10 @@ const autonomousFlightMaxHorizontalSpeed cmdDef = 5
 
 type ardrone3PilotingSettingsStateAutonomousFlightMaxHorizontalSpeed command
 
+type ardrone3PilotingSettingsStateAutonomousFlightMaxHorizontalSpeedArguments struct {
+value float32
+}
+
 func (a ardrone3PilotingSettingsStateAutonomousFlightMaxHorizontalSpeed) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -1589,6 +1961,10 @@ cmd: autonomousFlightMaxHorizontalSpeed,
 const autonomousFlightMaxVerticalSpeed cmdDef = 6
 
 type ardrone3PilotingSettingsStateAutonomousFlightMaxVerticalSpeed command
+
+type ardrone3PilotingSettingsStateAutonomousFlightMaxVerticalSpeedArguments struct {
+value float32
+}
 
 func (a ardrone3PilotingSettingsStateAutonomousFlightMaxVerticalSpeed) decode() {
 //TODO: .............
@@ -1610,6 +1986,10 @@ const autonomousFlightMaxHorizontalAcceleration cmdDef = 7
 
 type ardrone3PilotingSettingsStateAutonomousFlightMaxHorizontalAcceleration command
 
+type ardrone3PilotingSettingsStateAutonomousFlightMaxHorizontalAccelerationArguments struct {
+value float32
+}
+
 func (a ardrone3PilotingSettingsStateAutonomousFlightMaxHorizontalAcceleration) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -1629,6 +2009,10 @@ cmd: autonomousFlightMaxHorizontalAcceleration,
 const autonomousFlightMaxVerticalAcceleration cmdDef = 8
 
 type ardrone3PilotingSettingsStateAutonomousFlightMaxVerticalAcceleration command
+
+type ardrone3PilotingSettingsStateAutonomousFlightMaxVerticalAccelerationArguments struct {
+value float32
+}
 
 func (a ardrone3PilotingSettingsStateAutonomousFlightMaxVerticalAcceleration) decode() {
 //TODO: .............
@@ -1650,6 +2034,10 @@ const autonomousFlightMaxRotationSpeed cmdDef = 9
 
 type ardrone3PilotingSettingsStateAutonomousFlightMaxRotationSpeed command
 
+type ardrone3PilotingSettingsStateAutonomousFlightMaxRotationSpeedArguments struct {
+value float32
+}
+
 func (a ardrone3PilotingSettingsStateAutonomousFlightMaxRotationSpeed) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -1669,6 +2057,10 @@ cmd: autonomousFlightMaxRotationSpeed,
 const bankedTurnChanged cmdDef = 10
 
 type ardrone3PilotingSettingsStateBankedTurnChanged command
+
+type ardrone3PilotingSettingsStateBankedTurnChangedArguments struct {
+state uint8
+}
 
 func (a ardrone3PilotingSettingsStateBankedTurnChanged) decode() {
 //TODO: .............
@@ -1690,6 +2082,12 @@ const minAltitudeChanged cmdDef = 11
 
 type ardrone3PilotingSettingsStateMinAltitudeChanged command
 
+type ardrone3PilotingSettingsStateMinAltitudeChangedArguments struct {
+current float32
+min float32
+max float32
+}
+
 func (a ardrone3PilotingSettingsStateMinAltitudeChanged) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -1709,6 +2107,10 @@ cmd: minAltitudeChanged,
 const circlingDirectionChanged cmdDef = 12
 
 type ardrone3PilotingSettingsStateCirclingDirectionChanged command
+
+type ardrone3PilotingSettingsStateCirclingDirectionChangedArguments struct {
+value uint32
+}
 
 func (a ardrone3PilotingSettingsStateCirclingDirectionChanged) decode() {
 //TODO: .............
@@ -1730,6 +2132,12 @@ const circlingRadiusChanged cmdDef = 13
 
 type ardrone3PilotingSettingsStateCirclingRadiusChanged command
 
+type ardrone3PilotingSettingsStateCirclingRadiusChangedArguments struct {
+current uint16
+min uint16
+max uint16
+}
+
 func (a ardrone3PilotingSettingsStateCirclingRadiusChanged) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -1749,6 +2157,12 @@ cmd: circlingRadiusChanged,
 const circlingAltitudeChanged cmdDef = 14
 
 type ardrone3PilotingSettingsStateCirclingAltitudeChanged command
+
+type ardrone3PilotingSettingsStateCirclingAltitudeChangedArguments struct {
+current uint16
+min uint16
+max uint16
+}
 
 func (a ardrone3PilotingSettingsStateCirclingAltitudeChanged) decode() {
 //TODO: .............
@@ -1770,6 +2184,10 @@ const pitchModeChanged cmdDef = 15
 
 type ardrone3PilotingSettingsStatePitchModeChanged command
 
+type ardrone3PilotingSettingsStatePitchModeChangedArguments struct {
+value uint32
+}
+
 func (a ardrone3PilotingSettingsStatePitchModeChanged) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -1789,6 +2207,10 @@ cmd: pitchModeChanged,
 const motionDetection cmdDef = 16
 
 type ardrone3PilotingSettingsStateMotionDetection command
+
+type ardrone3PilotingSettingsStateMotionDetectionArguments struct {
+enabled uint8
+}
 
 func (a ardrone3PilotingSettingsStateMotionDetection) decode() {
 //TODO: .............
@@ -1812,6 +2234,10 @@ const maxVerticalSpeed cmdDef = 0
 
 type ardrone3SpeedSettingsMaxVerticalSpeed command
 
+type ardrone3SpeedSettingsMaxVerticalSpeedArguments struct {
+current float32
+}
+
 func (a ardrone3SpeedSettingsMaxVerticalSpeed) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -1831,6 +2257,10 @@ cmd: maxVerticalSpeed,
 const maxRotationSpeed cmdDef = 1
 
 type ardrone3SpeedSettingsMaxRotationSpeed command
+
+type ardrone3SpeedSettingsMaxRotationSpeedArguments struct {
+current float32
+}
 
 func (a ardrone3SpeedSettingsMaxRotationSpeed) decode() {
 //TODO: .............
@@ -1852,6 +2282,10 @@ const hullProtection cmdDef = 2
 
 type ardrone3SpeedSettingsHullProtection command
 
+type ardrone3SpeedSettingsHullProtectionArguments struct {
+present uint8
+}
+
 func (a ardrone3SpeedSettingsHullProtection) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -1869,6 +2303,10 @@ cmd: hullProtection,
 const outdoor cmdDef = 3
 
 type ardrone3SpeedSettingsOutdoor command
+
+type ardrone3SpeedSettingsOutdoorArguments struct {
+outdoor uint8
+}
 
 func (a ardrone3SpeedSettingsOutdoor) decode() {
 //TODO: .............
@@ -1889,6 +2327,10 @@ cmd: outdoor,
 const maxPitchRollRotationSpeed cmdDef = 4
 
 type ardrone3SpeedSettingsMaxPitchRollRotationSpeed command
+
+type ardrone3SpeedSettingsMaxPitchRollRotationSpeedArguments struct {
+current float32
+}
 
 func (a ardrone3SpeedSettingsMaxPitchRollRotationSpeed) decode() {
 //TODO: .............
@@ -1912,6 +2354,12 @@ const maxVerticalSpeedChanged cmdDef = 0
 
 type ardrone3SpeedSettingsStateMaxVerticalSpeedChanged command
 
+type ardrone3SpeedSettingsStateMaxVerticalSpeedChangedArguments struct {
+current float32
+min float32
+max float32
+}
+
 func (a ardrone3SpeedSettingsStateMaxVerticalSpeedChanged) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -1931,6 +2379,12 @@ cmd: maxVerticalSpeedChanged,
 const maxRotationSpeedChanged cmdDef = 1
 
 type ardrone3SpeedSettingsStateMaxRotationSpeedChanged command
+
+type ardrone3SpeedSettingsStateMaxRotationSpeedChangedArguments struct {
+current float32
+min float32
+max float32
+}
 
 func (a ardrone3SpeedSettingsStateMaxRotationSpeedChanged) decode() {
 //TODO: .............
@@ -1952,6 +2406,10 @@ const hullProtectionChanged cmdDef = 2
 
 type ardrone3SpeedSettingsStateHullProtectionChanged command
 
+type ardrone3SpeedSettingsStateHullProtectionChangedArguments struct {
+present uint8
+}
+
 func (a ardrone3SpeedSettingsStateHullProtectionChanged) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -1969,6 +2427,10 @@ cmd: hullProtectionChanged,
 const outdoorChanged cmdDef = 3
 
 type ardrone3SpeedSettingsStateOutdoorChanged command
+
+type ardrone3SpeedSettingsStateOutdoorChangedArguments struct {
+outdoor uint8
+}
 
 func (a ardrone3SpeedSettingsStateOutdoorChanged) decode() {
 //TODO: .............
@@ -1989,6 +2451,12 @@ cmd: outdoorChanged,
 const maxPitchRollRotationSpeedChanged cmdDef = 4
 
 type ardrone3SpeedSettingsStateMaxPitchRollRotationSpeedChanged command
+
+type ardrone3SpeedSettingsStateMaxPitchRollRotationSpeedChangedArguments struct {
+current float32
+min float32
+max float32
+}
 
 func (a ardrone3SpeedSettingsStateMaxPitchRollRotationSpeedChanged) decode() {
 //TODO: .............
@@ -2012,6 +2480,12 @@ const wifiSelection cmdDef = 0
 
 type ardrone3NetworkSettingsWifiSelection command
 
+type ardrone3NetworkSettingsWifiSelectionArguments struct {
+typeX uint32
+band uint32
+channel uint8
+}
+
 func (a ardrone3NetworkSettingsWifiSelection) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -2031,6 +2505,12 @@ cmd: wifiSelection,
 const wifiSecurity cmdDef = 1
 
 type ardrone3NetworkSettingswifiSecurity command
+
+type ardrone3NetworkSettingswifiSecurityArguments struct {
+typeX uint32
+key string
+keyType uint32
+}
 
 func (a ardrone3NetworkSettingswifiSecurity) decode() {
 //TODO: .............
@@ -2054,6 +2534,12 @@ const wifiSelectionChanged cmdDef = 0
 
 type ardrone3NetworkSettingsStateWifiSelectionChanged command
 
+type ardrone3NetworkSettingsStateWifiSelectionChangedArguments struct {
+typeX uint32
+band uint32
+channel uint8
+}
+
 func (a ardrone3NetworkSettingsStateWifiSelectionChanged) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -2071,6 +2557,10 @@ cmd: wifiSelectionChanged,
 const wifiSecurityChanged cmdDef = 1
 
 type ardrone3NetworkSettingsStatewifiSecurityChanged command
+
+type ardrone3NetworkSettingsStatewifiSecurityChangedArguments struct {
+typeX uint32
+}
 
 func (a ardrone3NetworkSettingsStatewifiSecurityChanged) decode() {
 //TODO: .............
@@ -2092,6 +2582,12 @@ const wifiSecurityDUPLICATE cmdDef = 2
 
 type ardrone3NetworkSettingsStatewifiSecurity command
 
+type ardrone3NetworkSettingsStatewifiSecurityArguments struct {
+typeX uint32
+key string
+keyType uint32
+}
+
 func (a ardrone3NetworkSettingsStatewifiSecurity) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -2111,6 +2607,13 @@ const settingsState classDef = 16
 const productMotorVersionListChanged cmdDef = 0
 
 type ardrone3SettingsStateProductMotorVersionListChanged command
+
+type ardrone3SettingsStateProductMotorVersionListChangedArguments struct {
+motor_number uint8
+typeX string
+software string
+hardware string
+}
 
 func (a ardrone3SettingsStateProductMotorVersionListChanged) decode() {
 //TODO: .............
@@ -2132,6 +2635,11 @@ const productGPSVersionChanged cmdDef = 1
 
 type ardrone3SettingsStateProductGPSVersionChanged command
 
+type ardrone3SettingsStateProductGPSVersionChangedArguments struct {
+software string
+hardware string
+}
+
 func (a ardrone3SettingsStateProductGPSVersionChanged) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -2152,6 +2660,11 @@ const motorErrorStateChanged cmdDef = 2
 
 type ardrone3SettingsStateMotorErrorStateChanged command
 
+type ardrone3SettingsStateMotorErrorStateChangedArguments struct {
+motorIds uint8
+motorError uint32
+}
+
 func (a ardrone3SettingsStateMotorErrorStateChanged) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -2169,6 +2682,10 @@ cmd: motorErrorStateChanged,
 const motorSoftwareVersionChanged cmdDef = 3
 
 type ardrone3SettingsStateMotorSoftwareVersionChanged command
+
+type ardrone3SettingsStateMotorSoftwareVersionChangedArguments struct {
+version string
+}
 
 func (a ardrone3SettingsStateMotorSoftwareVersionChanged) decode() {
 //TODO: .............
@@ -2190,6 +2707,12 @@ const motorFlightsStatusChanged cmdDef = 4
 
 type ardrone3SettingsStateMotorFlightsStatusChanged command
 
+type ardrone3SettingsStateMotorFlightsStatusChangedArguments struct {
+nbFlights uint16
+lastFlightDuration uint16
+totalFlightDuration uint32
+}
+
 func (a ardrone3SettingsStateMotorFlightsStatusChanged) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -2210,6 +2733,10 @@ const motorErrorLastErrorChanged cmdDef = 5
 
 type ardrone3SettingsStateMotorErrorLastErrorChanged command
 
+type ardrone3SettingsStateMotorErrorLastErrorChangedArguments struct {
+motorError uint32
+}
+
 func (a ardrone3SettingsStateMotorErrorLastErrorChanged) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -2228,6 +2755,10 @@ const p7ID cmdDef = 6
 
 type ardrone3SettingsStateP7ID command
 
+type ardrone3SettingsStateP7IDArguments struct {
+serialID string
+}
+
 func (a ardrone3SettingsStateP7ID) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -2243,6 +2774,10 @@ cmd: p7ID,
 const cPUID cmdDef = 7
 
 type ardrone3SettingsStateCPUID command
+
+type ardrone3SettingsStateCPUIDArguments struct {
+id string
+}
 
 func (a ardrone3SettingsStateCPUID) decode() {
 //TODO: .............
@@ -2266,6 +2801,10 @@ const pictureFormatSelection cmdDef = 0
 
 type ardrone3PictureSettingsPictureFormatSelection command
 
+type ardrone3PictureSettingsPictureFormatSelectionArguments struct {
+typeX uint32
+}
+
 func (a ardrone3PictureSettingsPictureFormatSelection) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -2285,6 +2824,10 @@ cmd: pictureFormatSelection,
 const autoWhiteBalanceSelection cmdDef = 1
 
 type ardrone3PictureSettingsAutoWhiteBalanceSelection command
+
+type ardrone3PictureSettingsAutoWhiteBalanceSelectionArguments struct {
+typeX uint32
+}
 
 func (a ardrone3PictureSettingsAutoWhiteBalanceSelection) decode() {
 //TODO: .............
@@ -2306,6 +2849,10 @@ const expositionSelection cmdDef = 2
 
 type ardrone3PictureSettingsExpositionSelection command
 
+type ardrone3PictureSettingsExpositionSelectionArguments struct {
+value float32
+}
+
 func (a ardrone3PictureSettingsExpositionSelection) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -2325,6 +2872,10 @@ cmd: expositionSelection,
 const saturationSelection cmdDef = 3
 
 type ardrone3PictureSettingsSaturationSelection command
+
+type ardrone3PictureSettingsSaturationSelectionArguments struct {
+value float32
+}
 
 func (a ardrone3PictureSettingsSaturationSelection) decode() {
 //TODO: .............
@@ -2346,6 +2897,11 @@ const timelapseSelection cmdDef = 4
 
 type ardrone3PictureSettingsTimelapseSelection command
 
+type ardrone3PictureSettingsTimelapseSelectionArguments struct {
+enabled uint8
+interval float32
+}
+
 func (a ardrone3PictureSettingsTimelapseSelection) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -2365,6 +2921,11 @@ cmd: timelapseSelection,
 const videoAutorecordSelection cmdDef = 5
 
 type ardrone3PictureSettingsVideoAutorecordSelection command
+
+type ardrone3PictureSettingsVideoAutorecordSelectionArguments struct {
+enabled uint8
+mass_storage_id uint8
+}
 
 func (a ardrone3PictureSettingsVideoAutorecordSelection) decode() {
 //TODO: .............
@@ -2386,6 +2947,10 @@ const videoStabilizationMode cmdDef = 6
 
 type ardrone3PictureSettingsVideoStabilizationMode command
 
+type ardrone3PictureSettingsVideoStabilizationModeArguments struct {
+mode uint32
+}
+
 func (a ardrone3PictureSettingsVideoStabilizationMode) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -2405,6 +2970,10 @@ cmd: videoStabilizationMode,
 const videoRecordingMode cmdDef = 7
 
 type ardrone3PictureSettingsVideoRecordingMode command
+
+type ardrone3PictureSettingsVideoRecordingModeArguments struct {
+mode uint32
+}
 
 func (a ardrone3PictureSettingsVideoRecordingMode) decode() {
 //TODO: .............
@@ -2426,6 +2995,10 @@ const videoFramerate cmdDef = 8
 
 type ardrone3PictureSettingsVideoFramerate command
 
+type ardrone3PictureSettingsVideoFramerateArguments struct {
+framerate uint32
+}
+
 func (a ardrone3PictureSettingsVideoFramerate) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -2445,6 +3018,10 @@ cmd: videoFramerate,
 const videoResolutions cmdDef = 9
 
 type ardrone3PictureSettingsVideoResolutions command
+
+type ardrone3PictureSettingsVideoResolutionsArguments struct {
+typeX uint32
+}
 
 func (a ardrone3PictureSettingsVideoResolutions) decode() {
 //TODO: .............
@@ -2468,6 +3045,10 @@ const pictureFormatChanged cmdDef = 0
 
 type ardrone3PictureSettingsStatePictureFormatChanged command
 
+type ardrone3PictureSettingsStatePictureFormatChangedArguments struct {
+typeX uint32
+}
+
 func (a ardrone3PictureSettingsStatePictureFormatChanged) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -2487,6 +3068,10 @@ cmd: pictureFormatChanged,
 const autoWhiteBalanceChanged cmdDef = 1
 
 type ardrone3PictureSettingsStateAutoWhiteBalanceChanged command
+
+type ardrone3PictureSettingsStateAutoWhiteBalanceChangedArguments struct {
+typeX uint32
+}
 
 func (a ardrone3PictureSettingsStateAutoWhiteBalanceChanged) decode() {
 //TODO: .............
@@ -2508,6 +3093,12 @@ const expositionChanged cmdDef = 2
 
 type ardrone3PictureSettingsStateExpositionChanged command
 
+type ardrone3PictureSettingsStateExpositionChangedArguments struct {
+value float32
+min float32
+max float32
+}
+
 func (a ardrone3PictureSettingsStateExpositionChanged) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -2527,6 +3118,12 @@ cmd: expositionChanged,
 const saturationChanged cmdDef = 3
 
 type ardrone3PictureSettingsStateSaturationChanged command
+
+type ardrone3PictureSettingsStateSaturationChangedArguments struct {
+value float32
+min float32
+max float32
+}
 
 func (a ardrone3PictureSettingsStateSaturationChanged) decode() {
 //TODO: .............
@@ -2548,6 +3145,13 @@ const timelapseChanged cmdDef = 4
 
 type ardrone3PictureSettingsStateTimelapseChanged command
 
+type ardrone3PictureSettingsStateTimelapseChangedArguments struct {
+enabled uint8
+interval float32
+minInterval float32
+maxInterval float32
+}
+
 func (a ardrone3PictureSettingsStateTimelapseChanged) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -2567,6 +3171,11 @@ cmd: timelapseChanged,
 const videoAutorecordChanged cmdDef = 5
 
 type ardrone3PictureSettingsStateVideoAutorecordChanged command
+
+type ardrone3PictureSettingsStateVideoAutorecordChangedArguments struct {
+enabled uint8
+mass_storage_id uint8
+}
 
 func (a ardrone3PictureSettingsStateVideoAutorecordChanged) decode() {
 //TODO: .............
@@ -2588,6 +3197,10 @@ const videoStabilizationModeChanged cmdDef = 6
 
 type ardrone3PictureSettingsStateVideoStabilizationModeChanged command
 
+type ardrone3PictureSettingsStateVideoStabilizationModeChangedArguments struct {
+mode uint32
+}
+
 func (a ardrone3PictureSettingsStateVideoStabilizationModeChanged) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -2607,6 +3220,10 @@ cmd: videoStabilizationModeChanged,
 const videoRecordingModeChanged cmdDef = 7
 
 type ardrone3PictureSettingsStateVideoRecordingModeChanged command
+
+type ardrone3PictureSettingsStateVideoRecordingModeChangedArguments struct {
+mode uint32
+}
 
 func (a ardrone3PictureSettingsStateVideoRecordingModeChanged) decode() {
 //TODO: .............
@@ -2628,6 +3245,10 @@ const videoFramerateChanged cmdDef = 8
 
 type ardrone3PictureSettingsStateVideoFramerateChanged command
 
+type ardrone3PictureSettingsStateVideoFramerateChangedArguments struct {
+framerate uint32
+}
+
 func (a ardrone3PictureSettingsStateVideoFramerateChanged) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -2647,6 +3268,10 @@ cmd: videoFramerateChanged,
 const videoResolutionsChanged cmdDef = 9
 
 type ardrone3PictureSettingsStateVideoResolutionsChanged command
+
+type ardrone3PictureSettingsStateVideoResolutionsChangedArguments struct {
+typeX uint32
+}
 
 func (a ardrone3PictureSettingsStateVideoResolutionsChanged) decode() {
 //TODO: .............
@@ -2670,6 +3295,10 @@ const videoEnable cmdDef = 0
 
 type ardrone3MediaStreamingVideoEnable command
 
+type ardrone3MediaStreamingVideoEnableArguments struct {
+enable uint8
+}
+
 func (a ardrone3MediaStreamingVideoEnable) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -2689,6 +3318,10 @@ cmd: videoEnable,
 const videoStreamMode cmdDef = 1
 
 type ardrone3MediaStreamingVideoStreamMode command
+
+type ardrone3MediaStreamingVideoStreamModeArguments struct {
+mode uint32
+}
 
 func (a ardrone3MediaStreamingVideoStreamMode) decode() {
 //TODO: .............
@@ -2712,6 +3345,10 @@ const videoEnableChanged cmdDef = 0
 
 type ardrone3MediaStreamingStateVideoEnableChanged command
 
+type ardrone3MediaStreamingStateVideoEnableChangedArguments struct {
+enabled uint32
+}
+
 func (a ardrone3MediaStreamingStateVideoEnableChanged) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -2727,6 +3364,10 @@ cmd: videoEnableChanged,
 const videoStreamModeChanged cmdDef = 1
 
 type ardrone3MediaStreamingStateVideoStreamModeChanged command
+
+type ardrone3MediaStreamingStateVideoStreamModeChangedArguments struct {
+mode uint32
+}
 
 func (a ardrone3MediaStreamingStateVideoStreamModeChanged) decode() {
 //TODO: .............
@@ -2748,6 +3389,12 @@ const setHome cmdDef = 0
 
 type ardrone3GPSSettingsSetHome command
 
+type ardrone3GPSSettingsSetHomeArguments struct {
+latitude float64
+longitude float64
+altitude float64
+}
+
 func (a ardrone3GPSSettingsSetHome) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -2767,6 +3414,9 @@ cmd: setHome,
 const resetHome cmdDef = 1
 
 type ardrone3GPSSettingsResetHome command
+
+type ardrone3GPSSettingsResetHomeArguments struct {
+}
 
 func (a ardrone3GPSSettingsResetHome) decode() {
 //TODO: .............
@@ -2788,6 +3438,14 @@ const sendControllerGPS cmdDef = 2
 
 type ardrone3GPSSettingsSendControllerGPS command
 
+type ardrone3GPSSettingsSendControllerGPSArguments struct {
+latitude float64
+longitude float64
+altitude float64
+horizontalAccuracy float64
+verticalAccuracy float64
+}
+
 func (a ardrone3GPSSettingsSendControllerGPS) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -2807,6 +3465,10 @@ cmd: sendControllerGPS,
 const homeType cmdDef = 3
 
 type ardrone3GPSSettingsHomeType command
+
+type ardrone3GPSSettingsHomeTypeArguments struct {
+typeX uint32
+}
 
 func (a ardrone3GPSSettingsHomeType) decode() {
 //TODO: .............
@@ -2828,6 +3490,10 @@ const returnHomeDelay cmdDef = 4
 
 type ardrone3GPSSettingsReturnHomeDelay command
 
+type ardrone3GPSSettingsReturnHomeDelayArguments struct {
+delay uint16
+}
+
 func (a ardrone3GPSSettingsReturnHomeDelay) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -2847,6 +3513,10 @@ cmd: returnHomeDelay,
 const returnHomeMinAltitude cmdDef = 5
 
 type ardrone3GPSSettingsReturnHomeMinAltitude command
+
+type ardrone3GPSSettingsReturnHomeMinAltitudeArguments struct {
+value float32
+}
 
 func (a ardrone3GPSSettingsReturnHomeMinAltitude) decode() {
 //TODO: .............
@@ -2870,6 +3540,12 @@ const homeChanged cmdDef = 0
 
 type ardrone3GPSSettingsStateHomeChanged command
 
+type ardrone3GPSSettingsStateHomeChangedArguments struct {
+latitude float64
+longitude float64
+altitude float64
+}
+
 func (a ardrone3GPSSettingsStateHomeChanged) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -2889,6 +3565,12 @@ cmd: homeChanged,
 const resetHomeChanged cmdDef = 1
 
 type ardrone3GPSSettingsStateResetHomeChanged command
+
+type ardrone3GPSSettingsStateResetHomeChangedArguments struct {
+latitude float64
+longitude float64
+altitude float64
+}
 
 func (a ardrone3GPSSettingsStateResetHomeChanged) decode() {
 //TODO: .............
@@ -2910,6 +3592,10 @@ const gPSFixStateChanged cmdDef = 2
 
 type ardrone3GPSSettingsStateGPSFixStateChanged command
 
+type ardrone3GPSSettingsStateGPSFixStateChangedArguments struct {
+fixed uint8
+}
+
 func (a ardrone3GPSSettingsStateGPSFixStateChanged) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -2929,6 +3615,10 @@ cmd: gPSFixStateChanged,
 const gPSUpdateStateChanged cmdDef = 3
 
 type ardrone3GPSSettingsStateGPSUpdateStateChanged command
+
+type ardrone3GPSSettingsStateGPSUpdateStateChangedArguments struct {
+state uint32
+}
 
 func (a ardrone3GPSSettingsStateGPSUpdateStateChanged) decode() {
 //TODO: .............
@@ -2950,6 +3640,10 @@ const homeTypeChanged cmdDef = 4
 
 type ardrone3GPSSettingsStateHomeTypeChanged command
 
+type ardrone3GPSSettingsStateHomeTypeChangedArguments struct {
+typeX uint32
+}
+
 func (a ardrone3GPSSettingsStateHomeTypeChanged) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -2970,6 +3664,10 @@ const returnHomeDelayChanged cmdDef = 5
 
 type ardrone3GPSSettingsStateReturnHomeDelayChanged command
 
+type ardrone3GPSSettingsStateReturnHomeDelayChangedArguments struct {
+delay uint16
+}
+
 func (a ardrone3GPSSettingsStateReturnHomeDelayChanged) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -2989,6 +3687,11 @@ const geofenceCenterChanged cmdDef = 6
 
 type ardrone3GPSSettingsStateGeofenceCenterChanged command
 
+type ardrone3GPSSettingsStateGeofenceCenterChangedArguments struct {
+latitude float64
+longitude float64
+}
+
 func (a ardrone3GPSSettingsStateGeofenceCenterChanged) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -3007,6 +3710,12 @@ cmd: geofenceCenterChanged,
 const returnHomeMinAltitudeChanged cmdDef = 7
 
 type ardrone3GPSSettingsStateReturnHomeMinAltitudeChanged command
+
+type ardrone3GPSSettingsStateReturnHomeMinAltitudeChangedArguments struct {
+value float32
+min float32
+max float32
+}
 
 func (a ardrone3GPSSettingsStateReturnHomeMinAltitudeChanged) decode() {
 //TODO: .............
@@ -3030,6 +3739,11 @@ const orientationDUPLICATE cmdDef = 0
 
 type ardrone3CameraStateOrientation command
 
+type ardrone3CameraStateOrientationArguments struct {
+tilt int8
+pan int8
+}
+
 func (a ardrone3CameraStateOrientation) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -3049,6 +3763,11 @@ cmd: orientation,
 const defaultCameraOrientation cmdDef = 1
 
 type ardrone3CameraStatedefaultCameraOrientation command
+
+type ardrone3CameraStatedefaultCameraOrientationArguments struct {
+tilt int8
+pan int8
+}
 
 func (a ardrone3CameraStatedefaultCameraOrientation) decode() {
 //TODO: .............
@@ -3070,6 +3789,11 @@ const orientationV2DUPLICATE cmdDef = 2
 
 type ardrone3CameraStateOrientationV2 command
 
+type ardrone3CameraStateOrientationV2Arguments struct {
+tilt float32
+pan float32
+}
+
 func (a ardrone3CameraStateOrientationV2) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -3090,6 +3814,11 @@ const defaultCameraOrientationV2 cmdDef = 3
 
 type ardrone3CameraStatedefaultCameraOrientationV2 command
 
+type ardrone3CameraStatedefaultCameraOrientationV2Arguments struct {
+tilt float32
+pan float32
+}
+
 func (a ardrone3CameraStatedefaultCameraOrientationV2) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -3109,6 +3838,11 @@ cmd: defaultCameraOrientationV2,
 const velocityRange cmdDef = 4
 
 type ardrone3CameraStateVelocityRange command
+
+type ardrone3CameraStateVelocityRangeArguments struct {
+max_tilt float32
+max_pan float32
+}
 
 func (a ardrone3CameraStateVelocityRange) decode() {
 //TODO: .............
@@ -3132,6 +3866,10 @@ const electricFrequency cmdDef = 0
 
 type ardrone3AntiflickeringelectricFrequency command
 
+type ardrone3AntiflickeringelectricFrequencyArguments struct {
+frequency uint32
+}
+
 func (a ardrone3AntiflickeringelectricFrequency) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -3151,6 +3889,10 @@ cmd: electricFrequency,
 const setMode cmdDef = 1
 
 type ardrone3AntiflickeringsetMode command
+
+type ardrone3AntiflickeringsetModeArguments struct {
+mode uint32
+}
 
 func (a ardrone3AntiflickeringsetMode) decode() {
 //TODO: .............
@@ -3174,6 +3916,10 @@ const electricFrequencyChanged cmdDef = 0
 
 type ardrone3AntiflickeringStateelectricFrequencyChanged command
 
+type ardrone3AntiflickeringStateelectricFrequencyChangedArguments struct {
+frequency uint32
+}
+
 func (a ardrone3AntiflickeringStateelectricFrequencyChanged) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -3193,6 +3939,10 @@ cmd: electricFrequencyChanged,
 const modeChanged cmdDef = 1
 
 type ardrone3AntiflickeringStatemodeChanged command
+
+type ardrone3AntiflickeringStatemodeChangedArguments struct {
+mode uint32
+}
 
 func (a ardrone3AntiflickeringStatemodeChanged) decode() {
 //TODO: .............
@@ -3216,6 +3966,10 @@ const numberOfSatelliteChanged cmdDef = 0
 
 type ardrone3GPSStateNumberOfSatelliteChanged command
 
+type ardrone3GPSStateNumberOfSatelliteChangedArguments struct {
+numberOfSatellite uint8
+}
+
 func (a ardrone3GPSStateNumberOfSatelliteChanged) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -3235,6 +3989,11 @@ cmd: numberOfSatelliteChanged,
 const homeTypeAvailabilityChanged cmdDef = 1
 
 type ardrone3GPSStateHomeTypeAvailabilityChanged command
+
+type ardrone3GPSStateHomeTypeAvailabilityChangedArguments struct {
+typeX uint32
+available uint8
+}
 
 func (a ardrone3GPSStateHomeTypeAvailabilityChanged) decode() {
 //TODO: .............
@@ -3256,6 +4015,10 @@ const homeTypeChosenChanged cmdDef = 2
 
 type ardrone3GPSStateHomeTypeChosenChanged command
 
+type ardrone3GPSStateHomeTypeChosenChangedArguments struct {
+typeX uint32
+}
+
 func (a ardrone3GPSStateHomeTypeChosenChanged) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -3275,6 +4038,10 @@ const pROState classDef = 32
 const features cmdDef = 0
 
 type ardrone3PROStateFeatures command
+
+type ardrone3PROStateFeaturesArguments struct {
+features uint64
+}
 
 func (a ardrone3PROStateFeatures) decode() {
 //TODO: .............
@@ -3298,6 +4065,14 @@ const connectedAccessories cmdDef = 0
 
 type ardrone3AccessoryStateConnectedAccessories command
 
+type ardrone3AccessoryStateConnectedAccessoriesArguments struct {
+id uint8
+accessory_type uint32
+uid string
+swVersion string
+list_flags uint8
+}
+
 func (a ardrone3AccessoryStateConnectedAccessories) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -3316,6 +4091,12 @@ cmd: connectedAccessories,
 const battery cmdDef = 1
 
 type ardrone3AccessoryStateBattery command
+
+type ardrone3AccessoryStateBatteryArguments struct {
+id uint8
+batteryLevel uint8
+list_flags uint8
+}
 
 func (a ardrone3AccessoryStateBattery) decode() {
 //TODO: .............
@@ -3339,6 +4120,9 @@ const startAlertSound cmdDef = 0
 
 type ardrone3SoundStartAlertSound command
 
+type ardrone3SoundStartAlertSoundArguments struct {
+}
+
 func (a ardrone3SoundStartAlertSound) decode() {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
@@ -3358,6 +4142,9 @@ cmd: startAlertSound,
 const stopAlertSound cmdDef = 1
 
 type ardrone3SoundStopAlertSound command
+
+type ardrone3SoundStopAlertSoundArguments struct {
+}
 
 func (a ardrone3SoundStopAlertSound) decode() {
 //TODO: .............
@@ -3380,6 +4167,10 @@ const soundState classDef = 36
 const alertSound cmdDef = 0
 
 type ardrone3SoundStateAlertSound command
+
+type ardrone3SoundStateAlertSoundArguments struct {
+state uint32
+}
 
 func (a ardrone3SoundStateAlertSound) decode() {
 //TODO: .............
@@ -3568,3 +4359,27 @@ command(soundStopAlertSound) : soundStopAlertSound,
 command(soundStateAlertSound) : soundStateAlertSound,
 }
 
+
+	// lenStringData takes a []byte which is the data for the arguments, and returns
+	// the position of the 0 terminator for the string.
+	// The []byte given as input will start looking from the beginning of the slice,
+	// so the input slice should be sliced to start from the offset of the string.
+	func lenStringData(b []byte) (int, error) {
+		// Figure out the length of the string
+		for i := 0; i < cap(b); i++ {
+			//fmt.Printf("%+v, of type %T\n", b[i], b[i])
+
+			//fmt.Println("i = ", i)
+			if b[i] == 0 {
+				//fmt.Println("lengthString = ", i)
+
+				// add 1 to jump to the 0
+				return i + 1, nil
+			}
+
+		}
+
+		err := fmt.Errorf("no string bytes found, returning 0")
+		return 0, err
+	}
+	

@@ -120,8 +120,6 @@ func Start(tCh chan lexml.Token) {
 	fmt.Println("package main")
 	fmt.Println()
 
-	printBuiltinFunctions()
-
 	printTopDeclarations()
 
 	// Range over the ChOut of buf, where ChOut is an unbuffered channel,
@@ -152,6 +150,8 @@ func Start(tCh chan lexml.Token) {
 	}
 
 	p.printMapDeclaration()
+
+	printBuiltinFunctions()
 
 }
 
@@ -203,7 +203,7 @@ func (p *parser) doTokenTagStart(buf *Buffer) {
 					log.Println("error: newArgBufferForCmd: ", err)
 				}
 
-				fmt.Printf("------------ARGBUFFER----------- %+v\n", argBuf)
+				//fmt.Printf("------------ARGBUFFER----------- %+v\n", argBuf)
 
 				p.doTagCommand(tmpBuf1, tmpBuf2, id, argBuf)
 			}
@@ -300,10 +300,15 @@ func (p *parser) doTagCommand(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id s
 	// TODO: -----------Put in the argument checking and parsing here--------------------
 	// TODO: Store all the arguments in an argument struct with fields needed, since we need to
 	// iterate it here, and we also need to iterate it in the creation of the decode method below.
-	// TODO: Get all the names and types of the arguments in the tmpBuf1 buffer
-
-	// TODO: Write out the name of the type, it's the same name as the command type + "Argument"
-
+	//
+	// Create a specific struct for a specific command, by adding Arguments to the end of the
+	// command name.
+	fmt.Printf("type %v struct {\n", concatenateSlice(p.tagStack.data)+"Arguments")
+	for _, v := range argBuf {
+		fmt.Printf("%v %v\n", v.name, v.goType)
+	}
+	fmt.Println("}")
+	fmt.Println()
 	// TODO: Write out the name of the arguments and the Go equivalent of the type for the fields.
 
 	// ----------------------------------------------------------------------------------
@@ -454,6 +459,11 @@ func (p *parser) newArgBufferForCmd(buf *Buffer) (argBuffer []argument, err erro
 		if buf.Slice[i].TokenText == "arg" && buf.Slice[i+1].TokenText == "name" {
 			a := argument{}
 			a.name = buf.Slice[i+2].TokenText
+			// check if the name is == type, and add an X to not conflict with go's
+			// type system.
+			if a.name == "type" {
+				a.name += "X"
+			}
 			typ := buf.Slice[i+4].TokenText
 			v, ok := p.droneTypesToGoTypes[typ]
 			if ok {
@@ -461,6 +471,9 @@ func (p *parser) newArgBufferForCmd(buf *Buffer) (argBuffer []argument, err erro
 				a.goType = v.name
 				a.length = v.length
 			}
+
+			// TODO: Add the different <enum specifications> as comments, so the user
+			// will know what values to enter, or what values where received.
 
 			argBuffer = append(argBuffer, a)
 
