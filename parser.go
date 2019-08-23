@@ -42,10 +42,11 @@ type parser struct {
 	// Essentially it will contains a command variable, and will be used at the end of the
 	// code to create the key/values of the map structure in the output.
 	variablesForMap []string
-	// commandConstants is a store for all the constants parsed, and are used in the code
+	// commandConstants/classConstants is a store for all the constants parsed, and are used in the code
 	// to check if a constant with the same name has previosly beeing parsed to avoid
 	// duplicated
 	commandConstants map[string]bool
+	classConstants   map[string]bool
 	// tagStack , are a push/pop storage for stack values.
 	// The contents of the tag stack is used to create names
 	// that consists of several tag names.
@@ -58,6 +59,7 @@ type parser struct {
 	// droneTypesToGoTypes is a map used to know how to map the types found in the xml like
 	// u8/i8/float etc to they're go equivalent.
 	droneTypesToGoTypes map[string]goType
+	duplicateClassCh    chan bool
 }
 
 type goType struct {
@@ -87,6 +89,7 @@ func newParser() *parser {
 	return &parser{
 		variablesForMap:  []string{},
 		commandConstants: map[string]bool{},
+		classConstants:   map[string]bool{},
 		tagStack:         newTagStack(),
 		depth:            0,
 		droneTypesToGoTypes: map[string]goType{
@@ -103,6 +106,7 @@ func newParser() *parser {
 			"string": goType{name: "string", length: "0"},
 			"enum":   goType{name: "uint32", length: "4"},
 		},
+		duplicateClassCh: make(chan bool, 2),
 	}
 }
 
@@ -238,8 +242,26 @@ func (p *parser) doTagClass(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id str
 		}
 	}
 
-	name := tmpBuf1[2]
-	fmt.Printf("const class%v classDef = %v\n", name.TokenText, id)
+	//--
+
+	// The name of the command const is found at slice pos [2].
+	classConstName := tmpBuf1[2]
+
+	// Check if there have been any previous use of the same const.
+	// If seen before, add DUPLICATE at the end of const name.
+	_, ok := p.classConstants[classConstName.TokenText]
+	if ok {
+		classConstName.TokenText = classConstName.TokenText + "DUPLICATE"
+		// put a true value on the channel so we can signal to the function
+		// writing out the variable that the class field name should be
+		// postfixed with DUPLICATE
+		p.duplicateClassCh <- true
+	}
+
+	// Store the const to check for duplicates on later iterations.
+	p.classConstants[classConstName.TokenText] = true
+	//--
+	fmt.Printf("const class%v classDef = %v\n", classConstName.TokenText, id)
 
 }
 
@@ -388,7 +410,12 @@ func (p *parser) doTagCommand(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id s
 	fmt.Println()
 	fmt.Printf("var %v = %v {\n", lowerFirstCharacter(variableName), concatenateSlice(p.tagStack.data))
 	fmt.Printf("project: project%v,\n", project)
-	fmt.Printf("class: class%v,\n", class)
+	select {
+	case <-p.duplicateClassCh:
+		fmt.Printf("class: class%vDUPLICATE,\n", class)
+	default:
+		fmt.Printf("class: class%v,\n", class)
+	}
 	fmt.Printf("cmd: cmd%v,\n", command)
 	fmt.Printf("}\n")
 	fmt.Println()

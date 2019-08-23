@@ -5516,6 +5516,3099 @@ class: classSoundState,
 cmd: cmdAlertSound,
 }
 
+// All common commands shared between all projects
+const projectcommon projectDef = 0
+// Network related commands
+const classNetworkDUPLICATE classDef = 0
+// title : Signals the remote that the host will disconnect, 
+// desc : Signals the remote that the host will disconnect.\n, 
+// support : none, 
+// result : None, 
+const cmdDisconnect cmdDef = 0
+
+type commonNetworkDisconnect command
+
+type commonNetworkDisconnectArguments struct {
+}
+
+func (a commonNetworkDisconnect) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonNetworkDisconnectArguments{}
+// No arguments to decode here !!
+
+return arg
+}
+
+var networkDisconnect = commonNetworkDisconnect {
+project: projectcommon,
+class: classNetworkDUPLICATE,
+cmd: cmdDisconnect,
+}
+
+// Network Event from product
+const classNetworkEvent classDef = 1
+// title : Drone will disconnect, 
+// desc : Drone will disconnect.\n This event is mainly triggered when the user presses on the power button of the product.\n\n **This event is a notification, you can't retrieve it in the cache of the device controller.**, 
+// support : 0901;090c, 
+// triggered : mainly when the user presses the power button of the drone., 
+const cmdDisconnection cmdDef = 0
+
+type commonNetworkEventDisconnection command
+
+type commonNetworkEventDisconnectionArguments struct {
+cause uint32
+}
+
+func (a commonNetworkEventDisconnection) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonNetworkEventDisconnectionArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.cause)
+offset += 4
+
+return arg
+}
+
+var networkEventDisconnection = commonNetworkEventDisconnection {
+project: projectcommon,
+class: classNetworkEvent,
+cmd: cmdDisconnection,
+}
+
+// Settings commands
+const classSettings classDef = 2
+// title : Ask for all settings, 
+// desc : Ask for all settings.\n\n **Please note that you should not send this command if you are using the\n libARController API as this library is handling the connection process for you.**, 
+// support : drones, 
+// result : The product will trigger all settings events (such as [CameraSettings](#0-15-0), or product specific settings as the [MaxAltitude](#1-6-0) for the Bebop).\n Then, it will trigger [AllSettingsEnd](#0-3-0)., 
+const cmdAllSettings cmdDef = 0
+
+type commonSettingsAllSettings command
+
+type commonSettingsAllSettingsArguments struct {
+}
+
+func (a commonSettingsAllSettings) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonSettingsAllSettingsArguments{}
+// No arguments to decode here !!
+
+return arg
+}
+
+var settingsAllSettings = commonSettingsAllSettings {
+project: projectcommon,
+class: classSettings,
+cmd: cmdAllSettings,
+}
+
+// title : Reset all settings, 
+// desc : Reset all settings., 
+// support : drones, 
+// result : It will trigger [ResetChanged](#0-3-1).\n Then, the product will trigger all settings events (such as [CameraSettings](#0-15-0), or product specific settings as the [MaxAltitude](#1-6-0) for the Bebop) with factory values., 
+const cmdReset cmdDef = 1
+
+type commonSettingsReset command
+
+type commonSettingsResetArguments struct {
+}
+
+func (a commonSettingsReset) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonSettingsResetArguments{}
+// No arguments to decode here !!
+
+return arg
+}
+
+var settingsReset = commonSettingsReset {
+project: projectcommon,
+class: classSettings,
+cmd: cmdReset,
+}
+
+// title : Set product name, 
+// desc : Set the product name.\n It also sets the name of the SSID for Wifi products and advertisement name for BLE products (changed after a reboot of the product)., 
+// support : drones, 
+// result : Name is changed.\n Then, it will trigger [NameChanged](#0-3-2)., 
+const cmdProductName cmdDef = 2
+
+type commonSettingsProductName command
+
+type commonSettingsProductNameArguments struct {
+name string
+}
+
+func (a commonSettingsProductName) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+var stringEnd int
+var err error
+arg := commonSettingsProductNameArguments{}
+var offset = 0
+
+				stringEnd, err = getLengthOfStringData(b[offset:])
+				if err != nil {
+					log.Println("error: ", err)
+				}
+arg.name = string(b[offset:offset+stringEnd])
+offset += stringEnd
+
+return arg
+}
+
+var settingsProductName = commonSettingsProductName {
+project: projectcommon,
+class: classSettings,
+cmd: cmdProductName,
+}
+
+// title : Set the country, 
+// desc : Set the country for Wifi products.\n This can modify Wifi band and/or channel.\n **Please note that you might be disconnected from the product after changing the country as it changes Wifi parameters.**, 
+// support : 0901;0902;0905;0906;090c;090e, 
+// result : The country is set.\n Then, it will trigger [CountryChanged](#0-3-6)., 
+const cmdCountry cmdDef = 3
+
+type commonSettingsCountry command
+
+type commonSettingsCountryArguments struct {
+code string
+}
+
+func (a commonSettingsCountry) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+var stringEnd int
+var err error
+arg := commonSettingsCountryArguments{}
+var offset = 0
+
+				stringEnd, err = getLengthOfStringData(b[offset:])
+				if err != nil {
+					log.Println("error: ", err)
+				}
+arg.code = string(b[offset:offset+stringEnd])
+offset += stringEnd
+
+return arg
+}
+
+var settingsCountry = commonSettingsCountry {
+project: projectcommon,
+class: classSettings,
+cmd: cmdCountry,
+}
+
+// title : Enable auto-country, 
+// desc : Enable auto-country.\n If auto-country is set, the drone will guess its Wifi country by itself by checking other Wifi country around it.\n **Please note that you might be disconnected from the product after changing the country as it changes Wifi parameters.**, 
+// support : 0901;0902;0905;0906;090c;090e, 
+// result : The auto-country of the product is changed.\n Then, it will trigger [AutoCountryChanged](#0-3-7) and [CountryChanged](#0-3-6)., 
+const cmdAutoCountry cmdDef = 4
+
+type commonSettingsAutoCountry command
+
+type commonSettingsAutoCountryArguments struct {
+automatic uint8
+}
+
+func (a commonSettingsAutoCountry) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonSettingsAutoCountryArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.automatic)
+offset++ 
+
+return arg
+}
+
+var settingsAutoCountry = commonSettingsAutoCountry {
+project: projectcommon,
+class: classSettings,
+cmd: cmdAutoCountry,
+}
+
+// Settings state from product
+const classSettingsStateDUPLICATE classDef = 3
+// title : All settings have been sent, 
+// desc : All settings have been sent.\n\n **Please note that you should not care about this event if you are using the libARController API as this library is handling the connection process for you.**, 
+// support : drones, 
+// triggered : when all settings values have been sent., 
+const cmdAllSettingsChanged cmdDef = 0
+
+type commonSettingsStateAllSettingsChanged command
+
+type commonSettingsStateAllSettingsChangedArguments struct {
+}
+
+func (a commonSettingsStateAllSettingsChanged) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonSettingsStateAllSettingsChangedArguments{}
+// No arguments to decode here !!
+
+return arg
+}
+
+var settingsStateAllSettingsChanged = commonSettingsStateAllSettingsChanged {
+project: projectcommon,
+class: classSettingsStateDUPLICATE,
+cmd: cmdAllSettingsChanged,
+}
+
+// title : All settings have been reset, 
+// desc : All settings have been reset., 
+// support : drones, 
+// triggered : by [ResetSettings](#0-2-1)., 
+const cmdResetChanged cmdDef = 1
+
+type commonSettingsStateResetChanged command
+
+type commonSettingsStateResetChangedArguments struct {
+}
+
+func (a commonSettingsStateResetChanged) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonSettingsStateResetChangedArguments{}
+// No arguments to decode here !!
+
+return arg
+}
+
+var settingsStateResetChanged = commonSettingsStateResetChanged {
+project: projectcommon,
+class: classSettingsState,
+cmd: cmdResetChanged,
+}
+
+// title : Product name changed, 
+// desc : Product name changed., 
+// support : drones, 
+// triggered : by [SetProductName](#0-2-2)., 
+const cmdProductNameChanged cmdDef = 2
+
+type commonSettingsStateProductNameChanged command
+
+type commonSettingsStateProductNameChangedArguments struct {
+name string
+}
+
+func (a commonSettingsStateProductNameChanged) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+var stringEnd int
+var err error
+arg := commonSettingsStateProductNameChangedArguments{}
+var offset = 0
+
+				stringEnd, err = getLengthOfStringData(b[offset:])
+				if err != nil {
+					log.Println("error: ", err)
+				}
+arg.name = string(b[offset:offset+stringEnd])
+offset += stringEnd
+
+return arg
+}
+
+var settingsStateProductNameChanged = commonSettingsStateProductNameChanged {
+project: projectcommon,
+class: classSettingsState,
+cmd: cmdProductNameChanged,
+}
+
+// title : Product version, 
+// desc : Product version., 
+// support : drones, 
+// triggered : during the connection process., 
+const cmdProductVersionChanged cmdDef = 3
+
+type commonSettingsStateProductVersionChanged command
+
+type commonSettingsStateProductVersionChangedArguments struct {
+software string
+hardware string
+}
+
+func (a commonSettingsStateProductVersionChanged) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+var stringEnd int
+var err error
+arg := commonSettingsStateProductVersionChangedArguments{}
+var offset = 0
+
+				stringEnd, err = getLengthOfStringData(b[offset:])
+				if err != nil {
+					log.Println("error: ", err)
+				}
+arg.software = string(b[offset:offset+stringEnd])
+offset += stringEnd
+
+				stringEnd, err = getLengthOfStringData(b[offset:])
+				if err != nil {
+					log.Println("error: ", err)
+				}
+arg.hardware = string(b[offset:offset+stringEnd])
+offset += stringEnd
+
+return arg
+}
+
+var settingsStateProductVersionChanged = commonSettingsStateProductVersionChanged {
+project: projectcommon,
+class: classSettingsState,
+cmd: cmdProductVersionChanged,
+}
+
+// title : Product serial (1st part), 
+// desc : Product serial (1st part)., 
+// support : drones, 
+// triggered : during the connection process., 
+const cmdProductSerialHighChanged cmdDef = 4
+
+type commonSettingsStateProductSerialHighChanged command
+
+type commonSettingsStateProductSerialHighChangedArguments struct {
+high string
+}
+
+func (a commonSettingsStateProductSerialHighChanged) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+var stringEnd int
+var err error
+arg := commonSettingsStateProductSerialHighChangedArguments{}
+var offset = 0
+
+				stringEnd, err = getLengthOfStringData(b[offset:])
+				if err != nil {
+					log.Println("error: ", err)
+				}
+arg.high = string(b[offset:offset+stringEnd])
+offset += stringEnd
+
+return arg
+}
+
+var settingsStateProductSerialHighChanged = commonSettingsStateProductSerialHighChanged {
+project: projectcommon,
+class: classSettingsState,
+cmd: cmdProductSerialHighChanged,
+}
+
+// title : Product serial (2nd part), 
+// desc : Product serial (2nd part)., 
+// support : drones, 
+// triggered : during the connection process., 
+const cmdProductSerialLowChanged cmdDef = 5
+
+type commonSettingsStateProductSerialLowChanged command
+
+type commonSettingsStateProductSerialLowChangedArguments struct {
+low string
+}
+
+func (a commonSettingsStateProductSerialLowChanged) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+var stringEnd int
+var err error
+arg := commonSettingsStateProductSerialLowChangedArguments{}
+var offset = 0
+
+				stringEnd, err = getLengthOfStringData(b[offset:])
+				if err != nil {
+					log.Println("error: ", err)
+				}
+arg.low = string(b[offset:offset+stringEnd])
+offset += stringEnd
+
+return arg
+}
+
+var settingsStateProductSerialLowChanged = commonSettingsStateProductSerialLowChanged {
+project: projectcommon,
+class: classSettingsState,
+cmd: cmdProductSerialLowChanged,
+}
+
+// title : Country changed, 
+// desc : Country changed., 
+// support : drones, 
+// triggered : by [SetCountry](#0-2-3)., 
+const cmdCountryChanged cmdDef = 6
+
+type commonSettingsStateCountryChanged command
+
+type commonSettingsStateCountryChangedArguments struct {
+code string
+}
+
+func (a commonSettingsStateCountryChanged) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+var stringEnd int
+var err error
+arg := commonSettingsStateCountryChangedArguments{}
+var offset = 0
+
+				stringEnd, err = getLengthOfStringData(b[offset:])
+				if err != nil {
+					log.Println("error: ", err)
+				}
+arg.code = string(b[offset:offset+stringEnd])
+offset += stringEnd
+
+return arg
+}
+
+var settingsStateCountryChanged = commonSettingsStateCountryChanged {
+project: projectcommon,
+class: classSettingsState,
+cmd: cmdCountryChanged,
+}
+
+// title : Auto-country changed, 
+// desc : Auto-country changed., 
+// support : drones, 
+// triggered : by [SetAutoCountry](#0-2-4)., 
+const cmdAutoCountryChanged cmdDef = 7
+
+type commonSettingsStateAutoCountryChanged command
+
+type commonSettingsStateAutoCountryChangedArguments struct {
+automatic uint8
+}
+
+func (a commonSettingsStateAutoCountryChanged) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonSettingsStateAutoCountryChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.automatic)
+offset++ 
+
+return arg
+}
+
+var settingsStateAutoCountryChanged = commonSettingsStateAutoCountryChanged {
+project: projectcommon,
+class: classSettingsState,
+cmd: cmdAutoCountryChanged,
+}
+
+// title : Board id, 
+// desc : Board id., 
+// support : drones, 
+// triggered : during the connection process., 
+const cmdBoardIdChanged cmdDef = 8
+
+type commonSettingsStateBoardIdChanged command
+
+type commonSettingsStateBoardIdChangedArguments struct {
+id string
+}
+
+func (a commonSettingsStateBoardIdChanged) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+var stringEnd int
+var err error
+arg := commonSettingsStateBoardIdChangedArguments{}
+var offset = 0
+
+				stringEnd, err = getLengthOfStringData(b[offset:])
+				if err != nil {
+					log.Println("error: ", err)
+				}
+arg.id = string(b[offset:offset+stringEnd])
+offset += stringEnd
+
+return arg
+}
+
+var settingsStateBoardIdChanged = commonSettingsStateBoardIdChanged {
+project: projectcommon,
+class: classSettingsState,
+cmd: cmdBoardIdChanged,
+}
+
+// Common commands
+const classCommon classDef = 4
+// title : Ask for all states, 
+// desc : Ask for all states.\n\n **Please note that you should not send this command if you are using the\n libARController API as this library is handling the connection process for you.**, 
+// support : drones, 
+// result : The product will trigger all states events (such as [FlyingState](#1-4-1) for the Bebop).\n Then, it will trigger [AllStatesEnd](#0-5-0)., 
+const cmdAllStates cmdDef = 0
+
+type commonCommonAllStates command
+
+type commonCommonAllStatesArguments struct {
+}
+
+func (a commonCommonAllStates) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonCommonAllStatesArguments{}
+// No arguments to decode here !!
+
+return arg
+}
+
+var commonAllStates = commonCommonAllStates {
+project: projectcommon,
+class: classCommon,
+cmd: cmdAllStates,
+}
+
+// title : Set the date, 
+// desc : Set the date.\n This date is taken by the drone as its own date.\n So medias and other files will be dated from this date\n\n **Please note that you should not send this command if you are using the\n libARController API as this library is handling the connection process for you.**, 
+// support : drones, 
+// result : The date of the product is set.\n Then, it will trigger [DateChanged](#0-5-4)., 
+const cmdCurrentDate cmdDef = 1
+
+type commonCommonCurrentDate command
+
+type commonCommonCurrentDateArguments struct {
+date string
+}
+
+func (a commonCommonCurrentDate) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+var stringEnd int
+var err error
+arg := commonCommonCurrentDateArguments{}
+var offset = 0
+
+				stringEnd, err = getLengthOfStringData(b[offset:])
+				if err != nil {
+					log.Println("error: ", err)
+				}
+arg.date = string(b[offset:offset+stringEnd])
+offset += stringEnd
+
+return arg
+}
+
+var commonCurrentDate = commonCommonCurrentDate {
+project: projectcommon,
+class: classCommon,
+cmd: cmdCurrentDate,
+}
+
+// title : Set the time, 
+// desc : Set the time.\n This time is taken by the drone as its own time.\n So medias and other files will be dated from this time\n\n **Please note that you should not send this command if you are using the\n libARController API as this library is handling the connection process for you.**, 
+// support : drones, 
+// result : The time of the product is set.\n Then, it will trigger [TimeChanged](#0-5-5)., 
+const cmdCurrentTime cmdDef = 2
+
+type commonCommonCurrentTime command
+
+type commonCommonCurrentTimeArguments struct {
+time string
+}
+
+func (a commonCommonCurrentTime) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+var stringEnd int
+var err error
+arg := commonCommonCurrentTimeArguments{}
+var offset = 0
+
+				stringEnd, err = getLengthOfStringData(b[offset:])
+				if err != nil {
+					log.Println("error: ", err)
+				}
+arg.time = string(b[offset:offset+stringEnd])
+offset += stringEnd
+
+return arg
+}
+
+var commonCurrentTime = commonCommonCurrentTime {
+project: projectcommon,
+class: classCommon,
+cmd: cmdCurrentTime,
+}
+
+// title : Reboot, 
+// desc : Reboot the product.\n The product will accept this command only if is not flying., 
+// support : drones, 
+// result : The product will reboot if it can., 
+const cmdReboot cmdDef = 3
+
+type commonCommonReboot command
+
+type commonCommonRebootArguments struct {
+}
+
+func (a commonCommonReboot) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonCommonRebootArguments{}
+// No arguments to decode here !!
+
+return arg
+}
+
+var commonReboot = commonCommonReboot {
+project: projectcommon,
+class: classCommon,
+cmd: cmdReboot,
+}
+
+// title : Set the datetime, 
+// desc : Set both the date and the time with only one command.\n If using this command, do not use [CurrentDate](#0-4-1) and [CurrentTime](#0-4-2) commands.\n This datetime is taken by the drone as its own datetime.\n So medias and other files will be dated from this datetime\n\n **Please note that you should not send this command if you are using the\n libARController API as this library is handling the connection process for you.**, 
+// support : 0914, 
+// result : The datetime of the product is set.\n Then, it will trigger [CurrentDateTimeChanged](#0-5-15)., 
+const cmdCurrentDateTime cmdDef = 4
+
+type commonCommonCurrentDateTime command
+
+type commonCommonCurrentDateTimeArguments struct {
+datetime string
+}
+
+func (a commonCommonCurrentDateTime) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+var stringEnd int
+var err error
+arg := commonCommonCurrentDateTimeArguments{}
+var offset = 0
+
+				stringEnd, err = getLengthOfStringData(b[offset:])
+				if err != nil {
+					log.Println("error: ", err)
+				}
+arg.datetime = string(b[offset:offset+stringEnd])
+offset += stringEnd
+
+return arg
+}
+
+var commonCurrentDateTime = commonCommonCurrentDateTime {
+project: projectcommon,
+class: classCommon,
+cmd: cmdCurrentDateTime,
+}
+
+// Common state from product
+const classCommonState classDef = 5
+// title : All states have been sent, 
+// desc : All states have been sent.\n\n **Please note that you should not care about this event if you are using the libARController API as this library is handling the connection process for you.**, 
+// support : drones, 
+// triggered : when all states values have been sent., 
+const cmdAllStatesChanged cmdDef = 0
+
+type commonCommonStateAllStatesChanged command
+
+type commonCommonStateAllStatesChangedArguments struct {
+}
+
+func (a commonCommonStateAllStatesChanged) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonCommonStateAllStatesChangedArguments{}
+// No arguments to decode here !!
+
+return arg
+}
+
+var commonStateAllStatesChanged = commonCommonStateAllStatesChanged {
+project: projectcommon,
+class: classCommonState,
+cmd: cmdAllStatesChanged,
+}
+
+// title : Battery state, 
+// desc : Battery state., 
+// support : drones, 
+// triggered : when the battery level changes., 
+const cmdBatteryStateChanged cmdDef = 1
+
+type commonCommonStateBatteryStateChanged command
+
+type commonCommonStateBatteryStateChangedArguments struct {
+percent uint8
+}
+
+func (a commonCommonStateBatteryStateChanged) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonCommonStateBatteryStateChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.percent)
+offset++ 
+
+return arg
+}
+
+var commonStateBatteryStateChanged = commonCommonStateBatteryStateChanged {
+project: projectcommon,
+class: classCommonState,
+cmd: cmdBatteryStateChanged,
+}
+
+// title : Mass storage state list, 
+// desc : Mass storage state list., 
+// support : drones, 
+// triggered : when a mass storage is inserted or ejected., 
+const cmdMassStorageStateListChanged cmdDef = 2
+
+type commonCommonStateMassStorageStateListChanged command
+
+type commonCommonStateMassStorageStateListChangedArguments struct {
+massstorageid uint8
+name string
+}
+
+func (a commonCommonStateMassStorageStateListChanged) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+var stringEnd int
+var err error
+arg := commonCommonStateMassStorageStateListChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.massstorageid)
+offset++ 
+
+				stringEnd, err = getLengthOfStringData(b[offset:])
+				if err != nil {
+					log.Println("error: ", err)
+				}
+arg.name = string(b[offset:offset+stringEnd])
+offset += stringEnd
+
+return arg
+}
+
+var commonStateMassStorageStateListChanged = commonCommonStateMassStorageStateListChanged {
+project: projectcommon,
+class: classCommonState,
+cmd: cmdMassStorageStateListChanged,
+}
+
+// title : Mass storage info state list, 
+// desc : Mass storage info state list., 
+// support : drones, 
+// triggered : when a mass storage info changes., 
+const cmdMassStorageInfoStateListChanged cmdDef = 3
+
+type commonCommonStateMassStorageInfoStateListChanged command
+
+type commonCommonStateMassStorageInfoStateListChangedArguments struct {
+massstorageid uint8
+size uint32
+usedsize uint32
+plugged uint8
+full uint8
+internal uint8
+}
+
+func (a commonCommonStateMassStorageInfoStateListChanged) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonCommonStateMassStorageInfoStateListChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.massstorageid)
+offset++ 
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.size)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.usedsize)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.plugged)
+offset++ 
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.full)
+offset++ 
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.internal)
+offset++ 
+
+return arg
+}
+
+var commonStateMassStorageInfoStateListChanged = commonCommonStateMassStorageInfoStateListChanged {
+project: projectcommon,
+class: classCommonState,
+cmd: cmdMassStorageInfoStateListChanged,
+}
+
+// title : Date changed, 
+// desc : Date changed.\n Corresponds to the latest date set on the drone.\n\n **Please note that you should not care about this event if you are using the libARController API as this library is handling the connection process for you.**, 
+// support : drones, 
+// triggered : by [SetDate](#0-4-1)., 
+const cmdCurrentDateChanged cmdDef = 4
+
+type commonCommonStateCurrentDateChanged command
+
+type commonCommonStateCurrentDateChangedArguments struct {
+date string
+}
+
+func (a commonCommonStateCurrentDateChanged) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+var stringEnd int
+var err error
+arg := commonCommonStateCurrentDateChangedArguments{}
+var offset = 0
+
+				stringEnd, err = getLengthOfStringData(b[offset:])
+				if err != nil {
+					log.Println("error: ", err)
+				}
+arg.date = string(b[offset:offset+stringEnd])
+offset += stringEnd
+
+return arg
+}
+
+var commonStateCurrentDateChanged = commonCommonStateCurrentDateChanged {
+project: projectcommon,
+class: classCommonState,
+cmd: cmdCurrentDateChanged,
+}
+
+// title : Time changed, 
+// desc : Time changed.\n Corresponds to the latest time set on the drone.\n\n **Please note that you should not care about this event if you are using the libARController API as this library is handling the connection process for you.**, 
+// support : drones, 
+// triggered : by [SetTime](#0-4-2)., 
+const cmdCurrentTimeChanged cmdDef = 5
+
+type commonCommonStateCurrentTimeChanged command
+
+type commonCommonStateCurrentTimeChangedArguments struct {
+time string
+}
+
+func (a commonCommonStateCurrentTimeChanged) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+var stringEnd int
+var err error
+arg := commonCommonStateCurrentTimeChangedArguments{}
+var offset = 0
+
+				stringEnd, err = getLengthOfStringData(b[offset:])
+				if err != nil {
+					log.Println("error: ", err)
+				}
+arg.time = string(b[offset:offset+stringEnd])
+offset += stringEnd
+
+return arg
+}
+
+var commonStateCurrentTimeChanged = commonCommonStateCurrentTimeChanged {
+project: projectcommon,
+class: classCommonState,
+cmd: cmdCurrentTimeChanged,
+}
+
+// title : Mass storage remaining data list, 
+// desc : Mass storage remaining data list., 
+const cmdMassStorageInfoRemainingListChanged cmdDef = 6
+
+type commonCommonStateMassStorageInfoRemainingListChanged command
+
+type commonCommonStateMassStorageInfoRemainingListChangedArguments struct {
+freespace uint32
+rectime uint16
+photoremaining uint32
+}
+
+func (a commonCommonStateMassStorageInfoRemainingListChanged) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonCommonStateMassStorageInfoRemainingListChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.freespace)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+2]), binary.LittleEndian, &arg.rectime)
+offset += 2
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.photoremaining)
+offset += 4
+
+return arg
+}
+
+var commonStateMassStorageInfoRemainingListChanged = commonCommonStateMassStorageInfoRemainingListChanged {
+project: projectcommon,
+class: classCommonState,
+cmd: cmdMassStorageInfoRemainingListChanged,
+}
+
+// title : Rssi changed, 
+// desc : Rssi (Wifi Signal between controller and product) changed., 
+// support : 0901;0902;0905;0906;090c;090e, 
+// triggered : regularly., 
+const cmdWifiSignalChanged cmdDef = 7
+
+type commonCommonStateWifiSignalChanged command
+
+type commonCommonStateWifiSignalChangedArguments struct {
+rssi int16
+}
+
+func (a commonCommonStateWifiSignalChanged) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonCommonStateWifiSignalChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+2]), binary.LittleEndian, &arg.rssi)
+offset += 2
+
+return arg
+}
+
+var commonStateWifiSignalChanged = commonCommonStateWifiSignalChanged {
+project: projectcommon,
+class: classCommonState,
+cmd: cmdWifiSignalChanged,
+}
+
+// title : Sensors state list, 
+// desc : Sensors state list., 
+// support : 0901:2.0.3;0902;0905;0906;0907;0909;090a;090c;090e, 
+// triggered : at connection and when a sensor state changes., 
+const cmdSensorsStatesListChanged cmdDef = 8
+
+type commonCommonStateSensorsStatesListChanged command
+
+type commonCommonStateSensorsStatesListChangedArguments struct {
+sensorName uint32
+sensorState uint8
+}
+
+func (a commonCommonStateSensorsStatesListChanged) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonCommonStateSensorsStatesListChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.sensorName)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.sensorState)
+offset++ 
+
+return arg
+}
+
+var commonStateSensorsStatesListChanged = commonCommonStateSensorsStatesListChanged {
+project: projectcommon,
+class: classCommonState,
+cmd: cmdSensorsStatesListChanged,
+}
+
+// title : Product sub-model, 
+// desc : Product sub-model.\n This can be used to customize the UI depending on the product., 
+// support : 0905;0906;0907;0909, 
+// triggered : at connection., 
+const cmdProductModel cmdDef = 9
+
+type commonCommonStateProductModel command
+
+type commonCommonStateProductModelArguments struct {
+model uint32
+}
+
+func (a commonCommonStateProductModel) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonCommonStateProductModelArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.model)
+offset += 4
+
+return arg
+}
+
+var commonStateProductModel = commonCommonStateProductModel {
+project: projectcommon,
+class: classCommonState,
+cmd: cmdProductModel,
+}
+
+// title : Country list, 
+// desc : List of countries known by the drone., 
+const cmdCountryListKnown cmdDef = 10
+
+type commonCommonStateCountryListKnown command
+
+type commonCommonStateCountryListKnownArguments struct {
+listFlags uint8
+countryCodes string
+}
+
+func (a commonCommonStateCountryListKnown) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+var stringEnd int
+var err error
+arg := commonCommonStateCountryListKnownArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.listFlags)
+offset++ 
+
+				stringEnd, err = getLengthOfStringData(b[offset:])
+				if err != nil {
+					log.Println("error: ", err)
+				}
+arg.countryCodes = string(b[offset:offset+stringEnd])
+offset += stringEnd
+
+return arg
+}
+
+var commonStateCountryListKnown = commonCommonStateCountryListKnown {
+project: projectcommon,
+class: classCommonState,
+cmd: cmdCountryListKnown,
+}
+
+// title : Mass storage content changed, 
+// desc : Mass storage content changed., 
+const cmdDeprecatedMassStorageContentChanged cmdDef = 11
+
+type commonCommonStateDeprecatedMassStorageContentChanged command
+
+type commonCommonStateDeprecatedMassStorageContentChangedArguments struct {
+massstorageid uint8
+nbPhotos uint16
+nbVideos uint16
+nbPuds uint16
+nbCrashLogs uint16
+}
+
+func (a commonCommonStateDeprecatedMassStorageContentChanged) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonCommonStateDeprecatedMassStorageContentChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.massstorageid)
+offset++ 
+binary.Read(bytes.NewReader(b[offset:offset+2]), binary.LittleEndian, &arg.nbPhotos)
+offset += 2
+binary.Read(bytes.NewReader(b[offset:offset+2]), binary.LittleEndian, &arg.nbVideos)
+offset += 2
+binary.Read(bytes.NewReader(b[offset:offset+2]), binary.LittleEndian, &arg.nbPuds)
+offset += 2
+binary.Read(bytes.NewReader(b[offset:offset+2]), binary.LittleEndian, &arg.nbCrashLogs)
+offset += 2
+
+return arg
+}
+
+var commonStateDeprecatedMassStorageContentChanged = commonCommonStateDeprecatedMassStorageContentChanged {
+project: projectcommon,
+class: classCommonState,
+cmd: cmdDeprecatedMassStorageContentChanged,
+}
+
+// title : Mass storage content, 
+// desc : Mass storage content., 
+// support : 090c:4.0.0;090e:4.0.0, 
+// triggered : when the content of the mass storage changes., 
+const cmdMassStorageContent cmdDef = 12
+
+type commonCommonStateMassStorageContent command
+
+type commonCommonStateMassStorageContentArguments struct {
+massstorageid uint8
+nbPhotos uint16
+nbVideos uint16
+nbPuds uint16
+nbCrashLogs uint16
+nbRawPhotos uint16
+}
+
+func (a commonCommonStateMassStorageContent) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonCommonStateMassStorageContentArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.massstorageid)
+offset++ 
+binary.Read(bytes.NewReader(b[offset:offset+2]), binary.LittleEndian, &arg.nbPhotos)
+offset += 2
+binary.Read(bytes.NewReader(b[offset:offset+2]), binary.LittleEndian, &arg.nbVideos)
+offset += 2
+binary.Read(bytes.NewReader(b[offset:offset+2]), binary.LittleEndian, &arg.nbPuds)
+offset += 2
+binary.Read(bytes.NewReader(b[offset:offset+2]), binary.LittleEndian, &arg.nbCrashLogs)
+offset += 2
+binary.Read(bytes.NewReader(b[offset:offset+2]), binary.LittleEndian, &arg.nbRawPhotos)
+offset += 2
+
+return arg
+}
+
+var commonStateMassStorageContent = commonCommonStateMassStorageContent {
+project: projectcommon,
+class: classCommonState,
+cmd: cmdMassStorageContent,
+}
+
+// title : Mass storage content for current run, 
+// desc : Mass storage content for current run.\n Only counts the files related to the current run (see [RunId](#0-30-0)), 
+// support : 090c:4.0.0;090e:4.0.0, 
+// triggered : when the content of the mass storage changes and this content is related to the current run., 
+const cmdMassStorageContentForCurrentRun cmdDef = 13
+
+type commonCommonStateMassStorageContentForCurrentRun command
+
+type commonCommonStateMassStorageContentForCurrentRunArguments struct {
+massstorageid uint8
+nbPhotos uint16
+nbVideos uint16
+nbRawPhotos uint16
+}
+
+func (a commonCommonStateMassStorageContentForCurrentRun) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonCommonStateMassStorageContentForCurrentRunArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.massstorageid)
+offset++ 
+binary.Read(bytes.NewReader(b[offset:offset+2]), binary.LittleEndian, &arg.nbPhotos)
+offset += 2
+binary.Read(bytes.NewReader(b[offset:offset+2]), binary.LittleEndian, &arg.nbVideos)
+offset += 2
+binary.Read(bytes.NewReader(b[offset:offset+2]), binary.LittleEndian, &arg.nbRawPhotos)
+offset += 2
+
+return arg
+}
+
+var commonStateMassStorageContentForCurrentRun = commonCommonStateMassStorageContentForCurrentRun {
+project: projectcommon,
+class: classCommonState,
+cmd: cmdMassStorageContentForCurrentRun,
+}
+
+// title : Video recording timestamp, 
+// desc : Current or last video recording timestamp.\n Timestamp in milliseconds since 00:00:00 UTC on 1 January 1970.\n **Please note that values don't persist after drone reboot**, 
+// triggered : on video recording start and video recording stop or \n after that the date/time of the drone changed., 
+const cmdVideoRecordingTimestamp cmdDef = 14
+
+type commonCommonStateVideoRecordingTimestamp command
+
+type commonCommonStateVideoRecordingTimestampArguments struct {
+startTimestamp uint64
+stopTimestamp uint64
+}
+
+func (a commonCommonStateVideoRecordingTimestamp) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonCommonStateVideoRecordingTimestampArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+8]), binary.LittleEndian, &arg.startTimestamp)
+offset += 8
+binary.Read(bytes.NewReader(b[offset:offset+8]), binary.LittleEndian, &arg.stopTimestamp)
+offset += 8
+
+return arg
+}
+
+var commonStateVideoRecordingTimestamp = commonCommonStateVideoRecordingTimestamp {
+project: projectcommon,
+class: classCommonState,
+cmd: cmdVideoRecordingTimestamp,
+}
+
+// title : Datetime changed, 
+// desc : Both date and time changed.\n Corresponds to the latest datetime set on the drone.\n\n **Please note that you should not care about this event if you are using the libARController API as this library is handling the connection process for you.**, 
+// support : 0914, 
+// triggered : by [CurrentDateTime](#0-4-4)., 
+const cmdCurrentDateTimeChanged cmdDef = 15
+
+type commonCommonStateCurrentDateTimeChanged command
+
+type commonCommonStateCurrentDateTimeChangedArguments struct {
+datetime string
+}
+
+func (a commonCommonStateCurrentDateTimeChanged) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+var stringEnd int
+var err error
+arg := commonCommonStateCurrentDateTimeChangedArguments{}
+var offset = 0
+
+				stringEnd, err = getLengthOfStringData(b[offset:])
+				if err != nil {
+					log.Println("error: ", err)
+				}
+arg.datetime = string(b[offset:offset+stringEnd])
+offset += stringEnd
+
+return arg
+}
+
+var commonStateCurrentDateTimeChanged = commonCommonStateCurrentDateTimeChanged {
+project: projectcommon,
+class: classCommonState,
+cmd: cmdCurrentDateTimeChanged,
+}
+
+// title : Link signal quality, 
+// desc : Link signal quality. Gives a overal indication of the radio link quality, 
+// support : 0914, 
+// triggered : when the link signal quality changes., 
+const cmdLinkSignalQuality cmdDef = 16
+
+type commonCommonStateLinkSignalQuality command
+
+type commonCommonStateLinkSignalQualityArguments struct {
+value uint8
+}
+
+func (a commonCommonStateLinkSignalQuality) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonCommonStateLinkSignalQualityArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.value)
+offset++ 
+
+return arg
+}
+
+var commonStateLinkSignalQuality = commonCommonStateLinkSignalQuality {
+project: projectcommon,
+class: classCommonState,
+cmd: cmdLinkSignalQuality,
+}
+
+// title : Current Drone Boot id, 
+// desc : Current Drone Boot id.\n A Boot Id identifies a drone session and do not change between drone power on and power off.\n Also, each medias contains the Boot Id., 
+// support : 0914, 
+// triggered : At connection., 
+const cmdBootId cmdDef = 17
+
+type commonCommonStateBootId command
+
+type commonCommonStateBootIdArguments struct {
+bootId string
+}
+
+func (a commonCommonStateBootId) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+var stringEnd int
+var err error
+arg := commonCommonStateBootIdArguments{}
+var offset = 0
+
+				stringEnd, err = getLengthOfStringData(b[offset:])
+				if err != nil {
+					log.Println("error: ", err)
+				}
+arg.bootId = string(b[offset:offset+stringEnd])
+offset += stringEnd
+
+return arg
+}
+
+var commonStateBootId = commonCommonStateBootId {
+project: projectcommon,
+class: classCommonState,
+cmd: cmdBootId,
+}
+
+// Over heat commands
+const classOverHeat classDef = 6
+// title : Switch off after an overheat, 
+// desc : Switch off after an overheat., 
+// support : none, 
+// result : None, 
+const cmdSwitchOff cmdDef = 0
+
+type commonOverHeatSwitchOff command
+
+type commonOverHeatSwitchOffArguments struct {
+}
+
+func (a commonOverHeatSwitchOff) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonOverHeatSwitchOffArguments{}
+// No arguments to decode here !!
+
+return arg
+}
+
+var overHeatSwitchOff = commonOverHeatSwitchOff {
+project: projectcommon,
+class: classOverHeat,
+cmd: cmdSwitchOff,
+}
+
+// title : Ventilate after an overheat, 
+// desc : Ventilate after an overheat., 
+// support : none, 
+// result : None, 
+const cmdVentilate cmdDef = 1
+
+type commonOverHeatVentilate command
+
+type commonOverHeatVentilateArguments struct {
+}
+
+func (a commonOverHeatVentilate) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonOverHeatVentilateArguments{}
+// No arguments to decode here !!
+
+return arg
+}
+
+var overHeatVentilate = commonOverHeatVentilate {
+project: projectcommon,
+class: classOverHeat,
+cmd: cmdVentilate,
+}
+
+// Overheat state from product
+const classOverHeatState classDef = 7
+// title : Overheat, 
+// desc : Overheat temperature reached., 
+const cmdOverHeatChanged cmdDef = 0
+
+type commonOverHeatStateOverHeatChanged command
+
+type commonOverHeatStateOverHeatChangedArguments struct {
+}
+
+func (a commonOverHeatStateOverHeatChanged) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonOverHeatStateOverHeatChangedArguments{}
+// No arguments to decode here !!
+
+return arg
+}
+
+var overHeatStateOverHeatChanged = commonOverHeatStateOverHeatChanged {
+project: projectcommon,
+class: classOverHeatState,
+cmd: cmdOverHeatChanged,
+}
+
+// title : Overheat regulation type, 
+// desc : Overheat regulation type., 
+const cmdOverHeatRegulationChanged cmdDef = 1
+
+type commonOverHeatStateOverHeatRegulationChanged command
+
+type commonOverHeatStateOverHeatRegulationChangedArguments struct {
+regulationType uint8
+}
+
+func (a commonOverHeatStateOverHeatRegulationChanged) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonOverHeatStateOverHeatRegulationChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.regulationType)
+offset++ 
+
+return arg
+}
+
+var overHeatStateOverHeatRegulationChanged = commonOverHeatStateOverHeatRegulationChanged {
+project: projectcommon,
+class: classOverHeatState,
+cmd: cmdOverHeatRegulationChanged,
+}
+
+// Notify the device about the state of the controller application.
+const classController classDef = 8
+// title : Inform about hud entering, 
+// desc : Inform about hud entering.\n Tell the drone that the controller enters/leaves the piloting hud.\n On a non-flying products it is used to know when a run begins., 
+// support : drones, 
+// result : If yes, the product will begin a new session (so it should send a new [runId](#0-30-0)).\n Also, on the JumpingSumos, if the video is in autorecord mode, it will start recording., 
+const cmdisPiloting cmdDef = 0
+
+type commonControllerisPiloting command
+
+type commonControllerisPilotingArguments struct {
+piloting uint8
+}
+
+func (a commonControllerisPiloting) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonControllerisPilotingArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.piloting)
+offset++ 
+
+return arg
+}
+
+var controllerisPiloting = commonControllerisPiloting {
+project: projectcommon,
+class: classController,
+cmd: cmdisPiloting,
+}
+
+// title : A SDK peer has connected/disconnected, 
+// desc : A SDK peer (ie FreeFlight) has connected/disconnected to the Skycontroller.\n This is only meant to be sent by the Skycontroller, as it is acting as a proxy., 
+// support : 0918, 
+// triggered : at connection and when the peer state changes., 
+const cmdPeerStateChanged cmdDef = 1
+
+type commonControllerPeerStateChanged command
+
+type commonControllerPeerStateChangedArguments struct {
+state uint32
+typeX uint32
+peerName string
+peerId string
+peerType string
+}
+
+func (a commonControllerPeerStateChanged) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+var stringEnd int
+var err error
+arg := commonControllerPeerStateChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.state)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.typeX)
+offset += 4
+
+				stringEnd, err = getLengthOfStringData(b[offset:])
+				if err != nil {
+					log.Println("error: ", err)
+				}
+arg.peerName = string(b[offset:offset+stringEnd])
+offset += stringEnd
+
+				stringEnd, err = getLengthOfStringData(b[offset:])
+				if err != nil {
+					log.Println("error: ", err)
+				}
+arg.peerId = string(b[offset:offset+stringEnd])
+offset += stringEnd
+
+				stringEnd, err = getLengthOfStringData(b[offset:])
+				if err != nil {
+					log.Println("error: ", err)
+				}
+arg.peerType = string(b[offset:offset+stringEnd])
+offset += stringEnd
+
+return arg
+}
+
+var controllerPeerStateChanged = commonControllerPeerStateChanged {
+project: projectcommon,
+class: classController,
+cmd: cmdPeerStateChanged,
+}
+
+// Wifi settings commands
+const classWifiSettings classDef = 9
+// title : Set wifi outdoor mode, 
+// desc : Set wifi indoor/outdoor mode.\n **Please note that you might be disconnected from the product after changing the indoor/outdoor setting as it changes Wifi parameters.**, 
+// support : 0901;0902;0905;0906;090c;090e, 
+// result : The product change its indoor/outdoor wifi settings.\n Then, it will trigger [WifiOutdoorMode](#0-10-0)., 
+const cmdOutdoorSetting cmdDef = 0
+
+type commonWifiSettingsOutdoorSetting command
+
+type commonWifiSettingsOutdoorSettingArguments struct {
+outdoor uint8
+}
+
+func (a commonWifiSettingsOutdoorSetting) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonWifiSettingsOutdoorSettingArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.outdoor)
+offset++ 
+
+return arg
+}
+
+var wifiSettingsOutdoorSetting = commonWifiSettingsOutdoorSetting {
+project: projectcommon,
+class: classWifiSettings,
+cmd: cmdOutdoorSetting,
+}
+
+// Wifi settings state from product
+const classWifiSettingsState classDef = 10
+// title : Wifi outdoor mode, 
+// desc : Wifi outdoor mode., 
+// support : 0901;0902;0905;0906;090c;090e, 
+// triggered : by [SetWifiOutdoorMode](#0-9-0)., 
+const cmdoutdoorSettingsChanged cmdDef = 0
+
+type commonWifiSettingsStateoutdoorSettingsChanged command
+
+type commonWifiSettingsStateoutdoorSettingsChangedArguments struct {
+outdoor uint8
+}
+
+func (a commonWifiSettingsStateoutdoorSettingsChanged) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonWifiSettingsStateoutdoorSettingsChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.outdoor)
+offset++ 
+
+return arg
+}
+
+var wifiSettingsStateoutdoorSettingsChanged = commonWifiSettingsStateoutdoorSettingsChanged {
+project: projectcommon,
+class: classWifiSettingsState,
+cmd: cmdoutdoorSettingsChanged,
+}
+
+// Mavlink flight plans commands
+const classMavlink classDef = 11
+// title : Start a FlightPlan, 
+// desc : Start a FlightPlan based on a mavlink file existing on the drone.\n\n Requirements are:\n * Product is calibrated\n * Product should be in outdoor mode\n * Product has fixed its GPS\n, 
+// support : 0901:2.0.29;090c;090e, 
+// result : If the FlightPlan has been started, event [FlightPlanPlayingStateChanged](#0-12-0) is triggered with param state set to *playing*.\n Otherwise, event [FlightPlanPlayingStateChanged](#0-12-0) is triggered with param state set to stopped and event [MavlinkPlayErrorStateChanged](#0-12-1) is triggered with an explanation of the error., 
+const cmdStart cmdDef = 0
+
+type commonMavlinkStart command
+
+type commonMavlinkStartArguments struct {
+filepath string
+typeX uint32
+}
+
+func (a commonMavlinkStart) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+var stringEnd int
+var err error
+arg := commonMavlinkStartArguments{}
+var offset = 0
+
+				stringEnd, err = getLengthOfStringData(b[offset:])
+				if err != nil {
+					log.Println("error: ", err)
+				}
+arg.filepath = string(b[offset:offset+stringEnd])
+offset += stringEnd
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.typeX)
+offset += 4
+
+return arg
+}
+
+var mavlinkStart = commonMavlinkStart {
+project: projectcommon,
+class: classMavlink,
+cmd: cmdStart,
+}
+
+// title : Pause a FlightPlan, 
+// desc : Pause a FlightPlan that was playing.\n To unpause a FlightPlan, see [StartFlightPlan](#0-11-0)\n, 
+// support : 0901:2.0.29;090c;090e, 
+// result : The currently playing FlightPlan will be paused. Then, event [FlightPlanPlayingStateChanged](#0-12-0) is triggered with param state set to the current state of the FlightPlan (should be *paused* if everything went well)., 
+const cmdPause cmdDef = 1
+
+type commonMavlinkPause command
+
+type commonMavlinkPauseArguments struct {
+}
+
+func (a commonMavlinkPause) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonMavlinkPauseArguments{}
+// No arguments to decode here !!
+
+return arg
+}
+
+var mavlinkPause = commonMavlinkPause {
+project: projectcommon,
+class: classMavlink,
+cmd: cmdPause,
+}
+
+// title : Stop a FlightPlan, 
+// desc : Stop a FlightPlan that was playing.\n, 
+// support : 0901:2.0.29;090c;090e, 
+// result : The currently playing FlightPlan will be stopped. Then, event [FlightPlanPlayingStateChanged](#0-12-0) is triggered with param state set to the current state of the FlightPlan (should be *stopped* if everything went well)., 
+const cmdStop cmdDef = 2
+
+type commonMavlinkStop command
+
+type commonMavlinkStopArguments struct {
+}
+
+func (a commonMavlinkStop) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonMavlinkStopArguments{}
+// No arguments to decode here !!
+
+return arg
+}
+
+var mavlinkStop = commonMavlinkStop {
+project: projectcommon,
+class: classMavlink,
+cmd: cmdStop,
+}
+
+// Mavlink flight plans states commands
+const classMavlinkState classDef = 12
+// title : Playing state of a FlightPlan, 
+// desc : Playing state of a FlightPlan., 
+// support : 0901:2.0.29;090c;090e, 
+// triggered : by [StartFlightPlan](#0-11-0), [PauseFlightPlan](#0-11-1) or [StopFlightPlan](#0-11-2)., 
+const cmdMavlinkFilePlayingStateChanged cmdDef = 0
+
+type commonMavlinkStateMavlinkFilePlayingStateChanged command
+
+type commonMavlinkStateMavlinkFilePlayingStateChangedArguments struct {
+state uint32
+filepath string
+typeX uint32
+}
+
+func (a commonMavlinkStateMavlinkFilePlayingStateChanged) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+var stringEnd int
+var err error
+arg := commonMavlinkStateMavlinkFilePlayingStateChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.state)
+offset += 4
+
+				stringEnd, err = getLengthOfStringData(b[offset:])
+				if err != nil {
+					log.Println("error: ", err)
+				}
+arg.filepath = string(b[offset:offset+stringEnd])
+offset += stringEnd
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.typeX)
+offset += 4
+
+return arg
+}
+
+var mavlinkStateMavlinkFilePlayingStateChanged = commonMavlinkStateMavlinkFilePlayingStateChanged {
+project: projectcommon,
+class: classMavlinkState,
+cmd: cmdMavlinkFilePlayingStateChanged,
+}
+
+// title : FlightPlan error, 
+// desc : FlightPlan error., 
+// support : 0901:2.0.29;090c;090e, 
+// triggered : by [StartFlightPlan](#0-11-0) if an error occurs., 
+const cmdMavlinkPlayErrorStateChanged cmdDef = 1
+
+type commonMavlinkStateMavlinkPlayErrorStateChanged command
+
+type commonMavlinkStateMavlinkPlayErrorStateChangedArguments struct {
+error uint32
+}
+
+func (a commonMavlinkStateMavlinkPlayErrorStateChanged) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonMavlinkStateMavlinkPlayErrorStateChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.error)
+offset += 4
+
+return arg
+}
+
+var mavlinkStateMavlinkPlayErrorStateChanged = commonMavlinkStateMavlinkPlayErrorStateChanged {
+project: projectcommon,
+class: classMavlinkState,
+cmd: cmdMavlinkPlayErrorStateChanged,
+}
+
+// title : Mission item executed, 
+// desc : Mission item has been executed., 
+// support : 090c:4.2.0;090e:1.4.0, 
+// triggered : when a mission item has been executed during a flight plan., 
+const cmdMissionItemExecuted cmdDef = 2
+
+type commonMavlinkStateMissionItemExecuted command
+
+type commonMavlinkStateMissionItemExecutedArguments struct {
+idx uint32
+}
+
+func (a commonMavlinkStateMissionItemExecuted) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonMavlinkStateMissionItemExecutedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.idx)
+offset += 4
+
+return arg
+}
+
+var mavlinkStateMissionItemExecuted = commonMavlinkStateMissionItemExecuted {
+project: projectcommon,
+class: classMavlinkState,
+cmd: cmdMissionItemExecuted,
+}
+
+const classFlightPlanSettings classDef = 32
+// title : Set ReturnHome behavior during FlightPlan, 
+// desc : Set ReturnHome behavior during FlightPlan\n When set, drone will return home, after return home delay, if a disconnection occurs during execution of FlightPlan, 
+// support : 0901:4.1.0;090c:4.1.0;090e:1.4.0, 
+// result : The return home mode is enabled or disabled.\n Then, event [ReturnHomeOnDisconnectionChanged](#0-33-0) is triggered., 
+const cmdReturnHomeOnDisconnect cmdDef = 0
+
+type commonFlightPlanSettingsReturnHomeOnDisconnect command
+
+type commonFlightPlanSettingsReturnHomeOnDisconnectArguments struct {
+value uint8
+}
+
+func (a commonFlightPlanSettingsReturnHomeOnDisconnect) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonFlightPlanSettingsReturnHomeOnDisconnectArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.value)
+offset++ 
+
+return arg
+}
+
+var flightPlanSettingsReturnHomeOnDisconnect = commonFlightPlanSettingsReturnHomeOnDisconnect {
+project: projectcommon,
+class: classFlightPlanSettings,
+cmd: cmdReturnHomeOnDisconnect,
+}
+
+const classFlightPlanSettingsState classDef = 33
+// title : ReturnHome behavior during FlightPlan, 
+// desc : Define behavior of drone when disconnection occurs during a flight plan, 
+// support : 0901:4.1.0;090c:4.1.0;090e:1.4.0, 
+// triggered : by [setReturnHomeOnDisconnectMode](#0-32-0)., 
+const cmdReturnHomeOnDisconnectChanged cmdDef = 0
+
+type commonFlightPlanSettingsStateReturnHomeOnDisconnectChanged command
+
+type commonFlightPlanSettingsStateReturnHomeOnDisconnectChangedArguments struct {
+state uint8
+isReadOnly uint8
+}
+
+func (a commonFlightPlanSettingsStateReturnHomeOnDisconnectChanged) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonFlightPlanSettingsStateReturnHomeOnDisconnectChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.state)
+offset++ 
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.isReadOnly)
+offset++ 
+
+return arg
+}
+
+var flightPlanSettingsStateReturnHomeOnDisconnectChanged = commonFlightPlanSettingsStateReturnHomeOnDisconnectChanged {
+project: projectcommon,
+class: classFlightPlanSettingsState,
+cmd: cmdReturnHomeOnDisconnectChanged,
+}
+
+// Calibration commands
+const classCalibration classDef = 13
+// title : Start/Abort magnetometer calibration, 
+// desc : Start or abort magnetometer calibration process.\n, 
+// support : 0901;090c;090e, 
+// result : The magnetometer calibration process is started or aborted. Then, event [MagnetoCalibrationStartedChanged](#0-14-3) is triggered.\n If started, event [MagnetoCalibrationStateChanged](#0-14-3) is triggered with the current calibration state: a list of all axis and their calibration states.\n It will also trigger [MagnetoCalibrationAxisToCalibrateChanged](#0-14-2), that will inform the controller about the current axis to calibrate., 
+const cmdMagnetoCalibration cmdDef = 0
+
+type commonCalibrationMagnetoCalibration command
+
+type commonCalibrationMagnetoCalibrationArguments struct {
+calibrate uint8
+}
+
+func (a commonCalibrationMagnetoCalibration) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonCalibrationMagnetoCalibrationArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.calibrate)
+offset++ 
+
+return arg
+}
+
+var calibrationMagnetoCalibration = commonCalibrationMagnetoCalibration {
+project: projectcommon,
+class: classCalibration,
+cmd: cmdMagnetoCalibration,
+}
+
+// title : Start/Abort Pitot calibration, 
+// desc : Start or abort Pitot tube calibration process.\n, 
+// support : 090e:1.1.0, 
+// result : The pitot calibration process is started or aborted. Then, event [PitotCalibrationStateChanged](#0-14-4) is triggered with the current calibration state., 
+const cmdPitotCalibration cmdDef = 1
+
+type commonCalibrationPitotCalibration command
+
+type commonCalibrationPitotCalibrationArguments struct {
+calibrate uint8
+}
+
+func (a commonCalibrationPitotCalibration) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonCalibrationPitotCalibrationArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.calibrate)
+offset++ 
+
+return arg
+}
+
+var calibrationPitotCalibration = commonCalibrationPitotCalibration {
+project: projectcommon,
+class: classCalibration,
+cmd: cmdPitotCalibration,
+}
+
+// Status of the calibration
+const classCalibrationState classDef = 14
+// title : Magneto calib process axis state, 
+// desc : Magneto calib process axis state., 
+// support : 0901;090c;090e, 
+// triggered : when the calibration process is started with [StartOrAbortMagnetoCalib](#0-13-0) and each time an axis calibration state changes., 
+const cmdMagnetoCalibrationStateChanged cmdDef = 0
+
+type commonCalibrationStateMagnetoCalibrationStateChanged command
+
+type commonCalibrationStateMagnetoCalibrationStateChangedArguments struct {
+xAxisCalibration uint8
+yAxisCalibration uint8
+zAxisCalibration uint8
+calibrationFailed uint8
+}
+
+func (a commonCalibrationStateMagnetoCalibrationStateChanged) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonCalibrationStateMagnetoCalibrationStateChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.xAxisCalibration)
+offset++ 
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.yAxisCalibration)
+offset++ 
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.zAxisCalibration)
+offset++ 
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.calibrationFailed)
+offset++ 
+
+return arg
+}
+
+var calibrationStateMagnetoCalibrationStateChanged = commonCalibrationStateMagnetoCalibrationStateChanged {
+project: projectcommon,
+class: classCalibrationState,
+cmd: cmdMagnetoCalibrationStateChanged,
+}
+
+// title : Calibration required, 
+// desc : Calibration required., 
+// support : 0901;090c;090e, 
+// triggered : when the calibration requirement changes., 
+const cmdMagnetoCalibrationRequiredState cmdDef = 1
+
+type commonCalibrationStateMagnetoCalibrationRequiredState command
+
+type commonCalibrationStateMagnetoCalibrationRequiredStateArguments struct {
+required uint8
+}
+
+func (a commonCalibrationStateMagnetoCalibrationRequiredState) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonCalibrationStateMagnetoCalibrationRequiredStateArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.required)
+offset++ 
+
+return arg
+}
+
+var calibrationStateMagnetoCalibrationRequiredState = commonCalibrationStateMagnetoCalibrationRequiredState {
+project: projectcommon,
+class: classCalibrationState,
+cmd: cmdMagnetoCalibrationRequiredState,
+}
+
+// title : Axis to calibrate during calibration process, 
+// desc : Axis to calibrate during calibration process., 
+// support : 0901;090c;090e, 
+// triggered : during the calibration process when the axis to calibrate changes., 
+const cmdMagnetoCalibrationAxisToCalibrateChanged cmdDef = 2
+
+type commonCalibrationStateMagnetoCalibrationAxisToCalibrateChanged command
+
+type commonCalibrationStateMagnetoCalibrationAxisToCalibrateChangedArguments struct {
+axis uint32
+}
+
+func (a commonCalibrationStateMagnetoCalibrationAxisToCalibrateChanged) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonCalibrationStateMagnetoCalibrationAxisToCalibrateChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.axis)
+offset += 4
+
+return arg
+}
+
+var calibrationStateMagnetoCalibrationAxisToCalibrateChanged = commonCalibrationStateMagnetoCalibrationAxisToCalibrateChanged {
+project: projectcommon,
+class: classCalibrationState,
+cmd: cmdMagnetoCalibrationAxisToCalibrateChanged,
+}
+
+// title : Calibration process state, 
+// desc : Calibration process state., 
+// support : 0901;090c;090e, 
+// triggered : by [StartOrAbortMagnetoCalib](#0-13-0) or when the process ends because it succeeded., 
+const cmdMagnetoCalibrationStartedChanged cmdDef = 3
+
+type commonCalibrationStateMagnetoCalibrationStartedChanged command
+
+type commonCalibrationStateMagnetoCalibrationStartedChangedArguments struct {
+started uint8
+}
+
+func (a commonCalibrationStateMagnetoCalibrationStartedChanged) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonCalibrationStateMagnetoCalibrationStartedChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.started)
+offset++ 
+
+return arg
+}
+
+var calibrationStateMagnetoCalibrationStartedChanged = commonCalibrationStateMagnetoCalibrationStartedChanged {
+project: projectcommon,
+class: classCalibrationState,
+cmd: cmdMagnetoCalibrationStartedChanged,
+}
+
+const cmdPitotCalibrationStateChanged cmdDef = 4
+
+type commonCalibrationStatePitotCalibrationStateChanged command
+
+type commonCalibrationStatePitotCalibrationStateChangedArguments struct {
+state uint32
+lastError uint8
+}
+
+func (a commonCalibrationStatePitotCalibrationStateChanged) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonCalibrationStatePitotCalibrationStateChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.state)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.lastError)
+offset++ 
+
+return arg
+}
+
+var calibrationStatePitotCalibrationStateChanged = commonCalibrationStatePitotCalibrationStateChanged {
+project: projectcommon,
+class: classCalibrationState,
+cmd: cmdPitotCalibrationStateChanged,
+}
+
+// Status of the camera settings
+const classCameraSettingsState classDef = 15
+// title : Camera info, 
+// desc : Camera info., 
+// support : 0901;090c;090e, 
+// triggered : at connection., 
+const cmdCameraSettingsChanged cmdDef = 0
+
+type commonCameraSettingsStateCameraSettingsChanged command
+
+type commonCameraSettingsStateCameraSettingsChangedArguments struct {
+fov float32
+panMax float32
+panMin float32
+tiltMax float32
+tiltMin float32
+}
+
+func (a commonCameraSettingsStateCameraSettingsChanged) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonCameraSettingsStateCameraSettingsChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.fov)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.panMax)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.panMin)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.tiltMax)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.tiltMin)
+offset += 4
+
+return arg
+}
+
+var cameraSettingsStateCameraSettingsChanged = commonCameraSettingsStateCameraSettingsChanged {
+project: projectcommon,
+class: classCameraSettingsState,
+cmd: cmdCameraSettingsChanged,
+}
+
+// GPS related commands
+const classGPS classDef = 16
+// title : Set the position of a run, 
+// desc : Set the position of a run.\n This will let the product know the controller location for the flight/run. The location is typically used to geotag medias.\n Only used on products that have no gps.\n Watch out, this command is not used by BLE products., 
+// support : 0902;0905;0906, 
+// result : The position is set., 
+const cmdControllerPositionForRun cmdDef = 0
+
+type commonGPSControllerPositionForRun command
+
+type commonGPSControllerPositionForRunArguments struct {
+latitude float64
+longitude float64
+}
+
+func (a commonGPSControllerPositionForRun) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonGPSControllerPositionForRunArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+8]), binary.LittleEndian, &arg.latitude)
+offset += 8
+binary.Read(bytes.NewReader(b[offset:offset+8]), binary.LittleEndian, &arg.longitude)
+offset += 8
+
+return arg
+}
+
+var gPSControllerPositionForRun = commonGPSControllerPositionForRun {
+project: projectcommon,
+class: classGPS,
+cmd: cmdControllerPositionForRun,
+}
+
+// FlightPlan state commands
+const classFlightPlanState classDef = 17
+// title : FlightPlan availability, 
+// desc : FlightPlan availability.\n Availability is linked to GPS fix, magnetometer calibration, sensor states..., 
+// support : 0901:2.0.29;090c;090e, 
+// triggered : on change., 
+const cmdAvailabilityStateChanged cmdDef = 0
+
+type commonFlightPlanStateAvailabilityStateChanged command
+
+type commonFlightPlanStateAvailabilityStateChangedArguments struct {
+AvailabilityState uint8
+}
+
+func (a commonFlightPlanStateAvailabilityStateChanged) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonFlightPlanStateAvailabilityStateChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.AvailabilityState)
+offset++ 
+
+return arg
+}
+
+var flightPlanStateAvailabilityStateChanged = commonFlightPlanStateAvailabilityStateChanged {
+project: projectcommon,
+class: classFlightPlanState,
+cmd: cmdAvailabilityStateChanged,
+}
+
+// title : FlightPlan components state list, 
+// desc : FlightPlan components state list., 
+// support : 0901:2.0.29;090c;090e, 
+// triggered : when the state of required components changes. \n GPS component is triggered when the availability of the GPS of the drone changes. \n Calibration component is triggered when the calibration state of the drone sensors changes \n Mavlink_File component is triggered when the command [StartFlightPlan](#0-11-0) is received. \n Takeoff component is triggered when the drone needs to take-off to continue the FlightPlan. \n WaypointsBeyondGeofence component is triggered when the command [StartFlightPlan](#0-11-0) is received., 
+const cmdComponentStateListChanged cmdDef = 1
+
+type commonFlightPlanStateComponentStateListChanged command
+
+type commonFlightPlanStateComponentStateListChangedArguments struct {
+component uint32
+State uint8
+}
+
+func (a commonFlightPlanStateComponentStateListChanged) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonFlightPlanStateComponentStateListChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.component)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.State)
+offset++ 
+
+return arg
+}
+
+var flightPlanStateComponentStateListChanged = commonFlightPlanStateComponentStateListChanged {
+project: projectcommon,
+class: classFlightPlanState,
+cmd: cmdComponentStateListChanged,
+}
+
+// title : FlightPlan lock state, 
+// desc : FlightPlan lock state.\n Represents the fact that the controller is able or not to stop or pause a playing FlightPlan, 
+// support : 0901:2.0.29;090c;090e, 
+// triggered : when the lock changes., 
+const cmdLockStateChanged cmdDef = 2
+
+type commonFlightPlanStateLockStateChanged command
+
+type commonFlightPlanStateLockStateChangedArguments struct {
+LockState uint8
+}
+
+func (a commonFlightPlanStateLockStateChanged) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonFlightPlanStateLockStateChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.LockState)
+offset++ 
+
+return arg
+}
+
+var flightPlanStateLockStateChanged = commonFlightPlanStateLockStateChanged {
+project: projectcommon,
+class: classFlightPlanState,
+cmd: cmdLockStateChanged,
+}
+
+// FlightPlan Event commands
+const classFlightPlanEvent classDef = 19
+// title : FlightPlan start error, 
+// desc : FlightPlan start error.\n\n **This event is a notification, you can't retrieve it in the cache of the device controller.**, 
+// support : 0901:2.0.29;090c;090e, 
+// triggered : on an error after a [StartFlightPlan](#0-11-0)., 
+const cmdStartingErrorEvent cmdDef = 0
+
+type commonFlightPlanEventStartingErrorEvent command
+
+type commonFlightPlanEventStartingErrorEventArguments struct {
+}
+
+func (a commonFlightPlanEventStartingErrorEvent) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonFlightPlanEventStartingErrorEventArguments{}
+// No arguments to decode here !!
+
+return arg
+}
+
+var flightPlanEventStartingErrorEvent = commonFlightPlanEventStartingErrorEvent {
+project: projectcommon,
+class: classFlightPlanEvent,
+cmd: cmdStartingErrorEvent,
+}
+
+// title : FlightPlan speed clamping, 
+// desc : FlightPlan speed clamping.\n Sent when a speed specified in the FlightPlan file is considered too high by the drone.\n\n **This event is a notification, you can't retrieve it in the cache of the device controller.**, 
+// support : none, 
+// triggered : on an speed related clamping after a [StartFlightPlan](#0-11-0)., 
+const cmdSpeedBridleEvent cmdDef = 1
+
+type commonFlightPlanEventSpeedBridleEvent command
+
+type commonFlightPlanEventSpeedBridleEventArguments struct {
+}
+
+func (a commonFlightPlanEventSpeedBridleEvent) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonFlightPlanEventSpeedBridleEventArguments{}
+// No arguments to decode here !!
+
+return arg
+}
+
+var flightPlanEventSpeedBridleEvent = commonFlightPlanEventSpeedBridleEvent {
+project: projectcommon,
+class: classFlightPlanEvent,
+cmd: cmdSpeedBridleEvent,
+}
+
+// ARlibs Versions Commands
+const classARLibsVersionsState classDef = 18
+const cmdControllerLibARCommandsVersion cmdDef = 0
+
+type commonARLibsVersionsStateControllerLibARCommandsVersion command
+
+type commonARLibsVersionsStateControllerLibARCommandsVersionArguments struct {
+version string
+}
+
+func (a commonARLibsVersionsStateControllerLibARCommandsVersion) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+var stringEnd int
+var err error
+arg := commonARLibsVersionsStateControllerLibARCommandsVersionArguments{}
+var offset = 0
+
+				stringEnd, err = getLengthOfStringData(b[offset:])
+				if err != nil {
+					log.Println("error: ", err)
+				}
+arg.version = string(b[offset:offset+stringEnd])
+offset += stringEnd
+
+return arg
+}
+
+var aRLibsVersionsStateControllerLibARCommandsVersion = commonARLibsVersionsStateControllerLibARCommandsVersion {
+project: projectcommon,
+class: classARLibsVersionsState,
+cmd: cmdControllerLibARCommandsVersion,
+}
+
+const cmdSkyControllerLibARCommandsVersion cmdDef = 1
+
+type commonARLibsVersionsStateSkyControllerLibARCommandsVersion command
+
+type commonARLibsVersionsStateSkyControllerLibARCommandsVersionArguments struct {
+version string
+}
+
+func (a commonARLibsVersionsStateSkyControllerLibARCommandsVersion) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+var stringEnd int
+var err error
+arg := commonARLibsVersionsStateSkyControllerLibARCommandsVersionArguments{}
+var offset = 0
+
+				stringEnd, err = getLengthOfStringData(b[offset:])
+				if err != nil {
+					log.Println("error: ", err)
+				}
+arg.version = string(b[offset:offset+stringEnd])
+offset += stringEnd
+
+return arg
+}
+
+var aRLibsVersionsStateSkyControllerLibARCommandsVersion = commonARLibsVersionsStateSkyControllerLibARCommandsVersion {
+project: projectcommon,
+class: classARLibsVersionsState,
+cmd: cmdSkyControllerLibARCommandsVersion,
+}
+
+const cmdDeviceLibARCommandsVersion cmdDef = 2
+
+type commonARLibsVersionsStateDeviceLibARCommandsVersion command
+
+type commonARLibsVersionsStateDeviceLibARCommandsVersionArguments struct {
+version string
+}
+
+func (a commonARLibsVersionsStateDeviceLibARCommandsVersion) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+var stringEnd int
+var err error
+arg := commonARLibsVersionsStateDeviceLibARCommandsVersionArguments{}
+var offset = 0
+
+				stringEnd, err = getLengthOfStringData(b[offset:])
+				if err != nil {
+					log.Println("error: ", err)
+				}
+arg.version = string(b[offset:offset+stringEnd])
+offset += stringEnd
+
+return arg
+}
+
+var aRLibsVersionsStateDeviceLibARCommandsVersion = commonARLibsVersionsStateDeviceLibARCommandsVersion {
+project: projectcommon,
+class: classARLibsVersionsState,
+cmd: cmdDeviceLibARCommandsVersion,
+}
+
+// Audio-related commands.
+const classAudio classDef = 20
+// title : Set audio stream direction, 
+// desc : Set audio stream direction., 
+// support : 0905;0906, 
+// result : The audio stream direction is set.\n Then, event [AudioStreamDirection](#0-21-0) is triggered., 
+const cmdControllerReadyForStreaming cmdDef = 0
+
+type commonAudioControllerReadyForStreaming command
+
+type commonAudioControllerReadyForStreamingArguments struct {
+ready uint8
+}
+
+func (a commonAudioControllerReadyForStreaming) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonAudioControllerReadyForStreamingArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.ready)
+offset++ 
+
+return arg
+}
+
+var audioControllerReadyForStreaming = commonAudioControllerReadyForStreaming {
+project: projectcommon,
+class: classAudio,
+cmd: cmdControllerReadyForStreaming,
+}
+
+// Audio-related state updates.
+const classAudioState classDef = 21
+// title : Audio stream direction, 
+// desc : Audio stream direction., 
+// support : 0905;0906, 
+// triggered : by [SetAudioStreamDirection](#0-20-0)., 
+const cmdAudioStreamingRunning cmdDef = 0
+
+type commonAudioStateAudioStreamingRunning command
+
+type commonAudioStateAudioStreamingRunningArguments struct {
+running uint8
+}
+
+func (a commonAudioStateAudioStreamingRunning) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonAudioStateAudioStreamingRunningArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.running)
+offset++ 
+
+return arg
+}
+
+var audioStateAudioStreamingRunning = commonAudioStateAudioStreamingRunning {
+project: projectcommon,
+class: classAudioState,
+cmd: cmdAudioStreamingRunning,
+}
+
+// Controls the headlight LEDs of the Evo variants.
+const classHeadlights classDef = 22
+// title : Set LEDs intensity, 
+// desc : Set lighting LEDs intensity., 
+// support : 0905;0906;0907, 
+// result : The intensity of the LEDs is changed.\n Then, event [LedIntensity](#0-23-0) is triggered., 
+const cmdintensity cmdDef = 0
+
+type commonHeadlightsintensity command
+
+type commonHeadlightsintensityArguments struct {
+left uint8
+right uint8
+}
+
+func (a commonHeadlightsintensity) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonHeadlightsintensityArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.left)
+offset++ 
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.right)
+offset++ 
+
+return arg
+}
+
+var headlightsintensity = commonHeadlightsintensity {
+project: projectcommon,
+class: classHeadlights,
+cmd: cmdintensity,
+}
+
+// Get information about the state of the Evo variants' LEDs.
+const classHeadlightsState classDef = 23
+// title : LEDs intensity, 
+// desc : Lighting LEDs intensity., 
+// support : 0905;0906;0907, 
+// triggered : by [SetLedsIntensity](#0-22-0)., 
+const cmdintensityChanged cmdDef = 0
+
+type commonHeadlightsStateintensityChanged command
+
+type commonHeadlightsStateintensityChangedArguments struct {
+left uint8
+right uint8
+}
+
+func (a commonHeadlightsStateintensityChanged) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonHeadlightsStateintensityChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.left)
+offset++ 
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.right)
+offset++ 
+
+return arg
+}
+
+var headlightsStateintensityChanged = commonHeadlightsStateintensityChanged {
+project: projectcommon,
+class: classHeadlightsState,
+cmd: cmdintensityChanged,
+}
+
+// Animations-related commands.
+const classAnimationsDUPLICATE classDef = 24
+// title : Start an animation, 
+// desc : Start a paramaterless animation.\n List of available animations can be retrieved from [AnimationsStateList](#0-25-0)., 
+// support : 0902;0905;0906;0907;0909, 
+// result : If possible, the product starts the requested animation. Then, event [AnimationsStateList](#0-25-0) is triggered., 
+const cmdStartAnimation cmdDef = 0
+
+type commonAnimationsStartAnimation command
+
+type commonAnimationsStartAnimationArguments struct {
+anim uint32
+}
+
+func (a commonAnimationsStartAnimation) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonAnimationsStartAnimationArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.anim)
+offset += 4
+
+return arg
+}
+
+var animationsStartAnimation = commonAnimationsStartAnimation {
+project: projectcommon,
+class: classAnimationsDUPLICATE,
+cmd: cmdStartAnimation,
+}
+
+// title : Stop an animation, 
+// desc : Stop a paramaterless animation.\n List of running animations can be retrieved from [AnimationsStateList](#0-25-0)., 
+// support : 0902;0905;0906;0907;0909, 
+// result : If the requested animation was running, it will be stopped.\n Then, event [AnimationsStateList](#0-25-0) is triggered., 
+const cmdStopAnimation cmdDef = 1
+
+type commonAnimationsStopAnimation command
+
+type commonAnimationsStopAnimationArguments struct {
+anim uint32
+}
+
+func (a commonAnimationsStopAnimation) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonAnimationsStopAnimationArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.anim)
+offset += 4
+
+return arg
+}
+
+var animationsStopAnimation = commonAnimationsStopAnimation {
+project: projectcommon,
+class: classAnimations,
+cmd: cmdStopAnimation,
+}
+
+// title : Stop all animations, 
+// desc : Stop all running paramaterless animations.\n List of running animations can be retrieved from [AnimationsStateList](#0-25-0)., 
+// support : 0902;0905;0906;0907;0909, 
+// result : All running animations are stopped.\n Then, event [AnimationsStateList](#0-25-0) is triggered., 
+const cmdStopAllAnimations cmdDef = 2
+
+type commonAnimationsStopAllAnimations command
+
+type commonAnimationsStopAllAnimationsArguments struct {
+}
+
+func (a commonAnimationsStopAllAnimations) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonAnimationsStopAllAnimationsArguments{}
+// No arguments to decode here !!
+
+return arg
+}
+
+var animationsStopAllAnimations = commonAnimationsStopAllAnimations {
+project: projectcommon,
+class: classAnimations,
+cmd: cmdStopAllAnimations,
+}
+
+// Animations-related notification/feedback commands.
+const classAnimationsState classDef = 25
+// title : Animation state list, 
+// desc : Paramaterless animations state list., 
+// support : 0902;0905;0906;0907;0909, 
+// triggered : when the list of available animations changes and also when an animation state changes (can be triggered by [StartAnim](#0-24-0), [StopAnim](#0-24-1) or [StopAllAnims](#0-24-2)., 
+const cmdList cmdDef = 0
+
+type commonAnimationsStateList command
+
+type commonAnimationsStateListArguments struct {
+anim uint32
+}
+
+func (a commonAnimationsStateList) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonAnimationsStateListArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.anim)
+offset += 4
+
+return arg
+}
+
+var animationsStateList = commonAnimationsStateList {
+project: projectcommon,
+class: classAnimationsState,
+cmd: cmdList,
+}
+
+// Accessories-related commands.
+const classAccessory classDef = 26
+// title : Declare an accessory, 
+// desc : Declare an accessory.\n You can choose the accessory between all accessible for this product.\n You can get this list through event [SupportedAccessories](#0-27-0).\n\n You can only set the accessory when the modification is enabled.\n You can know if it possible with the event [AccessoryDeclarationAvailability](#0-27-2)., 
+// support : 0902;0905;0906;0907;0909;090a, 
+// result : The product knows which accessory it is wearing.\n Then, event [AccessoryConfigChanged](#0-27-1) is triggered., 
+const cmdConfig cmdDef = 0
+
+type commonAccessoryConfig command
+
+type commonAccessoryConfigArguments struct {
+accessory uint32
+}
+
+func (a commonAccessoryConfig) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonAccessoryConfigArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.accessory)
+offset += 4
+
+return arg
+}
+
+var accessoryConfig = commonAccessoryConfig {
+project: projectcommon,
+class: classAccessory,
+cmd: cmdConfig,
+}
+
+// Accessories-related commands.
+const classAccessoryStateDUPLICATE classDef = 27
+// title : Supported accessories list, 
+// desc : Supported accessories list., 
+// support : 0902;0905;0906;0907;0909;090a, 
+// triggered : at connection., 
+const cmdSupportedAccessoriesListChanged cmdDef = 0
+
+type commonAccessoryStateSupportedAccessoriesListChanged command
+
+type commonAccessoryStateSupportedAccessoriesListChangedArguments struct {
+accessory uint32
+}
+
+func (a commonAccessoryStateSupportedAccessoriesListChanged) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonAccessoryStateSupportedAccessoriesListChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.accessory)
+offset += 4
+
+return arg
+}
+
+var accessoryStateSupportedAccessoriesListChanged = commonAccessoryStateSupportedAccessoriesListChanged {
+project: projectcommon,
+class: classAccessoryStateDUPLICATE,
+cmd: cmdSupportedAccessoriesListChanged,
+}
+
+// title : Accessory config, 
+// desc : Accessory config., 
+// support : 0902;0905;0906;0907;0909;090a, 
+// triggered : by [DeclareAccessory](#0-26-0)., 
+const cmdAccessoryConfigChanged cmdDef = 1
+
+type commonAccessoryStateAccessoryConfigChanged command
+
+type commonAccessoryStateAccessoryConfigChangedArguments struct {
+newAccessory uint32
+error uint32
+}
+
+func (a commonAccessoryStateAccessoryConfigChanged) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonAccessoryStateAccessoryConfigChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.newAccessory)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.error)
+offset += 4
+
+return arg
+}
+
+var accessoryStateAccessoryConfigChanged = commonAccessoryStateAccessoryConfigChanged {
+project: projectcommon,
+class: classAccessoryState,
+cmd: cmdAccessoryConfigChanged,
+}
+
+// title : Accessory declaration availability, 
+// desc : Availability to declare or not an accessory., 
+// support : 0902;0905;0906;0907;0909;090a, 
+// triggered : when the availability changes., 
+const cmdAccessoryConfigModificationEnabled cmdDef = 2
+
+type commonAccessoryStateAccessoryConfigModificationEnabled command
+
+type commonAccessoryStateAccessoryConfigModificationEnabledArguments struct {
+enabled uint8
+}
+
+func (a commonAccessoryStateAccessoryConfigModificationEnabled) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonAccessoryStateAccessoryConfigModificationEnabledArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.enabled)
+offset++ 
+
+return arg
+}
+
+var accessoryStateAccessoryConfigModificationEnabled = commonAccessoryStateAccessoryConfigModificationEnabled {
+project: projectcommon,
+class: classAccessoryState,
+cmd: cmdAccessoryConfigModificationEnabled,
+}
+
+// Commands sent by the controller to set charger parameters.
+const classCharger classDef = 28
+// title : Set max charge rate, 
+// desc : The product will inform itself the controller about its charging type (see [ChargingInfoChanged](#0-29-3))., 
+// support : none, 
+// result : None., 
+const cmdSetMaxChargeRate cmdDef = 0
+
+type commonChargerSetMaxChargeRate command
+
+type commonChargerSetMaxChargeRateArguments struct {
+rate uint32
+}
+
+func (a commonChargerSetMaxChargeRate) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonChargerSetMaxChargeRateArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.rate)
+offset += 4
+
+return arg
+}
+
+var chargerSetMaxChargeRate = commonChargerSetMaxChargeRate {
+project: projectcommon,
+class: classCharger,
+cmd: cmdSetMaxChargeRate,
+}
+
+// Commands sent by the firmware to advertise the charger status.
+const classChargerState classDef = 29
+// title : Max charge rate, 
+// desc : Max charge rate., 
+const cmdMaxChargeRateChanged cmdDef = 0
+
+type commonChargerStateMaxChargeRateChanged command
+
+type commonChargerStateMaxChargeRateChangedArguments struct {
+rate uint32
+}
+
+func (a commonChargerStateMaxChargeRateChanged) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonChargerStateMaxChargeRateChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.rate)
+offset += 4
+
+return arg
+}
+
+var chargerStateMaxChargeRateChanged = commonChargerStateMaxChargeRateChanged {
+project: projectcommon,
+class: classChargerState,
+cmd: cmdMaxChargeRateChanged,
+}
+
+// title : Current charge state, 
+// desc : Current charge state., 
+const cmdCurrentChargeStateChanged cmdDef = 1
+
+type commonChargerStateCurrentChargeStateChanged command
+
+type commonChargerStateCurrentChargeStateChangedArguments struct {
+status uint32
+phase uint32
+}
+
+func (a commonChargerStateCurrentChargeStateChanged) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonChargerStateCurrentChargeStateChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.status)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.phase)
+offset += 4
+
+return arg
+}
+
+var chargerStateCurrentChargeStateChanged = commonChargerStateCurrentChargeStateChanged {
+project: projectcommon,
+class: classChargerState,
+cmd: cmdCurrentChargeStateChanged,
+}
+
+// title : Last charge rate, 
+// desc : Last charge rate., 
+const cmdLastChargeRateChanged cmdDef = 2
+
+type commonChargerStateLastChargeRateChanged command
+
+type commonChargerStateLastChargeRateChangedArguments struct {
+rate uint32
+}
+
+func (a commonChargerStateLastChargeRateChanged) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonChargerStateLastChargeRateChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.rate)
+offset += 4
+
+return arg
+}
+
+var chargerStateLastChargeRateChanged = commonChargerStateLastChargeRateChanged {
+project: projectcommon,
+class: classChargerState,
+cmd: cmdLastChargeRateChanged,
+}
+
+// title : Charging information, 
+// desc : Charging information., 
+// support : 0905;0906;0907;0909;090a, 
+// triggered : when the product is charging or when the charging state changes., 
+const cmdChargingInfo cmdDef = 3
+
+type commonChargerStateChargingInfo command
+
+type commonChargerStateChargingInfoArguments struct {
+phase uint32
+rate uint32
+intensity uint8
+fullChargingTime uint8
+}
+
+func (a commonChargerStateChargingInfo) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonChargerStateChargingInfoArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.phase)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.rate)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.intensity)
+offset++ 
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.fullChargingTime)
+offset++ 
+
+return arg
+}
+
+var chargerStateChargingInfo = commonChargerStateChargingInfo {
+project: projectcommon,
+class: classChargerState,
+cmd: cmdChargingInfo,
+}
+
+// Commands sent by the drone to inform about the run or flight state
+const classRunState classDef = 30
+// title : Current run id, 
+// desc : Current run id.\n A run id is uniquely identifying a run or a flight.\n For each run is generated on the drone a file which can be used by Academy to sum up the run.\n Also, each medias taken during a run has a filename containing the run id., 
+// support : 0901:3.0.1;090c;090e, 
+// triggered : when the drone generates a new run id (generally right after a take off)., 
+const cmdRunIdChanged cmdDef = 0
+
+type commonRunStateRunIdChanged command
+
+type commonRunStateRunIdChangedArguments struct {
+runId string
+}
+
+func (a commonRunStateRunIdChanged) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+var stringEnd int
+var err error
+arg := commonRunStateRunIdChangedArguments{}
+var offset = 0
+
+				stringEnd, err = getLengthOfStringData(b[offset:])
+				if err != nil {
+					log.Println("error: ", err)
+				}
+arg.runId = string(b[offset:offset+stringEnd])
+offset += stringEnd
+
+return arg
+}
+
+var runStateRunIdChanged = commonRunStateRunIdChanged {
+project: projectcommon,
+class: classRunState,
+cmd: cmdRunIdChanged,
+}
+
+// Factory reset commands
+const classFactory classDef = 31
+// title : Reset the product to its factory settings, 
+// desc : This command will request a factory reset from the prodcut. *The factory reset procedure implies an automatic reboot*, which will be done immediately after receiving this command., 
+// result : The product will reboot, all settings will be reset to their default values. All data on the product will also be erased., 
+const cmdResetDUPLICATE cmdDef = 0
+
+type commonFactoryReset command
+
+type commonFactoryResetArguments struct {
+}
+
+func (a commonFactoryReset) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+arg := commonFactoryResetArguments{}
+// No arguments to decode here !!
+
+return arg
+}
+
+var factoryReset = commonFactoryReset {
+project: projectcommon,
+class: classFactory,
+cmd: cmdReset,
+}
+
+// Update related commands
+const classUpdateState classDef = 34
+// title : Software update status, 
+// desc : Status of the latest software update, 
+// support : 0914, 
+// triggered : at connection during the first boot after a firmware update., 
+const cmdUpdateStateChanged cmdDef = 0
+
+type commonUpdateStateUpdateStateChanged command
+
+type commonUpdateStateUpdateStateChangedArguments struct {
+sourceVersion string
+targetVersion string
+status uint32
+}
+
+func (a commonUpdateStateUpdateStateChanged) decode(b []byte) interface{} {
+//TODO: .............
+fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
+fmt.Printf("%+v\n", a)
+var stringEnd int
+var err error
+arg := commonUpdateStateUpdateStateChangedArguments{}
+var offset = 0
+
+				stringEnd, err = getLengthOfStringData(b[offset:])
+				if err != nil {
+					log.Println("error: ", err)
+				}
+arg.sourceVersion = string(b[offset:offset+stringEnd])
+offset += stringEnd
+
+				stringEnd, err = getLengthOfStringData(b[offset:])
+				if err != nil {
+					log.Println("error: ", err)
+				}
+arg.targetVersion = string(b[offset:offset+stringEnd])
+offset += stringEnd
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.status)
+offset += 4
+
+return arg
+}
+
+var updateStateUpdateStateChanged = commonUpdateStateUpdateStateChanged {
+project: projectcommon,
+class: classUpdateState,
+cmd: cmdUpdateStateChanged,
+}
+
 type decoder interface {
 decode([]byte) interface{}
 }
@@ -5689,6 +8782,98 @@ command(accessoryStateBattery) : accessoryStateBattery,
 command(soundStartAlertSound) : soundStartAlertSound,
 command(soundStopAlertSound) : soundStopAlertSound,
 command(soundStateAlertSound) : soundStateAlertSound,
+command(networkDisconnect) : networkDisconnect,
+command(networkEventDisconnection) : networkEventDisconnection,
+command(settingsAllSettings) : settingsAllSettings,
+command(settingsReset) : settingsReset,
+command(settingsProductName) : settingsProductName,
+command(settingsCountry) : settingsCountry,
+command(settingsAutoCountry) : settingsAutoCountry,
+command(settingsStateAllSettingsChanged) : settingsStateAllSettingsChanged,
+command(settingsStateResetChanged) : settingsStateResetChanged,
+command(settingsStateProductNameChanged) : settingsStateProductNameChanged,
+command(settingsStateProductVersionChanged) : settingsStateProductVersionChanged,
+command(settingsStateProductSerialHighChanged) : settingsStateProductSerialHighChanged,
+command(settingsStateProductSerialLowChanged) : settingsStateProductSerialLowChanged,
+command(settingsStateCountryChanged) : settingsStateCountryChanged,
+command(settingsStateAutoCountryChanged) : settingsStateAutoCountryChanged,
+command(settingsStateBoardIdChanged) : settingsStateBoardIdChanged,
+command(commonAllStates) : commonAllStates,
+command(commonCurrentDate) : commonCurrentDate,
+command(commonCurrentTime) : commonCurrentTime,
+command(commonReboot) : commonReboot,
+command(commonCurrentDateTime) : commonCurrentDateTime,
+command(commonStateAllStatesChanged) : commonStateAllStatesChanged,
+command(commonStateBatteryStateChanged) : commonStateBatteryStateChanged,
+command(commonStateMassStorageStateListChanged) : commonStateMassStorageStateListChanged,
+command(commonStateMassStorageInfoStateListChanged) : commonStateMassStorageInfoStateListChanged,
+command(commonStateCurrentDateChanged) : commonStateCurrentDateChanged,
+command(commonStateCurrentTimeChanged) : commonStateCurrentTimeChanged,
+command(commonStateMassStorageInfoRemainingListChanged) : commonStateMassStorageInfoRemainingListChanged,
+command(commonStateWifiSignalChanged) : commonStateWifiSignalChanged,
+command(commonStateSensorsStatesListChanged) : commonStateSensorsStatesListChanged,
+command(commonStateProductModel) : commonStateProductModel,
+command(commonStateCountryListKnown) : commonStateCountryListKnown,
+command(commonStateDeprecatedMassStorageContentChanged) : commonStateDeprecatedMassStorageContentChanged,
+command(commonStateMassStorageContent) : commonStateMassStorageContent,
+command(commonStateMassStorageContentForCurrentRun) : commonStateMassStorageContentForCurrentRun,
+command(commonStateVideoRecordingTimestamp) : commonStateVideoRecordingTimestamp,
+command(commonStateCurrentDateTimeChanged) : commonStateCurrentDateTimeChanged,
+command(commonStateLinkSignalQuality) : commonStateLinkSignalQuality,
+command(commonStateBootId) : commonStateBootId,
+command(overHeatSwitchOff) : overHeatSwitchOff,
+command(overHeatVentilate) : overHeatVentilate,
+command(overHeatStateOverHeatChanged) : overHeatStateOverHeatChanged,
+command(overHeatStateOverHeatRegulationChanged) : overHeatStateOverHeatRegulationChanged,
+command(controllerisPiloting) : controllerisPiloting,
+command(controllerPeerStateChanged) : controllerPeerStateChanged,
+command(wifiSettingsOutdoorSetting) : wifiSettingsOutdoorSetting,
+command(wifiSettingsStateoutdoorSettingsChanged) : wifiSettingsStateoutdoorSettingsChanged,
+command(mavlinkStart) : mavlinkStart,
+command(mavlinkPause) : mavlinkPause,
+command(mavlinkStop) : mavlinkStop,
+command(mavlinkStateMavlinkFilePlayingStateChanged) : mavlinkStateMavlinkFilePlayingStateChanged,
+command(mavlinkStateMavlinkPlayErrorStateChanged) : mavlinkStateMavlinkPlayErrorStateChanged,
+command(mavlinkStateMissionItemExecuted) : mavlinkStateMissionItemExecuted,
+command(flightPlanSettingsReturnHomeOnDisconnect) : flightPlanSettingsReturnHomeOnDisconnect,
+command(flightPlanSettingsStateReturnHomeOnDisconnectChanged) : flightPlanSettingsStateReturnHomeOnDisconnectChanged,
+command(calibrationMagnetoCalibration) : calibrationMagnetoCalibration,
+command(calibrationPitotCalibration) : calibrationPitotCalibration,
+command(calibrationStateMagnetoCalibrationStateChanged) : calibrationStateMagnetoCalibrationStateChanged,
+command(calibrationStateMagnetoCalibrationRequiredState) : calibrationStateMagnetoCalibrationRequiredState,
+command(calibrationStateMagnetoCalibrationAxisToCalibrateChanged) : calibrationStateMagnetoCalibrationAxisToCalibrateChanged,
+command(calibrationStateMagnetoCalibrationStartedChanged) : calibrationStateMagnetoCalibrationStartedChanged,
+command(calibrationStatePitotCalibrationStateChanged) : calibrationStatePitotCalibrationStateChanged,
+command(cameraSettingsStateCameraSettingsChanged) : cameraSettingsStateCameraSettingsChanged,
+command(gPSControllerPositionForRun) : gPSControllerPositionForRun,
+command(flightPlanStateAvailabilityStateChanged) : flightPlanStateAvailabilityStateChanged,
+command(flightPlanStateComponentStateListChanged) : flightPlanStateComponentStateListChanged,
+command(flightPlanStateLockStateChanged) : flightPlanStateLockStateChanged,
+command(flightPlanEventStartingErrorEvent) : flightPlanEventStartingErrorEvent,
+command(flightPlanEventSpeedBridleEvent) : flightPlanEventSpeedBridleEvent,
+command(aRLibsVersionsStateControllerLibARCommandsVersion) : aRLibsVersionsStateControllerLibARCommandsVersion,
+command(aRLibsVersionsStateSkyControllerLibARCommandsVersion) : aRLibsVersionsStateSkyControllerLibARCommandsVersion,
+command(aRLibsVersionsStateDeviceLibARCommandsVersion) : aRLibsVersionsStateDeviceLibARCommandsVersion,
+command(audioControllerReadyForStreaming) : audioControllerReadyForStreaming,
+command(audioStateAudioStreamingRunning) : audioStateAudioStreamingRunning,
+command(headlightsintensity) : headlightsintensity,
+command(headlightsStateintensityChanged) : headlightsStateintensityChanged,
+command(animationsStartAnimation) : animationsStartAnimation,
+command(animationsStopAnimation) : animationsStopAnimation,
+command(animationsStopAllAnimations) : animationsStopAllAnimations,
+command(animationsStateList) : animationsStateList,
+command(accessoryConfig) : accessoryConfig,
+command(accessoryStateSupportedAccessoriesListChanged) : accessoryStateSupportedAccessoriesListChanged,
+command(accessoryStateAccessoryConfigChanged) : accessoryStateAccessoryConfigChanged,
+command(accessoryStateAccessoryConfigModificationEnabled) : accessoryStateAccessoryConfigModificationEnabled,
+command(chargerSetMaxChargeRate) : chargerSetMaxChargeRate,
+command(chargerStateMaxChargeRateChanged) : chargerStateMaxChargeRateChanged,
+command(chargerStateCurrentChargeStateChanged) : chargerStateCurrentChargeStateChanged,
+command(chargerStateLastChargeRateChanged) : chargerStateLastChargeRateChanged,
+command(chargerStateChargingInfo) : chargerStateChargingInfo,
+command(runStateRunIdChanged) : runStateRunIdChanged,
+command(factoryReset) : factoryReset,
+command(updateStateUpdateStateChanged) : updateStateUpdateStateChanged,
 }
 
 
