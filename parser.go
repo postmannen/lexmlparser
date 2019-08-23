@@ -225,7 +225,7 @@ func (p *parser) doTagProject(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id s
 	}
 
 	name := tmpBuf1[2]
-	fmt.Printf("const %v projectDef = %v\n", lowerFirstCharacter(name.TokenText), id)
+	fmt.Printf("const project%v projectDef = %v\n", name.TokenText, id)
 }
 
 // doTagClass will do all the parsing of a class tag.
@@ -239,13 +239,14 @@ func (p *parser) doTagClass(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id str
 	}
 
 	name := tmpBuf1[2]
-	fmt.Printf("const %v classDef = %v\n", lowerFirstCharacter(name.TokenText), id)
+	fmt.Printf("const class%v classDef = %v\n", name.TokenText, id)
 
 }
 
 // doTagCommand will do all the parsing of a command tag
 func (p *parser) doTagCommand(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id string, argBuf []argument) {
-	// TODO : Implement detection of duplicate commands !!!
+
+	// -------------------------CREATE COMMENTS------------------------------------------
 
 	// Check if there are comments to be printed for the command.
 	//
@@ -266,6 +267,8 @@ func (p *parser) doTagCommand(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id s
 		}
 	}
 
+	// -------------------------CREATE COMMENTS, END------------------------------------------
+
 	// Create the variable name of the current project->class->command
 	// content in the tagStack.
 	var variableName string
@@ -284,14 +287,14 @@ func (p *parser) doTagCommand(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id s
 	// If seen before, add DUPLICATE at the end of const name.
 	_, ok := p.commandConstants[cmdConstname.TokenText]
 	if ok {
-		cmdConstname.TokenText += "DUPLICATE"
+		cmdConstname.TokenText = cmdConstname.TokenText + "DUPLICATE"
 	}
 
 	// Store the const to check for duplicates on later iterations.
 	p.commandConstants[cmdConstname.TokenText] = true
 
-	constName := lowerFirstCharacter(cmdConstname.TokenText)
-	fmt.Printf("const %v cmdDef = %v\n", constName, id)
+	constName := cmdConstname.TokenText
+	fmt.Printf("const cmd%v cmdDef = %v\n", constName, id)
 	fmt.Println()
 
 	// Create the struct type command which will hold the decode methods
@@ -313,7 +316,7 @@ func (p *parser) doTagCommand(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id s
 	fmt.Println()
 	// TODO: Write out the name of the arguments and the Go equivalent of the type for the fields.
 
-	// ----------------------------------------------------------------------------------
+	// ----------------------------DECODE METHOD--------------------------------------------------
 	// Create the decode function for the command type
 	fmt.Printf("func (a %v) decode(b []byte) interface{} {\n", concatenateSlice(p.tagStack.data))
 	fmt.Printf("//TODO: .............\n")
@@ -370,28 +373,31 @@ func (p *parser) doTagCommand(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id s
 	} else {
 		fmt.Println("// No arguments to decode here !!")
 	}
+
 	fmt.Println()
-
 	fmt.Println("return arg")
-
-	// ----------------------------------------------------------------------------------
 	fmt.Printf("}\n")
 
-	project := lowerFirstCharacter(p.tagStack.data[0])
-	class := lowerFirstCharacter(p.tagStack.data[1])
-	command := lowerFirstCharacter(p.tagStack.data[2])
+	// ----------------------------DECODE METHOD, END--------------------------------------------------
+
+	// ----------------------------CREATE VAR--------------------------------------------------
+	project := p.tagStack.data[0]
+	class := p.tagStack.data[1]
+	command := p.tagStack.data[2]
 
 	fmt.Println()
 	fmt.Printf("var %v = %v {\n", lowerFirstCharacter(variableName), concatenateSlice(p.tagStack.data))
-	fmt.Printf("project: %v,\n", project)
-	fmt.Printf("class: %v,\n", class)
-	fmt.Printf("cmd: %v,\n", command)
+	fmt.Printf("project: project%v,\n", project)
+	fmt.Printf("class: class%v,\n", class)
+	fmt.Printf("cmd: cmd%v,\n", command)
 	fmt.Printf("}\n")
 	fmt.Println()
 
 	// store the variable name in a slice so we can use it
 	// to create the map[command]decoder map later.
 	p.variablesForMap = append(p.variablesForMap, variableName)
+
+	// ----------------------------CREATE VAR, END--------------------------------------------------
 }
 
 // lowerFirstCharacer, turns the first character of a string
