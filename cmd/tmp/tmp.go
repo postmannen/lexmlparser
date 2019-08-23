@@ -2,6 +2,9 @@ package main
 
 import (
 	"fmt"
+	"bytes"
+	"log"
+	"encoding/binary"
 )
 
 type projectDef uint8 
@@ -15,7 +18,7 @@ type command struct {
 }
 
 // All ARDrone3-only commands
-	const ardrone3 projectDef = 1
+const ardrone3 projectDef = 1
 // All commands related to piloting the drone
 const piloting classDef = 0
 // title : Take off, 
@@ -29,10 +32,14 @@ type ardrone3PilotingTakeOff command
 type ardrone3PilotingTakeOffArguments struct {
 }
 
-func (a ardrone3PilotingTakeOff) decode() {
+func (a ardrone3PilotingTakeOff) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingTakeOffArguments{}
+// No arguments to decode here !!
+
+return arg
 }
 
 var pilotingTakeOff = ardrone3PilotingTakeOff {
@@ -58,10 +65,26 @@ gaz int8
 timestampAndSeqNum uint32
 }
 
-func (a ardrone3PilotingPCMD) decode() {
+func (a ardrone3PilotingPCMD) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingPCMDArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.flag)
+offset++ 
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.roll)
+offset++ 
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.pitch)
+offset++ 
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.yaw)
+offset++ 
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.gaz)
+offset++ 
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.timestampAndSeqNum)
+offset += 4
+
+return arg
 }
 
 var pilotingPCMD = ardrone3PilotingPCMD {
@@ -81,10 +104,14 @@ type ardrone3PilotingLanding command
 type ardrone3PilotingLandingArguments struct {
 }
 
-func (a ardrone3PilotingLanding) decode() {
+func (a ardrone3PilotingLanding) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingLandingArguments{}
+// No arguments to decode here !!
+
+return arg
 }
 
 var pilotingLanding = ardrone3PilotingLanding {
@@ -104,10 +131,14 @@ type ardrone3PilotingEmergency command
 type ardrone3PilotingEmergencyArguments struct {
 }
 
-func (a ardrone3PilotingEmergency) decode() {
+func (a ardrone3PilotingEmergency) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingEmergencyArguments{}
+// No arguments to decode here !!
+
+return arg
 }
 
 var pilotingEmergency = ardrone3PilotingEmergency {
@@ -128,10 +159,16 @@ type ardrone3PilotingNavigateHomeArguments struct {
 start uint8
 }
 
-func (a ardrone3PilotingNavigateHome) decode() {
+func (a ardrone3PilotingNavigateHome) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingNavigateHomeArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.start)
+offset++ 
+
+return arg
 }
 
 var pilotingNavigateHome = ardrone3PilotingNavigateHome {
@@ -150,10 +187,16 @@ type ardrone3PilotingAutoTakeOffModeArguments struct {
 state uint8
 }
 
-func (a ardrone3PilotingAutoTakeOffMode) decode() {
+func (a ardrone3PilotingAutoTakeOffMode) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingAutoTakeOffModeArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.state)
+offset++ 
+
+return arg
 }
 
 var pilotingAutoTakeOffMode = ardrone3PilotingAutoTakeOffMode {
@@ -177,10 +220,22 @@ dZ float32
 dPsi float32
 }
 
-func (a ardrone3PilotingmoveBy) decode() {
+func (a ardrone3PilotingmoveBy) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingmoveByArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.dX)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.dY)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.dZ)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.dPsi)
+offset += 4
+
+return arg
 }
 
 var pilotingmoveBy = ardrone3PilotingmoveBy {
@@ -201,10 +256,16 @@ type ardrone3PilotingUserTakeOffArguments struct {
 state uint8
 }
 
-func (a ardrone3PilotingUserTakeOff) decode() {
+func (a ardrone3PilotingUserTakeOff) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingUserTakeOffArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.state)
+offset++ 
+
+return arg
 }
 
 var pilotingUserTakeOff = ardrone3PilotingUserTakeOff {
@@ -225,10 +286,16 @@ type ardrone3PilotingCircleArguments struct {
 direction uint32
 }
 
-func (a ardrone3PilotingCircle) decode() {
+func (a ardrone3PilotingCircle) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingCircleArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.direction)
+offset += 4
+
+return arg
 }
 
 var pilotingCircle = ardrone3PilotingCircle {
@@ -249,14 +316,28 @@ type ardrone3PilotingmoveToArguments struct {
 latitude float64
 longitude float64
 altitude float64
-orientation_mode uint32
+orientationmode uint32
 heading float32
 }
 
-func (a ardrone3PilotingmoveTo) decode() {
+func (a ardrone3PilotingmoveTo) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingmoveToArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+8]), binary.LittleEndian, &arg.latitude)
+offset += 8
+binary.Read(bytes.NewReader(b[offset:offset+8]), binary.LittleEndian, &arg.longitude)
+offset += 8
+binary.Read(bytes.NewReader(b[offset:offset+8]), binary.LittleEndian, &arg.altitude)
+offset += 8
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.orientationmode)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.heading)
+offset += 4
+
+return arg
 }
 
 var pilotingmoveTo = ardrone3PilotingmoveTo {
@@ -276,10 +357,14 @@ type ardrone3PilotingCancelMoveTo command
 type ardrone3PilotingCancelMoveToArguments struct {
 }
 
-func (a ardrone3PilotingCancelMoveTo) decode() {
+func (a ardrone3PilotingCancelMoveTo) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingCancelMoveToArguments{}
+// No arguments to decode here !!
+
+return arg
 }
 
 var pilotingCancelMoveTo = ardrone3PilotingCancelMoveTo {
@@ -302,10 +387,20 @@ longitude float64
 altitude float64
 }
 
-func (a ardrone3PilotingStartPilotedPOI) decode() {
+func (a ardrone3PilotingStartPilotedPOI) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingStartPilotedPOIArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+8]), binary.LittleEndian, &arg.latitude)
+offset += 8
+binary.Read(bytes.NewReader(b[offset:offset+8]), binary.LittleEndian, &arg.longitude)
+offset += 8
+binary.Read(bytes.NewReader(b[offset:offset+8]), binary.LittleEndian, &arg.altitude)
+offset += 8
+
+return arg
 }
 
 var pilotingStartPilotedPOI = ardrone3PilotingStartPilotedPOI {
@@ -325,10 +420,14 @@ type ardrone3PilotingStopPilotedPOI command
 type ardrone3PilotingStopPilotedPOIArguments struct {
 }
 
-func (a ardrone3PilotingStopPilotedPOI) decode() {
+func (a ardrone3PilotingStopPilotedPOI) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingStopPilotedPOIArguments{}
+// No arguments to decode here !!
+
+return arg
 }
 
 var pilotingStopPilotedPOI = ardrone3PilotingStopPilotedPOI {
@@ -347,10 +446,14 @@ type ardrone3PilotingCancelMoveBy command
 type ardrone3PilotingCancelMoveByArguments struct {
 }
 
-func (a ardrone3PilotingCancelMoveBy) decode() {
+func (a ardrone3PilotingCancelMoveBy) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingCancelMoveByArguments{}
+// No arguments to decode here !!
+
+return arg
 }
 
 var pilotingCancelMoveBy = ardrone3PilotingCancelMoveBy {
@@ -373,10 +476,16 @@ type ardrone3AnimationsFlipArguments struct {
 direction uint32
 }
 
-func (a ardrone3AnimationsFlip) decode() {
+func (a ardrone3AnimationsFlip) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3AnimationsFlipArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.direction)
+offset += 4
+
+return arg
 }
 
 var animationsFlip = ardrone3AnimationsFlip {
@@ -400,10 +509,18 @@ tilt int8
 pan int8
 }
 
-func (a ardrone3CameraOrientation) decode() {
+func (a ardrone3CameraOrientation) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3CameraOrientationArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.tilt)
+offset++ 
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.pan)
+offset++ 
+
+return arg
 }
 
 var cameraOrientation = ardrone3CameraOrientation {
@@ -425,10 +542,18 @@ tilt float32
 pan float32
 }
 
-func (a ardrone3CameraOrientationV2) decode() {
+func (a ardrone3CameraOrientationV2) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3CameraOrientationV2Arguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.tilt)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.pan)
+offset += 4
+
+return arg
 }
 
 var cameraOrientationV2 = ardrone3CameraOrientationV2 {
@@ -450,10 +575,18 @@ tilt float32
 pan float32
 }
 
-func (a ardrone3CameraVelocity) decode() {
+func (a ardrone3CameraVelocity) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3CameraVelocityArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.tilt)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.pan)
+offset += 4
+
+return arg
 }
 
 var cameraVelocity = ardrone3CameraVelocity {
@@ -471,13 +604,19 @@ const picture cmdDef = 0
 type ardrone3MediaRecordPicture command
 
 type ardrone3MediaRecordPictureArguments struct {
-mass_storage_id uint8
+massstorageid uint8
 }
 
-func (a ardrone3MediaRecordPicture) decode() {
+func (a ardrone3MediaRecordPicture) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3MediaRecordPictureArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.massstorageid)
+offset++ 
+
+return arg
 }
 
 var mediaRecordPicture = ardrone3MediaRecordPicture {
@@ -494,13 +633,21 @@ type ardrone3MediaRecordVideo command
 
 type ardrone3MediaRecordVideoArguments struct {
 record uint32
-mass_storage_id uint8
+massstorageid uint8
 }
 
-func (a ardrone3MediaRecordVideo) decode() {
+func (a ardrone3MediaRecordVideo) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3MediaRecordVideoArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.record)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.massstorageid)
+offset++ 
+
+return arg
 }
 
 var mediaRecordVideo = ardrone3MediaRecordVideo {
@@ -520,10 +667,14 @@ type ardrone3MediaRecordPictureV2 command
 type ardrone3MediaRecordPictureV2Arguments struct {
 }
 
-func (a ardrone3MediaRecordPictureV2) decode() {
+func (a ardrone3MediaRecordPictureV2) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3MediaRecordPictureV2Arguments{}
+// No arguments to decode here !!
+
+return arg
 }
 
 var mediaRecordPictureV2 = ardrone3MediaRecordPictureV2 {
@@ -544,10 +695,16 @@ type ardrone3MediaRecordVideoV2Arguments struct {
 record uint32
 }
 
-func (a ardrone3MediaRecordVideoV2) decode() {
+func (a ardrone3MediaRecordVideoV2) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3MediaRecordVideoV2Arguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.record)
+offset += 4
+
+return arg
 }
 
 var mediaRecordVideoV2 = ardrone3MediaRecordVideoV2 {
@@ -566,13 +723,21 @@ type ardrone3MediaRecordStatePictureStateChanged command
 
 type ardrone3MediaRecordStatePictureStateChangedArguments struct {
 state uint8
-mass_storage_id uint8
+massstorageid uint8
 }
 
-func (a ardrone3MediaRecordStatePictureStateChanged) decode() {
+func (a ardrone3MediaRecordStatePictureStateChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3MediaRecordStatePictureStateChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.state)
+offset++ 
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.massstorageid)
+offset++ 
+
+return arg
 }
 
 var mediaRecordStatePictureStateChanged = ardrone3MediaRecordStatePictureStateChanged {
@@ -589,13 +754,21 @@ type ardrone3MediaRecordStateVideoStateChanged command
 
 type ardrone3MediaRecordStateVideoStateChangedArguments struct {
 state uint32
-mass_storage_id uint8
+massstorageid uint8
 }
 
-func (a ardrone3MediaRecordStateVideoStateChanged) decode() {
+func (a ardrone3MediaRecordStateVideoStateChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3MediaRecordStateVideoStateChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.state)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.massstorageid)
+offset++ 
+
+return arg
 }
 
 var mediaRecordStateVideoStateChanged = ardrone3MediaRecordStateVideoStateChanged {
@@ -617,10 +790,18 @@ state uint32
 error uint32
 }
 
-func (a ardrone3MediaRecordStatePictureStateChangedV2) decode() {
+func (a ardrone3MediaRecordStatePictureStateChangedV2) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3MediaRecordStatePictureStateChangedV2Arguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.state)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.error)
+offset += 4
+
+return arg
 }
 
 var mediaRecordStatePictureStateChangedV2 = ardrone3MediaRecordStatePictureStateChangedV2 {
@@ -642,10 +823,18 @@ state uint32
 error uint32
 }
 
-func (a ardrone3MediaRecordStateVideoStateChangedV2) decode() {
+func (a ardrone3MediaRecordStateVideoStateChangedV2) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3MediaRecordStateVideoStateChangedV2Arguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.state)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.error)
+offset += 4
+
+return arg
 }
 
 var mediaRecordStateVideoStateChangedV2 = ardrone3MediaRecordStateVideoStateChangedV2 {
@@ -667,10 +856,18 @@ streaming uint32
 recording uint32
 }
 
-func (a ardrone3MediaRecordStateVideoResolutionState) decode() {
+func (a ardrone3MediaRecordStateVideoResolutionState) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3MediaRecordStateVideoResolutionStateArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.streaming)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.recording)
+offset += 4
+
+return arg
 }
 
 var mediaRecordStateVideoResolutionState = ardrone3MediaRecordStateVideoResolutionState {
@@ -694,10 +891,18 @@ event uint32
 error uint32
 }
 
-func (a ardrone3MediaRecordEventPictureEventChanged) decode() {
+func (a ardrone3MediaRecordEventPictureEventChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3MediaRecordEventPictureEventChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.event)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.error)
+offset += 4
+
+return arg
 }
 
 var mediaRecordEventPictureEventChanged = ardrone3MediaRecordEventPictureEventChanged {
@@ -719,10 +924,18 @@ event uint32
 error uint32
 }
 
-func (a ardrone3MediaRecordEventVideoEventChanged) decode() {
+func (a ardrone3MediaRecordEventVideoEventChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3MediaRecordEventVideoEventChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.event)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.error)
+offset += 4
+
+return arg
 }
 
 var mediaRecordEventVideoEventChanged = ardrone3MediaRecordEventVideoEventChanged {
@@ -745,10 +958,16 @@ type ardrone3PilotingStateFlyingStateChangedArguments struct {
 state uint32
 }
 
-func (a ardrone3PilotingStateFlyingStateChanged) decode() {
+func (a ardrone3PilotingStateFlyingStateChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingStateFlyingStateChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.state)
+offset += 4
+
+return arg
 }
 
 var pilotingStateFlyingStateChanged = ardrone3PilotingStateFlyingStateChanged {
@@ -769,10 +988,16 @@ type ardrone3PilotingStateAlertStateChangedArguments struct {
 state uint32
 }
 
-func (a ardrone3PilotingStateAlertStateChanged) decode() {
+func (a ardrone3PilotingStateAlertStateChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingStateAlertStateChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.state)
+offset += 4
+
+return arg
 }
 
 var pilotingStateAlertStateChanged = ardrone3PilotingStateAlertStateChanged {
@@ -794,10 +1019,18 @@ state uint32
 reason uint32
 }
 
-func (a ardrone3PilotingStateNavigateHomeStateChanged) decode() {
+func (a ardrone3PilotingStateNavigateHomeStateChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingStateNavigateHomeStateChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.state)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.reason)
+offset += 4
+
+return arg
 }
 
 var pilotingStateNavigateHomeStateChanged = ardrone3PilotingStateNavigateHomeStateChanged {
@@ -820,10 +1053,20 @@ longitude float64
 altitude float64
 }
 
-func (a ardrone3PilotingStatePositionChanged) decode() {
+func (a ardrone3PilotingStatePositionChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingStatePositionChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+8]), binary.LittleEndian, &arg.latitude)
+offset += 8
+binary.Read(bytes.NewReader(b[offset:offset+8]), binary.LittleEndian, &arg.longitude)
+offset += 8
+binary.Read(bytes.NewReader(b[offset:offset+8]), binary.LittleEndian, &arg.altitude)
+offset += 8
+
+return arg
 }
 
 var pilotingStatePositionChanged = ardrone3PilotingStatePositionChanged {
@@ -846,10 +1089,20 @@ speedY float32
 speedZ float32
 }
 
-func (a ardrone3PilotingStateSpeedChanged) decode() {
+func (a ardrone3PilotingStateSpeedChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingStateSpeedChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.speedX)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.speedY)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.speedZ)
+offset += 4
+
+return arg
 }
 
 var pilotingStateSpeedChanged = ardrone3PilotingStateSpeedChanged {
@@ -872,10 +1125,20 @@ pitch float32
 yaw float32
 }
 
-func (a ardrone3PilotingStateAttitudeChanged) decode() {
+func (a ardrone3PilotingStateAttitudeChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingStateAttitudeChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.roll)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.pitch)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.yaw)
+offset += 4
+
+return arg
 }
 
 var pilotingStateAttitudeChanged = ardrone3PilotingStateAttitudeChanged {
@@ -894,10 +1157,16 @@ type ardrone3PilotingStateAutoTakeOffModeChangedArguments struct {
 state uint8
 }
 
-func (a ardrone3PilotingStateAutoTakeOffModeChanged) decode() {
+func (a ardrone3PilotingStateAutoTakeOffModeChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingStateAutoTakeOffModeChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.state)
+offset++ 
+
+return arg
 }
 
 var pilotingStateAutoTakeOffModeChanged = ardrone3PilotingStateAutoTakeOffModeChanged {
@@ -918,10 +1187,16 @@ type ardrone3PilotingStateAltitudeChangedArguments struct {
 altitude float64
 }
 
-func (a ardrone3PilotingStateAltitudeChanged) decode() {
+func (a ardrone3PilotingStateAltitudeChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingStateAltitudeChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+8]), binary.LittleEndian, &arg.altitude)
+offset += 8
+
+return arg
 }
 
 var pilotingStateAltitudeChanged = ardrone3PilotingStateAltitudeChanged {
@@ -942,15 +1217,31 @@ type ardrone3PilotingStateGpsLocationChangedArguments struct {
 latitude float64
 longitude float64
 altitude float64
-latitude_accuracy int8
-longitude_accuracy int8
-altitude_accuracy int8
+latitudeaccuracy int8
+longitudeaccuracy int8
+altitudeaccuracy int8
 }
 
-func (a ardrone3PilotingStateGpsLocationChanged) decode() {
+func (a ardrone3PilotingStateGpsLocationChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingStateGpsLocationChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+8]), binary.LittleEndian, &arg.latitude)
+offset += 8
+binary.Read(bytes.NewReader(b[offset:offset+8]), binary.LittleEndian, &arg.longitude)
+offset += 8
+binary.Read(bytes.NewReader(b[offset:offset+8]), binary.LittleEndian, &arg.altitude)
+offset += 8
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.latitudeaccuracy)
+offset++ 
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.longitudeaccuracy)
+offset++ 
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.altitudeaccuracy)
+offset++ 
+
+return arg
 }
 
 var pilotingStateGpsLocationChanged = ardrone3PilotingStateGpsLocationChanged {
@@ -971,10 +1262,16 @@ type ardrone3PilotingStateLandingStateChangedArguments struct {
 state uint32
 }
 
-func (a ardrone3PilotingStateLandingStateChanged) decode() {
+func (a ardrone3PilotingStateLandingStateChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingStateLandingStateChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.state)
+offset += 4
+
+return arg
 }
 
 var pilotingStateLandingStateChanged = ardrone3PilotingStateLandingStateChanged {
@@ -995,10 +1292,16 @@ type ardrone3PilotingStateAirSpeedChangedArguments struct {
 airSpeed float32
 }
 
-func (a ardrone3PilotingStateAirSpeedChanged) decode() {
+func (a ardrone3PilotingStateAirSpeedChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingStateAirSpeedChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.airSpeed)
+offset += 4
+
+return arg
 }
 
 var pilotingStateAirSpeedChanged = ardrone3PilotingStateAirSpeedChanged {
@@ -1019,15 +1322,31 @@ type ardrone3PilotingStatemoveToChangedArguments struct {
 latitude float64
 longitude float64
 altitude float64
-orientation_mode uint32
+orientationmode uint32
 heading float32
 status uint32
 }
 
-func (a ardrone3PilotingStatemoveToChanged) decode() {
+func (a ardrone3PilotingStatemoveToChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingStatemoveToChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+8]), binary.LittleEndian, &arg.latitude)
+offset += 8
+binary.Read(bytes.NewReader(b[offset:offset+8]), binary.LittleEndian, &arg.longitude)
+offset += 8
+binary.Read(bytes.NewReader(b[offset:offset+8]), binary.LittleEndian, &arg.altitude)
+offset += 8
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.orientationmode)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.heading)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.status)
+offset += 4
+
+return arg
 }
 
 var pilotingStatemoveToChanged = ardrone3PilotingStatemoveToChanged {
@@ -1048,10 +1367,16 @@ type ardrone3PilotingStateMotionStateArguments struct {
 state uint32
 }
 
-func (a ardrone3PilotingStateMotionState) decode() {
+func (a ardrone3PilotingStateMotionState) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingStateMotionStateArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.state)
+offset += 4
+
+return arg
 }
 
 var pilotingStateMotionState = ardrone3PilotingStateMotionState {
@@ -1075,10 +1400,22 @@ altitude float64
 status uint32
 }
 
-func (a ardrone3PilotingStatePilotedPOI) decode() {
+func (a ardrone3PilotingStatePilotedPOI) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingStatePilotedPOIArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+8]), binary.LittleEndian, &arg.latitude)
+offset += 8
+binary.Read(bytes.NewReader(b[offset:offset+8]), binary.LittleEndian, &arg.longitude)
+offset += 8
+binary.Read(bytes.NewReader(b[offset:offset+8]), binary.LittleEndian, &arg.altitude)
+offset += 8
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.status)
+offset += 4
+
+return arg
 }
 
 var pilotingStatePilotedPOI = ardrone3PilotingStatePilotedPOI {
@@ -1099,10 +1436,16 @@ type ardrone3PilotingStateReturnHomeBatteryCapacityArguments struct {
 status uint32
 }
 
-func (a ardrone3PilotingStateReturnHomeBatteryCapacity) decode() {
+func (a ardrone3PilotingStateReturnHomeBatteryCapacity) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingStateReturnHomeBatteryCapacityArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.status)
+offset += 4
+
+return arg
 }
 
 var pilotingStateReturnHomeBatteryCapacity = ardrone3PilotingStateReturnHomeBatteryCapacity {
@@ -1130,10 +1473,32 @@ dPsi float32
 status uint32
 }
 
-func (a ardrone3PilotingStatemoveByChanged) decode() {
+func (a ardrone3PilotingStatemoveByChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingStatemoveByChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.dXAsked)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.dYAsked)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.dZAsked)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.dPsiAsked)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.dX)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.dY)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.dZ)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.dPsi)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.status)
+offset += 4
+
+return arg
 }
 
 var pilotingStatemoveByChanged = ardrone3PilotingStatemoveByChanged {
@@ -1151,14 +1516,22 @@ const hoveringWarning cmdDef = 17
 type ardrone3PilotingStateHoveringWarning command
 
 type ardrone3PilotingStateHoveringWarningArguments struct {
-no_gps_too_dark uint8
-no_gps_too_high uint8
+nogpstoodark uint8
+nogpstoohigh uint8
 }
 
-func (a ardrone3PilotingStateHoveringWarning) decode() {
+func (a ardrone3PilotingStateHoveringWarning) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingStateHoveringWarningArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.nogpstoodark)
+offset++ 
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.nogpstoohigh)
+offset++ 
+
+return arg
 }
 
 var pilotingStateHoveringWarning = ardrone3PilotingStateHoveringWarning {
@@ -1180,10 +1553,18 @@ reason uint32
 delay uint32
 }
 
-func (a ardrone3PilotingStateForcedLandingAutoTrigger) decode() {
+func (a ardrone3PilotingStateForcedLandingAutoTrigger) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingStateForcedLandingAutoTriggerArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.reason)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.delay)
+offset += 4
+
+return arg
 }
 
 var pilotingStateForcedLandingAutoTrigger = ardrone3PilotingStateForcedLandingAutoTrigger {
@@ -1204,10 +1585,16 @@ type ardrone3PilotingStateWindStateChangedArguments struct {
 state uint32
 }
 
-func (a ardrone3PilotingStateWindStateChanged) decode() {
+func (a ardrone3PilotingStateWindStateChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingStateWindStateChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.state)
+offset += 4
+
+return arg
 }
 
 var pilotingStateWindStateChanged = ardrone3PilotingStateWindStateChanged {
@@ -1234,10 +1621,24 @@ dPsi float32
 error uint32
 }
 
-func (a ardrone3PilotingEventmoveByEnd) decode() {
+func (a ardrone3PilotingEventmoveByEnd) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingEventmoveByEndArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.dX)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.dY)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.dZ)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.dPsi)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.error)
+offset += 4
+
+return arg
 }
 
 var pilotingEventmoveByEnd = ardrone3PilotingEventmoveByEnd {
@@ -1260,10 +1661,16 @@ type ardrone3NetworkWifiScanArguments struct {
 band uint32
 }
 
-func (a ardrone3NetworkWifiScan) decode() {
+func (a ardrone3NetworkWifiScan) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3NetworkWifiScanArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.band)
+offset += 4
+
+return arg
 }
 
 var networkWifiScan = ardrone3NetworkWifiScan {
@@ -1283,10 +1690,14 @@ type ardrone3NetworkWifiAuthChannel command
 type ardrone3NetworkWifiAuthChannelArguments struct {
 }
 
-func (a ardrone3NetworkWifiAuthChannel) decode() {
+func (a ardrone3NetworkWifiAuthChannel) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3NetworkWifiAuthChannelArguments{}
+// No arguments to decode here !!
+
+return arg
 }
 
 var networkWifiAuthChannel = ardrone3NetworkWifiAuthChannel {
@@ -1312,10 +1723,29 @@ band uint32
 channel uint8
 }
 
-func (a ardrone3NetworkStateWifiScanListChanged) decode() {
+func (a ardrone3NetworkStateWifiScanListChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+var stringEnd int
+var err error
+arg := ardrone3NetworkStateWifiScanListChangedArguments{}
+var offset = 0
+
+				stringEnd, err = getLengthOfStringData(b[offset:])
+				if err != nil {
+					log.Println("error: ", err)
+				}
+arg.ssid = string(b[offset:offset+stringEnd])
+offset += stringEnd
+binary.Read(bytes.NewReader(b[offset:offset+2]), binary.LittleEndian, &arg.rssi)
+offset += 2
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.band)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.channel)
+offset++ 
+
+return arg
 }
 
 var networkStateWifiScanListChanged = ardrone3NetworkStateWifiScanListChanged {
@@ -1335,10 +1765,14 @@ type ardrone3NetworkStateAllWifiScanChanged command
 type ardrone3NetworkStateAllWifiScanChangedArguments struct {
 }
 
-func (a ardrone3NetworkStateAllWifiScanChanged) decode() {
+func (a ardrone3NetworkStateAllWifiScanChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3NetworkStateAllWifiScanChangedArguments{}
+// No arguments to decode here !!
+
+return arg
 }
 
 var networkStateAllWifiScanChanged = ardrone3NetworkStateAllWifiScanChanged {
@@ -1358,13 +1792,23 @@ type ardrone3NetworkStateWifiAuthChannelListChanged command
 type ardrone3NetworkStateWifiAuthChannelListChangedArguments struct {
 band uint32
 channel uint8
-in_or_out uint8
+inorout uint8
 }
 
-func (a ardrone3NetworkStateWifiAuthChannelListChanged) decode() {
+func (a ardrone3NetworkStateWifiAuthChannelListChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3NetworkStateWifiAuthChannelListChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.band)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.channel)
+offset++ 
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.inorout)
+offset++ 
+
+return arg
 }
 
 var networkStateWifiAuthChannelListChanged = ardrone3NetworkStateWifiAuthChannelListChanged {
@@ -1384,10 +1828,14 @@ type ardrone3NetworkStateAllWifiAuthChannelChanged command
 type ardrone3NetworkStateAllWifiAuthChannelChangedArguments struct {
 }
 
-func (a ardrone3NetworkStateAllWifiAuthChannelChanged) decode() {
+func (a ardrone3NetworkStateAllWifiAuthChannelChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3NetworkStateAllWifiAuthChannelChangedArguments{}
+// No arguments to decode here !!
+
+return arg
 }
 
 var networkStateAllWifiAuthChannelChanged = ardrone3NetworkStateAllWifiAuthChannelChanged {
@@ -1410,10 +1858,16 @@ type ardrone3PilotingSettingsMaxAltitudeArguments struct {
 current float32
 }
 
-func (a ardrone3PilotingSettingsMaxAltitude) decode() {
+func (a ardrone3PilotingSettingsMaxAltitude) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingSettingsMaxAltitudeArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.current)
+offset += 4
+
+return arg
 }
 
 var pilotingSettingsMaxAltitude = ardrone3PilotingSettingsMaxAltitude {
@@ -1434,10 +1888,16 @@ type ardrone3PilotingSettingsMaxTiltArguments struct {
 current float32
 }
 
-func (a ardrone3PilotingSettingsMaxTilt) decode() {
+func (a ardrone3PilotingSettingsMaxTilt) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingSettingsMaxTiltArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.current)
+offset += 4
+
+return arg
 }
 
 var pilotingSettingsMaxTilt = ardrone3PilotingSettingsMaxTilt {
@@ -1456,10 +1916,16 @@ type ardrone3PilotingSettingsAbsolutControlArguments struct {
 on uint8
 }
 
-func (a ardrone3PilotingSettingsAbsolutControl) decode() {
+func (a ardrone3PilotingSettingsAbsolutControl) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingSettingsAbsolutControlArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.on)
+offset++ 
+
+return arg
 }
 
 var pilotingSettingsAbsolutControl = ardrone3PilotingSettingsAbsolutControl {
@@ -1480,10 +1946,16 @@ type ardrone3PilotingSettingsMaxDistanceArguments struct {
 value float32
 }
 
-func (a ardrone3PilotingSettingsMaxDistance) decode() {
+func (a ardrone3PilotingSettingsMaxDistance) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingSettingsMaxDistanceArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.value)
+offset += 4
+
+return arg
 }
 
 var pilotingSettingsMaxDistance = ardrone3PilotingSettingsMaxDistance {
@@ -1504,10 +1976,16 @@ type ardrone3PilotingSettingsNoFlyOverMaxDistanceArguments struct {
 shouldNotFlyOver uint8
 }
 
-func (a ardrone3PilotingSettingsNoFlyOverMaxDistance) decode() {
+func (a ardrone3PilotingSettingsNoFlyOverMaxDistance) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingSettingsNoFlyOverMaxDistanceArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.shouldNotFlyOver)
+offset++ 
+
+return arg
 }
 
 var pilotingSettingsNoFlyOverMaxDistance = ardrone3PilotingSettingsNoFlyOverMaxDistance {
@@ -1528,10 +2006,16 @@ type ardrone3PilotingSettingssetAutonomousFlightMaxHorizontalSpeedArguments stru
 value float32
 }
 
-func (a ardrone3PilotingSettingssetAutonomousFlightMaxHorizontalSpeed) decode() {
+func (a ardrone3PilotingSettingssetAutonomousFlightMaxHorizontalSpeed) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingSettingssetAutonomousFlightMaxHorizontalSpeedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.value)
+offset += 4
+
+return arg
 }
 
 var pilotingSettingssetAutonomousFlightMaxHorizontalSpeed = ardrone3PilotingSettingssetAutonomousFlightMaxHorizontalSpeed {
@@ -1552,10 +2036,16 @@ type ardrone3PilotingSettingssetAutonomousFlightMaxVerticalSpeedArguments struct
 value float32
 }
 
-func (a ardrone3PilotingSettingssetAutonomousFlightMaxVerticalSpeed) decode() {
+func (a ardrone3PilotingSettingssetAutonomousFlightMaxVerticalSpeed) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingSettingssetAutonomousFlightMaxVerticalSpeedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.value)
+offset += 4
+
+return arg
 }
 
 var pilotingSettingssetAutonomousFlightMaxVerticalSpeed = ardrone3PilotingSettingssetAutonomousFlightMaxVerticalSpeed {
@@ -1576,10 +2066,16 @@ type ardrone3PilotingSettingssetAutonomousFlightMaxHorizontalAccelerationArgumen
 value float32
 }
 
-func (a ardrone3PilotingSettingssetAutonomousFlightMaxHorizontalAcceleration) decode() {
+func (a ardrone3PilotingSettingssetAutonomousFlightMaxHorizontalAcceleration) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingSettingssetAutonomousFlightMaxHorizontalAccelerationArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.value)
+offset += 4
+
+return arg
 }
 
 var pilotingSettingssetAutonomousFlightMaxHorizontalAcceleration = ardrone3PilotingSettingssetAutonomousFlightMaxHorizontalAcceleration {
@@ -1600,10 +2096,16 @@ type ardrone3PilotingSettingssetAutonomousFlightMaxVerticalAccelerationArguments
 value float32
 }
 
-func (a ardrone3PilotingSettingssetAutonomousFlightMaxVerticalAcceleration) decode() {
+func (a ardrone3PilotingSettingssetAutonomousFlightMaxVerticalAcceleration) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingSettingssetAutonomousFlightMaxVerticalAccelerationArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.value)
+offset += 4
+
+return arg
 }
 
 var pilotingSettingssetAutonomousFlightMaxVerticalAcceleration = ardrone3PilotingSettingssetAutonomousFlightMaxVerticalAcceleration {
@@ -1624,10 +2126,16 @@ type ardrone3PilotingSettingssetAutonomousFlightMaxRotationSpeedArguments struct
 value float32
 }
 
-func (a ardrone3PilotingSettingssetAutonomousFlightMaxRotationSpeed) decode() {
+func (a ardrone3PilotingSettingssetAutonomousFlightMaxRotationSpeed) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingSettingssetAutonomousFlightMaxRotationSpeedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.value)
+offset += 4
+
+return arg
 }
 
 var pilotingSettingssetAutonomousFlightMaxRotationSpeed = ardrone3PilotingSettingssetAutonomousFlightMaxRotationSpeed {
@@ -1648,10 +2156,16 @@ type ardrone3PilotingSettingsBankedTurnArguments struct {
 value uint8
 }
 
-func (a ardrone3PilotingSettingsBankedTurn) decode() {
+func (a ardrone3PilotingSettingsBankedTurn) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingSettingsBankedTurnArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.value)
+offset++ 
+
+return arg
 }
 
 var pilotingSettingsBankedTurn = ardrone3PilotingSettingsBankedTurn {
@@ -1672,10 +2186,16 @@ type ardrone3PilotingSettingsMinAltitudeArguments struct {
 current float32
 }
 
-func (a ardrone3PilotingSettingsMinAltitude) decode() {
+func (a ardrone3PilotingSettingsMinAltitude) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingSettingsMinAltitudeArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.current)
+offset += 4
+
+return arg
 }
 
 var pilotingSettingsMinAltitude = ardrone3PilotingSettingsMinAltitude {
@@ -1696,10 +2216,16 @@ type ardrone3PilotingSettingsCirclingDirectionArguments struct {
 value uint32
 }
 
-func (a ardrone3PilotingSettingsCirclingDirection) decode() {
+func (a ardrone3PilotingSettingsCirclingDirection) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingSettingsCirclingDirectionArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.value)
+offset += 4
+
+return arg
 }
 
 var pilotingSettingsCirclingDirection = ardrone3PilotingSettingsCirclingDirection {
@@ -1720,10 +2246,16 @@ type ardrone3PilotingSettingsCirclingRadiusArguments struct {
 value uint16
 }
 
-func (a ardrone3PilotingSettingsCirclingRadius) decode() {
+func (a ardrone3PilotingSettingsCirclingRadius) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingSettingsCirclingRadiusArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+2]), binary.LittleEndian, &arg.value)
+offset += 2
+
+return arg
 }
 
 var pilotingSettingsCirclingRadius = ardrone3PilotingSettingsCirclingRadius {
@@ -1744,10 +2276,16 @@ type ardrone3PilotingSettingsCirclingAltitudeArguments struct {
 value uint16
 }
 
-func (a ardrone3PilotingSettingsCirclingAltitude) decode() {
+func (a ardrone3PilotingSettingsCirclingAltitude) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingSettingsCirclingAltitudeArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+2]), binary.LittleEndian, &arg.value)
+offset += 2
+
+return arg
 }
 
 var pilotingSettingsCirclingAltitude = ardrone3PilotingSettingsCirclingAltitude {
@@ -1768,10 +2306,16 @@ type ardrone3PilotingSettingsPitchModeArguments struct {
 value uint32
 }
 
-func (a ardrone3PilotingSettingsPitchMode) decode() {
+func (a ardrone3PilotingSettingsPitchMode) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingSettingsPitchModeArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.value)
+offset += 4
+
+return arg
 }
 
 var pilotingSettingsPitchMode = ardrone3PilotingSettingsPitchMode {
@@ -1792,10 +2336,16 @@ type ardrone3PilotingSettingsSetMotionDetectionModeArguments struct {
 enable uint8
 }
 
-func (a ardrone3PilotingSettingsSetMotionDetectionMode) decode() {
+func (a ardrone3PilotingSettingsSetMotionDetectionMode) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingSettingsSetMotionDetectionModeArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.enable)
+offset++ 
+
+return arg
 }
 
 var pilotingSettingsSetMotionDetectionMode = ardrone3PilotingSettingsSetMotionDetectionMode {
@@ -1820,10 +2370,20 @@ min float32
 max float32
 }
 
-func (a ardrone3PilotingSettingsStateMaxAltitudeChanged) decode() {
+func (a ardrone3PilotingSettingsStateMaxAltitudeChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingSettingsStateMaxAltitudeChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.current)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.min)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.max)
+offset += 4
+
+return arg
 }
 
 var pilotingSettingsStateMaxAltitudeChanged = ardrone3PilotingSettingsStateMaxAltitudeChanged {
@@ -1846,10 +2406,20 @@ min float32
 max float32
 }
 
-func (a ardrone3PilotingSettingsStateMaxTiltChanged) decode() {
+func (a ardrone3PilotingSettingsStateMaxTiltChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingSettingsStateMaxTiltChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.current)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.min)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.max)
+offset += 4
+
+return arg
 }
 
 var pilotingSettingsStateMaxTiltChanged = ardrone3PilotingSettingsStateMaxTiltChanged {
@@ -1868,10 +2438,16 @@ type ardrone3PilotingSettingsStateAbsolutControlChangedArguments struct {
 on uint8
 }
 
-func (a ardrone3PilotingSettingsStateAbsolutControlChanged) decode() {
+func (a ardrone3PilotingSettingsStateAbsolutControlChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingSettingsStateAbsolutControlChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.on)
+offset++ 
+
+return arg
 }
 
 var pilotingSettingsStateAbsolutControlChanged = ardrone3PilotingSettingsStateAbsolutControlChanged {
@@ -1894,10 +2470,20 @@ min float32
 max float32
 }
 
-func (a ardrone3PilotingSettingsStateMaxDistanceChanged) decode() {
+func (a ardrone3PilotingSettingsStateMaxDistanceChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingSettingsStateMaxDistanceChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.current)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.min)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.max)
+offset += 4
+
+return arg
 }
 
 var pilotingSettingsStateMaxDistanceChanged = ardrone3PilotingSettingsStateMaxDistanceChanged {
@@ -1918,10 +2504,16 @@ type ardrone3PilotingSettingsStateNoFlyOverMaxDistanceChangedArguments struct {
 shouldNotFlyOver uint8
 }
 
-func (a ardrone3PilotingSettingsStateNoFlyOverMaxDistanceChanged) decode() {
+func (a ardrone3PilotingSettingsStateNoFlyOverMaxDistanceChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingSettingsStateNoFlyOverMaxDistanceChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.shouldNotFlyOver)
+offset++ 
+
+return arg
 }
 
 var pilotingSettingsStateNoFlyOverMaxDistanceChanged = ardrone3PilotingSettingsStateNoFlyOverMaxDistanceChanged {
@@ -1942,10 +2534,16 @@ type ardrone3PilotingSettingsStateAutonomousFlightMaxHorizontalSpeedArguments st
 value float32
 }
 
-func (a ardrone3PilotingSettingsStateAutonomousFlightMaxHorizontalSpeed) decode() {
+func (a ardrone3PilotingSettingsStateAutonomousFlightMaxHorizontalSpeed) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingSettingsStateAutonomousFlightMaxHorizontalSpeedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.value)
+offset += 4
+
+return arg
 }
 
 var pilotingSettingsStateAutonomousFlightMaxHorizontalSpeed = ardrone3PilotingSettingsStateAutonomousFlightMaxHorizontalSpeed {
@@ -1966,10 +2564,16 @@ type ardrone3PilotingSettingsStateAutonomousFlightMaxVerticalSpeedArguments stru
 value float32
 }
 
-func (a ardrone3PilotingSettingsStateAutonomousFlightMaxVerticalSpeed) decode() {
+func (a ardrone3PilotingSettingsStateAutonomousFlightMaxVerticalSpeed) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingSettingsStateAutonomousFlightMaxVerticalSpeedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.value)
+offset += 4
+
+return arg
 }
 
 var pilotingSettingsStateAutonomousFlightMaxVerticalSpeed = ardrone3PilotingSettingsStateAutonomousFlightMaxVerticalSpeed {
@@ -1990,10 +2594,16 @@ type ardrone3PilotingSettingsStateAutonomousFlightMaxHorizontalAccelerationArgum
 value float32
 }
 
-func (a ardrone3PilotingSettingsStateAutonomousFlightMaxHorizontalAcceleration) decode() {
+func (a ardrone3PilotingSettingsStateAutonomousFlightMaxHorizontalAcceleration) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingSettingsStateAutonomousFlightMaxHorizontalAccelerationArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.value)
+offset += 4
+
+return arg
 }
 
 var pilotingSettingsStateAutonomousFlightMaxHorizontalAcceleration = ardrone3PilotingSettingsStateAutonomousFlightMaxHorizontalAcceleration {
@@ -2014,10 +2624,16 @@ type ardrone3PilotingSettingsStateAutonomousFlightMaxVerticalAccelerationArgumen
 value float32
 }
 
-func (a ardrone3PilotingSettingsStateAutonomousFlightMaxVerticalAcceleration) decode() {
+func (a ardrone3PilotingSettingsStateAutonomousFlightMaxVerticalAcceleration) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingSettingsStateAutonomousFlightMaxVerticalAccelerationArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.value)
+offset += 4
+
+return arg
 }
 
 var pilotingSettingsStateAutonomousFlightMaxVerticalAcceleration = ardrone3PilotingSettingsStateAutonomousFlightMaxVerticalAcceleration {
@@ -2038,10 +2654,16 @@ type ardrone3PilotingSettingsStateAutonomousFlightMaxRotationSpeedArguments stru
 value float32
 }
 
-func (a ardrone3PilotingSettingsStateAutonomousFlightMaxRotationSpeed) decode() {
+func (a ardrone3PilotingSettingsStateAutonomousFlightMaxRotationSpeed) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingSettingsStateAutonomousFlightMaxRotationSpeedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.value)
+offset += 4
+
+return arg
 }
 
 var pilotingSettingsStateAutonomousFlightMaxRotationSpeed = ardrone3PilotingSettingsStateAutonomousFlightMaxRotationSpeed {
@@ -2062,10 +2684,16 @@ type ardrone3PilotingSettingsStateBankedTurnChangedArguments struct {
 state uint8
 }
 
-func (a ardrone3PilotingSettingsStateBankedTurnChanged) decode() {
+func (a ardrone3PilotingSettingsStateBankedTurnChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingSettingsStateBankedTurnChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.state)
+offset++ 
+
+return arg
 }
 
 var pilotingSettingsStateBankedTurnChanged = ardrone3PilotingSettingsStateBankedTurnChanged {
@@ -2088,10 +2716,20 @@ min float32
 max float32
 }
 
-func (a ardrone3PilotingSettingsStateMinAltitudeChanged) decode() {
+func (a ardrone3PilotingSettingsStateMinAltitudeChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingSettingsStateMinAltitudeChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.current)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.min)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.max)
+offset += 4
+
+return arg
 }
 
 var pilotingSettingsStateMinAltitudeChanged = ardrone3PilotingSettingsStateMinAltitudeChanged {
@@ -2112,10 +2750,16 @@ type ardrone3PilotingSettingsStateCirclingDirectionChangedArguments struct {
 value uint32
 }
 
-func (a ardrone3PilotingSettingsStateCirclingDirectionChanged) decode() {
+func (a ardrone3PilotingSettingsStateCirclingDirectionChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingSettingsStateCirclingDirectionChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.value)
+offset += 4
+
+return arg
 }
 
 var pilotingSettingsStateCirclingDirectionChanged = ardrone3PilotingSettingsStateCirclingDirectionChanged {
@@ -2138,10 +2782,20 @@ min uint16
 max uint16
 }
 
-func (a ardrone3PilotingSettingsStateCirclingRadiusChanged) decode() {
+func (a ardrone3PilotingSettingsStateCirclingRadiusChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingSettingsStateCirclingRadiusChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+2]), binary.LittleEndian, &arg.current)
+offset += 2
+binary.Read(bytes.NewReader(b[offset:offset+2]), binary.LittleEndian, &arg.min)
+offset += 2
+binary.Read(bytes.NewReader(b[offset:offset+2]), binary.LittleEndian, &arg.max)
+offset += 2
+
+return arg
 }
 
 var pilotingSettingsStateCirclingRadiusChanged = ardrone3PilotingSettingsStateCirclingRadiusChanged {
@@ -2164,10 +2818,20 @@ min uint16
 max uint16
 }
 
-func (a ardrone3PilotingSettingsStateCirclingAltitudeChanged) decode() {
+func (a ardrone3PilotingSettingsStateCirclingAltitudeChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingSettingsStateCirclingAltitudeChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+2]), binary.LittleEndian, &arg.current)
+offset += 2
+binary.Read(bytes.NewReader(b[offset:offset+2]), binary.LittleEndian, &arg.min)
+offset += 2
+binary.Read(bytes.NewReader(b[offset:offset+2]), binary.LittleEndian, &arg.max)
+offset += 2
+
+return arg
 }
 
 var pilotingSettingsStateCirclingAltitudeChanged = ardrone3PilotingSettingsStateCirclingAltitudeChanged {
@@ -2188,10 +2852,16 @@ type ardrone3PilotingSettingsStatePitchModeChangedArguments struct {
 value uint32
 }
 
-func (a ardrone3PilotingSettingsStatePitchModeChanged) decode() {
+func (a ardrone3PilotingSettingsStatePitchModeChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingSettingsStatePitchModeChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.value)
+offset += 4
+
+return arg
 }
 
 var pilotingSettingsStatePitchModeChanged = ardrone3PilotingSettingsStatePitchModeChanged {
@@ -2212,10 +2882,16 @@ type ardrone3PilotingSettingsStateMotionDetectionArguments struct {
 enabled uint8
 }
 
-func (a ardrone3PilotingSettingsStateMotionDetection) decode() {
+func (a ardrone3PilotingSettingsStateMotionDetection) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PilotingSettingsStateMotionDetectionArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.enabled)
+offset++ 
+
+return arg
 }
 
 var pilotingSettingsStateMotionDetection = ardrone3PilotingSettingsStateMotionDetection {
@@ -2238,10 +2914,16 @@ type ardrone3SpeedSettingsMaxVerticalSpeedArguments struct {
 current float32
 }
 
-func (a ardrone3SpeedSettingsMaxVerticalSpeed) decode() {
+func (a ardrone3SpeedSettingsMaxVerticalSpeed) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3SpeedSettingsMaxVerticalSpeedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.current)
+offset += 4
+
+return arg
 }
 
 var speedSettingsMaxVerticalSpeed = ardrone3SpeedSettingsMaxVerticalSpeed {
@@ -2262,10 +2944,16 @@ type ardrone3SpeedSettingsMaxRotationSpeedArguments struct {
 current float32
 }
 
-func (a ardrone3SpeedSettingsMaxRotationSpeed) decode() {
+func (a ardrone3SpeedSettingsMaxRotationSpeed) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3SpeedSettingsMaxRotationSpeedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.current)
+offset += 4
+
+return arg
 }
 
 var speedSettingsMaxRotationSpeed = ardrone3SpeedSettingsMaxRotationSpeed {
@@ -2286,10 +2974,16 @@ type ardrone3SpeedSettingsHullProtectionArguments struct {
 present uint8
 }
 
-func (a ardrone3SpeedSettingsHullProtection) decode() {
+func (a ardrone3SpeedSettingsHullProtection) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3SpeedSettingsHullProtectionArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.present)
+offset++ 
+
+return arg
 }
 
 var speedSettingsHullProtection = ardrone3SpeedSettingsHullProtection {
@@ -2308,10 +3002,16 @@ type ardrone3SpeedSettingsOutdoorArguments struct {
 outdoor uint8
 }
 
-func (a ardrone3SpeedSettingsOutdoor) decode() {
+func (a ardrone3SpeedSettingsOutdoor) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3SpeedSettingsOutdoorArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.outdoor)
+offset++ 
+
+return arg
 }
 
 var speedSettingsOutdoor = ardrone3SpeedSettingsOutdoor {
@@ -2332,10 +3032,16 @@ type ardrone3SpeedSettingsMaxPitchRollRotationSpeedArguments struct {
 current float32
 }
 
-func (a ardrone3SpeedSettingsMaxPitchRollRotationSpeed) decode() {
+func (a ardrone3SpeedSettingsMaxPitchRollRotationSpeed) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3SpeedSettingsMaxPitchRollRotationSpeedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.current)
+offset += 4
+
+return arg
 }
 
 var speedSettingsMaxPitchRollRotationSpeed = ardrone3SpeedSettingsMaxPitchRollRotationSpeed {
@@ -2360,10 +3066,20 @@ min float32
 max float32
 }
 
-func (a ardrone3SpeedSettingsStateMaxVerticalSpeedChanged) decode() {
+func (a ardrone3SpeedSettingsStateMaxVerticalSpeedChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3SpeedSettingsStateMaxVerticalSpeedChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.current)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.min)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.max)
+offset += 4
+
+return arg
 }
 
 var speedSettingsStateMaxVerticalSpeedChanged = ardrone3SpeedSettingsStateMaxVerticalSpeedChanged {
@@ -2386,10 +3102,20 @@ min float32
 max float32
 }
 
-func (a ardrone3SpeedSettingsStateMaxRotationSpeedChanged) decode() {
+func (a ardrone3SpeedSettingsStateMaxRotationSpeedChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3SpeedSettingsStateMaxRotationSpeedChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.current)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.min)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.max)
+offset += 4
+
+return arg
 }
 
 var speedSettingsStateMaxRotationSpeedChanged = ardrone3SpeedSettingsStateMaxRotationSpeedChanged {
@@ -2410,10 +3136,16 @@ type ardrone3SpeedSettingsStateHullProtectionChangedArguments struct {
 present uint8
 }
 
-func (a ardrone3SpeedSettingsStateHullProtectionChanged) decode() {
+func (a ardrone3SpeedSettingsStateHullProtectionChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3SpeedSettingsStateHullProtectionChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.present)
+offset++ 
+
+return arg
 }
 
 var speedSettingsStateHullProtectionChanged = ardrone3SpeedSettingsStateHullProtectionChanged {
@@ -2432,10 +3164,16 @@ type ardrone3SpeedSettingsStateOutdoorChangedArguments struct {
 outdoor uint8
 }
 
-func (a ardrone3SpeedSettingsStateOutdoorChanged) decode() {
+func (a ardrone3SpeedSettingsStateOutdoorChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3SpeedSettingsStateOutdoorChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.outdoor)
+offset++ 
+
+return arg
 }
 
 var speedSettingsStateOutdoorChanged = ardrone3SpeedSettingsStateOutdoorChanged {
@@ -2458,10 +3196,20 @@ min float32
 max float32
 }
 
-func (a ardrone3SpeedSettingsStateMaxPitchRollRotationSpeedChanged) decode() {
+func (a ardrone3SpeedSettingsStateMaxPitchRollRotationSpeedChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3SpeedSettingsStateMaxPitchRollRotationSpeedChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.current)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.min)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.max)
+offset += 4
+
+return arg
 }
 
 var speedSettingsStateMaxPitchRollRotationSpeedChanged = ardrone3SpeedSettingsStateMaxPitchRollRotationSpeedChanged {
@@ -2486,10 +3234,20 @@ band uint32
 channel uint8
 }
 
-func (a ardrone3NetworkSettingsWifiSelection) decode() {
+func (a ardrone3NetworkSettingsWifiSelection) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3NetworkSettingsWifiSelectionArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.typeX)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.band)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.channel)
+offset++ 
+
+return arg
 }
 
 var networkSettingsWifiSelection = ardrone3NetworkSettingsWifiSelection {
@@ -2512,10 +3270,27 @@ key string
 keyType uint32
 }
 
-func (a ardrone3NetworkSettingswifiSecurity) decode() {
+func (a ardrone3NetworkSettingswifiSecurity) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+var stringEnd int
+var err error
+arg := ardrone3NetworkSettingswifiSecurityArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.typeX)
+offset += 4
+
+				stringEnd, err = getLengthOfStringData(b[offset:])
+				if err != nil {
+					log.Println("error: ", err)
+				}
+arg.key = string(b[offset:offset+stringEnd])
+offset += stringEnd
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.keyType)
+offset += 4
+
+return arg
 }
 
 var networkSettingswifiSecurity = ardrone3NetworkSettingswifiSecurity {
@@ -2540,10 +3315,20 @@ band uint32
 channel uint8
 }
 
-func (a ardrone3NetworkSettingsStateWifiSelectionChanged) decode() {
+func (a ardrone3NetworkSettingsStateWifiSelectionChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3NetworkSettingsStateWifiSelectionChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.typeX)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.band)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.channel)
+offset++ 
+
+return arg
 }
 
 var networkSettingsStateWifiSelectionChanged = ardrone3NetworkSettingsStateWifiSelectionChanged {
@@ -2562,10 +3347,16 @@ type ardrone3NetworkSettingsStatewifiSecurityChangedArguments struct {
 typeX uint32
 }
 
-func (a ardrone3NetworkSettingsStatewifiSecurityChanged) decode() {
+func (a ardrone3NetworkSettingsStatewifiSecurityChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3NetworkSettingsStatewifiSecurityChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.typeX)
+offset += 4
+
+return arg
 }
 
 var networkSettingsStatewifiSecurityChanged = ardrone3NetworkSettingsStatewifiSecurityChanged {
@@ -2588,10 +3379,27 @@ key string
 keyType uint32
 }
 
-func (a ardrone3NetworkSettingsStatewifiSecurity) decode() {
+func (a ardrone3NetworkSettingsStatewifiSecurity) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+var stringEnd int
+var err error
+arg := ardrone3NetworkSettingsStatewifiSecurityArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.typeX)
+offset += 4
+
+				stringEnd, err = getLengthOfStringData(b[offset:])
+				if err != nil {
+					log.Println("error: ", err)
+				}
+arg.key = string(b[offset:offset+stringEnd])
+offset += stringEnd
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.keyType)
+offset += 4
+
+return arg
 }
 
 var networkSettingsStatewifiSecurity = ardrone3NetworkSettingsStatewifiSecurity {
@@ -2609,16 +3417,45 @@ const productMotorVersionListChanged cmdDef = 0
 type ardrone3SettingsStateProductMotorVersionListChanged command
 
 type ardrone3SettingsStateProductMotorVersionListChangedArguments struct {
-motor_number uint8
+motornumber uint8
 typeX string
 software string
 hardware string
 }
 
-func (a ardrone3SettingsStateProductMotorVersionListChanged) decode() {
+func (a ardrone3SettingsStateProductMotorVersionListChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+var stringEnd int
+var err error
+arg := ardrone3SettingsStateProductMotorVersionListChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.motornumber)
+offset++ 
+
+				stringEnd, err = getLengthOfStringData(b[offset:])
+				if err != nil {
+					log.Println("error: ", err)
+				}
+arg.typeX = string(b[offset:offset+stringEnd])
+offset += stringEnd
+
+				stringEnd, err = getLengthOfStringData(b[offset:])
+				if err != nil {
+					log.Println("error: ", err)
+				}
+arg.software = string(b[offset:offset+stringEnd])
+offset += stringEnd
+
+				stringEnd, err = getLengthOfStringData(b[offset:])
+				if err != nil {
+					log.Println("error: ", err)
+				}
+arg.hardware = string(b[offset:offset+stringEnd])
+offset += stringEnd
+
+return arg
 }
 
 var settingsStateProductMotorVersionListChanged = ardrone3SettingsStateProductMotorVersionListChanged {
@@ -2640,10 +3477,30 @@ software string
 hardware string
 }
 
-func (a ardrone3SettingsStateProductGPSVersionChanged) decode() {
+func (a ardrone3SettingsStateProductGPSVersionChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+var stringEnd int
+var err error
+arg := ardrone3SettingsStateProductGPSVersionChangedArguments{}
+var offset = 0
+
+				stringEnd, err = getLengthOfStringData(b[offset:])
+				if err != nil {
+					log.Println("error: ", err)
+				}
+arg.software = string(b[offset:offset+stringEnd])
+offset += stringEnd
+
+				stringEnd, err = getLengthOfStringData(b[offset:])
+				if err != nil {
+					log.Println("error: ", err)
+				}
+arg.hardware = string(b[offset:offset+stringEnd])
+offset += stringEnd
+
+return arg
 }
 
 var settingsStateProductGPSVersionChanged = ardrone3SettingsStateProductGPSVersionChanged {
@@ -2665,10 +3522,18 @@ motorIds uint8
 motorError uint32
 }
 
-func (a ardrone3SettingsStateMotorErrorStateChanged) decode() {
+func (a ardrone3SettingsStateMotorErrorStateChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3SettingsStateMotorErrorStateChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.motorIds)
+offset++ 
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.motorError)
+offset += 4
+
+return arg
 }
 
 var settingsStateMotorErrorStateChanged = ardrone3SettingsStateMotorErrorStateChanged {
@@ -2687,10 +3552,23 @@ type ardrone3SettingsStateMotorSoftwareVersionChangedArguments struct {
 version string
 }
 
-func (a ardrone3SettingsStateMotorSoftwareVersionChanged) decode() {
+func (a ardrone3SettingsStateMotorSoftwareVersionChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+var stringEnd int
+var err error
+arg := ardrone3SettingsStateMotorSoftwareVersionChangedArguments{}
+var offset = 0
+
+				stringEnd, err = getLengthOfStringData(b[offset:])
+				if err != nil {
+					log.Println("error: ", err)
+				}
+arg.version = string(b[offset:offset+stringEnd])
+offset += stringEnd
+
+return arg
 }
 
 var settingsStateMotorSoftwareVersionChanged = ardrone3SettingsStateMotorSoftwareVersionChanged {
@@ -2713,10 +3591,20 @@ lastFlightDuration uint16
 totalFlightDuration uint32
 }
 
-func (a ardrone3SettingsStateMotorFlightsStatusChanged) decode() {
+func (a ardrone3SettingsStateMotorFlightsStatusChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3SettingsStateMotorFlightsStatusChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+2]), binary.LittleEndian, &arg.nbFlights)
+offset += 2
+binary.Read(bytes.NewReader(b[offset:offset+2]), binary.LittleEndian, &arg.lastFlightDuration)
+offset += 2
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.totalFlightDuration)
+offset += 4
+
+return arg
 }
 
 var settingsStateMotorFlightsStatusChanged = ardrone3SettingsStateMotorFlightsStatusChanged {
@@ -2737,10 +3625,16 @@ type ardrone3SettingsStateMotorErrorLastErrorChangedArguments struct {
 motorError uint32
 }
 
-func (a ardrone3SettingsStateMotorErrorLastErrorChanged) decode() {
+func (a ardrone3SettingsStateMotorErrorLastErrorChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3SettingsStateMotorErrorLastErrorChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.motorError)
+offset += 4
+
+return arg
 }
 
 var settingsStateMotorErrorLastErrorChanged = ardrone3SettingsStateMotorErrorLastErrorChanged {
@@ -2759,10 +3653,23 @@ type ardrone3SettingsStateP7IDArguments struct {
 serialID string
 }
 
-func (a ardrone3SettingsStateP7ID) decode() {
+func (a ardrone3SettingsStateP7ID) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+var stringEnd int
+var err error
+arg := ardrone3SettingsStateP7IDArguments{}
+var offset = 0
+
+				stringEnd, err = getLengthOfStringData(b[offset:])
+				if err != nil {
+					log.Println("error: ", err)
+				}
+arg.serialID = string(b[offset:offset+stringEnd])
+offset += stringEnd
+
+return arg
 }
 
 var settingsStateP7ID = ardrone3SettingsStateP7ID {
@@ -2779,10 +3686,23 @@ type ardrone3SettingsStateCPUIDArguments struct {
 id string
 }
 
-func (a ardrone3SettingsStateCPUID) decode() {
+func (a ardrone3SettingsStateCPUID) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+var stringEnd int
+var err error
+arg := ardrone3SettingsStateCPUIDArguments{}
+var offset = 0
+
+				stringEnd, err = getLengthOfStringData(b[offset:])
+				if err != nil {
+					log.Println("error: ", err)
+				}
+arg.id = string(b[offset:offset+stringEnd])
+offset += stringEnd
+
+return arg
 }
 
 var settingsStateCPUID = ardrone3SettingsStateCPUID {
@@ -2805,10 +3725,16 @@ type ardrone3PictureSettingsPictureFormatSelectionArguments struct {
 typeX uint32
 }
 
-func (a ardrone3PictureSettingsPictureFormatSelection) decode() {
+func (a ardrone3PictureSettingsPictureFormatSelection) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PictureSettingsPictureFormatSelectionArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.typeX)
+offset += 4
+
+return arg
 }
 
 var pictureSettingsPictureFormatSelection = ardrone3PictureSettingsPictureFormatSelection {
@@ -2829,10 +3755,16 @@ type ardrone3PictureSettingsAutoWhiteBalanceSelectionArguments struct {
 typeX uint32
 }
 
-func (a ardrone3PictureSettingsAutoWhiteBalanceSelection) decode() {
+func (a ardrone3PictureSettingsAutoWhiteBalanceSelection) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PictureSettingsAutoWhiteBalanceSelectionArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.typeX)
+offset += 4
+
+return arg
 }
 
 var pictureSettingsAutoWhiteBalanceSelection = ardrone3PictureSettingsAutoWhiteBalanceSelection {
@@ -2853,10 +3785,16 @@ type ardrone3PictureSettingsExpositionSelectionArguments struct {
 value float32
 }
 
-func (a ardrone3PictureSettingsExpositionSelection) decode() {
+func (a ardrone3PictureSettingsExpositionSelection) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PictureSettingsExpositionSelectionArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.value)
+offset += 4
+
+return arg
 }
 
 var pictureSettingsExpositionSelection = ardrone3PictureSettingsExpositionSelection {
@@ -2877,10 +3815,16 @@ type ardrone3PictureSettingsSaturationSelectionArguments struct {
 value float32
 }
 
-func (a ardrone3PictureSettingsSaturationSelection) decode() {
+func (a ardrone3PictureSettingsSaturationSelection) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PictureSettingsSaturationSelectionArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.value)
+offset += 4
+
+return arg
 }
 
 var pictureSettingsSaturationSelection = ardrone3PictureSettingsSaturationSelection {
@@ -2902,10 +3846,18 @@ enabled uint8
 interval float32
 }
 
-func (a ardrone3PictureSettingsTimelapseSelection) decode() {
+func (a ardrone3PictureSettingsTimelapseSelection) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PictureSettingsTimelapseSelectionArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.enabled)
+offset++ 
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.interval)
+offset += 4
+
+return arg
 }
 
 var pictureSettingsTimelapseSelection = ardrone3PictureSettingsTimelapseSelection {
@@ -2924,13 +3876,21 @@ type ardrone3PictureSettingsVideoAutorecordSelection command
 
 type ardrone3PictureSettingsVideoAutorecordSelectionArguments struct {
 enabled uint8
-mass_storage_id uint8
+massstorageid uint8
 }
 
-func (a ardrone3PictureSettingsVideoAutorecordSelection) decode() {
+func (a ardrone3PictureSettingsVideoAutorecordSelection) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PictureSettingsVideoAutorecordSelectionArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.enabled)
+offset++ 
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.massstorageid)
+offset++ 
+
+return arg
 }
 
 var pictureSettingsVideoAutorecordSelection = ardrone3PictureSettingsVideoAutorecordSelection {
@@ -2951,10 +3911,16 @@ type ardrone3PictureSettingsVideoStabilizationModeArguments struct {
 mode uint32
 }
 
-func (a ardrone3PictureSettingsVideoStabilizationMode) decode() {
+func (a ardrone3PictureSettingsVideoStabilizationMode) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PictureSettingsVideoStabilizationModeArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.mode)
+offset += 4
+
+return arg
 }
 
 var pictureSettingsVideoStabilizationMode = ardrone3PictureSettingsVideoStabilizationMode {
@@ -2975,10 +3941,16 @@ type ardrone3PictureSettingsVideoRecordingModeArguments struct {
 mode uint32
 }
 
-func (a ardrone3PictureSettingsVideoRecordingMode) decode() {
+func (a ardrone3PictureSettingsVideoRecordingMode) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PictureSettingsVideoRecordingModeArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.mode)
+offset += 4
+
+return arg
 }
 
 var pictureSettingsVideoRecordingMode = ardrone3PictureSettingsVideoRecordingMode {
@@ -2999,10 +3971,16 @@ type ardrone3PictureSettingsVideoFramerateArguments struct {
 framerate uint32
 }
 
-func (a ardrone3PictureSettingsVideoFramerate) decode() {
+func (a ardrone3PictureSettingsVideoFramerate) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PictureSettingsVideoFramerateArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.framerate)
+offset += 4
+
+return arg
 }
 
 var pictureSettingsVideoFramerate = ardrone3PictureSettingsVideoFramerate {
@@ -3023,10 +4001,16 @@ type ardrone3PictureSettingsVideoResolutionsArguments struct {
 typeX uint32
 }
 
-func (a ardrone3PictureSettingsVideoResolutions) decode() {
+func (a ardrone3PictureSettingsVideoResolutions) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PictureSettingsVideoResolutionsArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.typeX)
+offset += 4
+
+return arg
 }
 
 var pictureSettingsVideoResolutions = ardrone3PictureSettingsVideoResolutions {
@@ -3049,10 +4033,16 @@ type ardrone3PictureSettingsStatePictureFormatChangedArguments struct {
 typeX uint32
 }
 
-func (a ardrone3PictureSettingsStatePictureFormatChanged) decode() {
+func (a ardrone3PictureSettingsStatePictureFormatChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PictureSettingsStatePictureFormatChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.typeX)
+offset += 4
+
+return arg
 }
 
 var pictureSettingsStatePictureFormatChanged = ardrone3PictureSettingsStatePictureFormatChanged {
@@ -3073,10 +4063,16 @@ type ardrone3PictureSettingsStateAutoWhiteBalanceChangedArguments struct {
 typeX uint32
 }
 
-func (a ardrone3PictureSettingsStateAutoWhiteBalanceChanged) decode() {
+func (a ardrone3PictureSettingsStateAutoWhiteBalanceChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PictureSettingsStateAutoWhiteBalanceChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.typeX)
+offset += 4
+
+return arg
 }
 
 var pictureSettingsStateAutoWhiteBalanceChanged = ardrone3PictureSettingsStateAutoWhiteBalanceChanged {
@@ -3099,10 +4095,20 @@ min float32
 max float32
 }
 
-func (a ardrone3PictureSettingsStateExpositionChanged) decode() {
+func (a ardrone3PictureSettingsStateExpositionChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PictureSettingsStateExpositionChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.value)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.min)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.max)
+offset += 4
+
+return arg
 }
 
 var pictureSettingsStateExpositionChanged = ardrone3PictureSettingsStateExpositionChanged {
@@ -3125,10 +4131,20 @@ min float32
 max float32
 }
 
-func (a ardrone3PictureSettingsStateSaturationChanged) decode() {
+func (a ardrone3PictureSettingsStateSaturationChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PictureSettingsStateSaturationChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.value)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.min)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.max)
+offset += 4
+
+return arg
 }
 
 var pictureSettingsStateSaturationChanged = ardrone3PictureSettingsStateSaturationChanged {
@@ -3152,10 +4168,22 @@ minInterval float32
 maxInterval float32
 }
 
-func (a ardrone3PictureSettingsStateTimelapseChanged) decode() {
+func (a ardrone3PictureSettingsStateTimelapseChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PictureSettingsStateTimelapseChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.enabled)
+offset++ 
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.interval)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.minInterval)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.maxInterval)
+offset += 4
+
+return arg
 }
 
 var pictureSettingsStateTimelapseChanged = ardrone3PictureSettingsStateTimelapseChanged {
@@ -3174,13 +4202,21 @@ type ardrone3PictureSettingsStateVideoAutorecordChanged command
 
 type ardrone3PictureSettingsStateVideoAutorecordChangedArguments struct {
 enabled uint8
-mass_storage_id uint8
+massstorageid uint8
 }
 
-func (a ardrone3PictureSettingsStateVideoAutorecordChanged) decode() {
+func (a ardrone3PictureSettingsStateVideoAutorecordChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PictureSettingsStateVideoAutorecordChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.enabled)
+offset++ 
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.massstorageid)
+offset++ 
+
+return arg
 }
 
 var pictureSettingsStateVideoAutorecordChanged = ardrone3PictureSettingsStateVideoAutorecordChanged {
@@ -3201,10 +4237,16 @@ type ardrone3PictureSettingsStateVideoStabilizationModeChangedArguments struct {
 mode uint32
 }
 
-func (a ardrone3PictureSettingsStateVideoStabilizationModeChanged) decode() {
+func (a ardrone3PictureSettingsStateVideoStabilizationModeChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PictureSettingsStateVideoStabilizationModeChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.mode)
+offset += 4
+
+return arg
 }
 
 var pictureSettingsStateVideoStabilizationModeChanged = ardrone3PictureSettingsStateVideoStabilizationModeChanged {
@@ -3225,10 +4267,16 @@ type ardrone3PictureSettingsStateVideoRecordingModeChangedArguments struct {
 mode uint32
 }
 
-func (a ardrone3PictureSettingsStateVideoRecordingModeChanged) decode() {
+func (a ardrone3PictureSettingsStateVideoRecordingModeChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PictureSettingsStateVideoRecordingModeChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.mode)
+offset += 4
+
+return arg
 }
 
 var pictureSettingsStateVideoRecordingModeChanged = ardrone3PictureSettingsStateVideoRecordingModeChanged {
@@ -3249,10 +4297,16 @@ type ardrone3PictureSettingsStateVideoFramerateChangedArguments struct {
 framerate uint32
 }
 
-func (a ardrone3PictureSettingsStateVideoFramerateChanged) decode() {
+func (a ardrone3PictureSettingsStateVideoFramerateChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PictureSettingsStateVideoFramerateChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.framerate)
+offset += 4
+
+return arg
 }
 
 var pictureSettingsStateVideoFramerateChanged = ardrone3PictureSettingsStateVideoFramerateChanged {
@@ -3273,10 +4327,16 @@ type ardrone3PictureSettingsStateVideoResolutionsChangedArguments struct {
 typeX uint32
 }
 
-func (a ardrone3PictureSettingsStateVideoResolutionsChanged) decode() {
+func (a ardrone3PictureSettingsStateVideoResolutionsChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PictureSettingsStateVideoResolutionsChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.typeX)
+offset += 4
+
+return arg
 }
 
 var pictureSettingsStateVideoResolutionsChanged = ardrone3PictureSettingsStateVideoResolutionsChanged {
@@ -3299,10 +4359,16 @@ type ardrone3MediaStreamingVideoEnableArguments struct {
 enable uint8
 }
 
-func (a ardrone3MediaStreamingVideoEnable) decode() {
+func (a ardrone3MediaStreamingVideoEnable) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3MediaStreamingVideoEnableArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.enable)
+offset++ 
+
+return arg
 }
 
 var mediaStreamingVideoEnable = ardrone3MediaStreamingVideoEnable {
@@ -3323,10 +4389,16 @@ type ardrone3MediaStreamingVideoStreamModeArguments struct {
 mode uint32
 }
 
-func (a ardrone3MediaStreamingVideoStreamMode) decode() {
+func (a ardrone3MediaStreamingVideoStreamMode) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3MediaStreamingVideoStreamModeArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.mode)
+offset += 4
+
+return arg
 }
 
 var mediaStreamingVideoStreamMode = ardrone3MediaStreamingVideoStreamMode {
@@ -3349,10 +4421,16 @@ type ardrone3MediaStreamingStateVideoEnableChangedArguments struct {
 enabled uint32
 }
 
-func (a ardrone3MediaStreamingStateVideoEnableChanged) decode() {
+func (a ardrone3MediaStreamingStateVideoEnableChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3MediaStreamingStateVideoEnableChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.enabled)
+offset += 4
+
+return arg
 }
 
 var mediaStreamingStateVideoEnableChanged = ardrone3MediaStreamingStateVideoEnableChanged {
@@ -3369,10 +4447,16 @@ type ardrone3MediaStreamingStateVideoStreamModeChangedArguments struct {
 mode uint32
 }
 
-func (a ardrone3MediaStreamingStateVideoStreamModeChanged) decode() {
+func (a ardrone3MediaStreamingStateVideoStreamModeChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3MediaStreamingStateVideoStreamModeChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.mode)
+offset += 4
+
+return arg
 }
 
 var mediaStreamingStateVideoStreamModeChanged = ardrone3MediaStreamingStateVideoStreamModeChanged {
@@ -3395,10 +4479,20 @@ longitude float64
 altitude float64
 }
 
-func (a ardrone3GPSSettingsSetHome) decode() {
+func (a ardrone3GPSSettingsSetHome) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3GPSSettingsSetHomeArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+8]), binary.LittleEndian, &arg.latitude)
+offset += 8
+binary.Read(bytes.NewReader(b[offset:offset+8]), binary.LittleEndian, &arg.longitude)
+offset += 8
+binary.Read(bytes.NewReader(b[offset:offset+8]), binary.LittleEndian, &arg.altitude)
+offset += 8
+
+return arg
 }
 
 var gPSSettingsSetHome = ardrone3GPSSettingsSetHome {
@@ -3418,10 +4512,14 @@ type ardrone3GPSSettingsResetHome command
 type ardrone3GPSSettingsResetHomeArguments struct {
 }
 
-func (a ardrone3GPSSettingsResetHome) decode() {
+func (a ardrone3GPSSettingsResetHome) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3GPSSettingsResetHomeArguments{}
+// No arguments to decode here !!
+
+return arg
 }
 
 var gPSSettingsResetHome = ardrone3GPSSettingsResetHome {
@@ -3446,10 +4544,24 @@ horizontalAccuracy float64
 verticalAccuracy float64
 }
 
-func (a ardrone3GPSSettingsSendControllerGPS) decode() {
+func (a ardrone3GPSSettingsSendControllerGPS) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3GPSSettingsSendControllerGPSArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+8]), binary.LittleEndian, &arg.latitude)
+offset += 8
+binary.Read(bytes.NewReader(b[offset:offset+8]), binary.LittleEndian, &arg.longitude)
+offset += 8
+binary.Read(bytes.NewReader(b[offset:offset+8]), binary.LittleEndian, &arg.altitude)
+offset += 8
+binary.Read(bytes.NewReader(b[offset:offset+8]), binary.LittleEndian, &arg.horizontalAccuracy)
+offset += 8
+binary.Read(bytes.NewReader(b[offset:offset+8]), binary.LittleEndian, &arg.verticalAccuracy)
+offset += 8
+
+return arg
 }
 
 var gPSSettingsSendControllerGPS = ardrone3GPSSettingsSendControllerGPS {
@@ -3470,10 +4582,16 @@ type ardrone3GPSSettingsHomeTypeArguments struct {
 typeX uint32
 }
 
-func (a ardrone3GPSSettingsHomeType) decode() {
+func (a ardrone3GPSSettingsHomeType) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3GPSSettingsHomeTypeArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.typeX)
+offset += 4
+
+return arg
 }
 
 var gPSSettingsHomeType = ardrone3GPSSettingsHomeType {
@@ -3494,10 +4612,16 @@ type ardrone3GPSSettingsReturnHomeDelayArguments struct {
 delay uint16
 }
 
-func (a ardrone3GPSSettingsReturnHomeDelay) decode() {
+func (a ardrone3GPSSettingsReturnHomeDelay) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3GPSSettingsReturnHomeDelayArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+2]), binary.LittleEndian, &arg.delay)
+offset += 2
+
+return arg
 }
 
 var gPSSettingsReturnHomeDelay = ardrone3GPSSettingsReturnHomeDelay {
@@ -3518,10 +4642,16 @@ type ardrone3GPSSettingsReturnHomeMinAltitudeArguments struct {
 value float32
 }
 
-func (a ardrone3GPSSettingsReturnHomeMinAltitude) decode() {
+func (a ardrone3GPSSettingsReturnHomeMinAltitude) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3GPSSettingsReturnHomeMinAltitudeArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.value)
+offset += 4
+
+return arg
 }
 
 var gPSSettingsReturnHomeMinAltitude = ardrone3GPSSettingsReturnHomeMinAltitude {
@@ -3546,10 +4676,20 @@ longitude float64
 altitude float64
 }
 
-func (a ardrone3GPSSettingsStateHomeChanged) decode() {
+func (a ardrone3GPSSettingsStateHomeChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3GPSSettingsStateHomeChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+8]), binary.LittleEndian, &arg.latitude)
+offset += 8
+binary.Read(bytes.NewReader(b[offset:offset+8]), binary.LittleEndian, &arg.longitude)
+offset += 8
+binary.Read(bytes.NewReader(b[offset:offset+8]), binary.LittleEndian, &arg.altitude)
+offset += 8
+
+return arg
 }
 
 var gPSSettingsStateHomeChanged = ardrone3GPSSettingsStateHomeChanged {
@@ -3572,10 +4712,20 @@ longitude float64
 altitude float64
 }
 
-func (a ardrone3GPSSettingsStateResetHomeChanged) decode() {
+func (a ardrone3GPSSettingsStateResetHomeChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3GPSSettingsStateResetHomeChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+8]), binary.LittleEndian, &arg.latitude)
+offset += 8
+binary.Read(bytes.NewReader(b[offset:offset+8]), binary.LittleEndian, &arg.longitude)
+offset += 8
+binary.Read(bytes.NewReader(b[offset:offset+8]), binary.LittleEndian, &arg.altitude)
+offset += 8
+
+return arg
 }
 
 var gPSSettingsStateResetHomeChanged = ardrone3GPSSettingsStateResetHomeChanged {
@@ -3596,10 +4746,16 @@ type ardrone3GPSSettingsStateGPSFixStateChangedArguments struct {
 fixed uint8
 }
 
-func (a ardrone3GPSSettingsStateGPSFixStateChanged) decode() {
+func (a ardrone3GPSSettingsStateGPSFixStateChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3GPSSettingsStateGPSFixStateChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.fixed)
+offset++ 
+
+return arg
 }
 
 var gPSSettingsStateGPSFixStateChanged = ardrone3GPSSettingsStateGPSFixStateChanged {
@@ -3620,10 +4776,16 @@ type ardrone3GPSSettingsStateGPSUpdateStateChangedArguments struct {
 state uint32
 }
 
-func (a ardrone3GPSSettingsStateGPSUpdateStateChanged) decode() {
+func (a ardrone3GPSSettingsStateGPSUpdateStateChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3GPSSettingsStateGPSUpdateStateChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.state)
+offset += 4
+
+return arg
 }
 
 var gPSSettingsStateGPSUpdateStateChanged = ardrone3GPSSettingsStateGPSUpdateStateChanged {
@@ -3644,10 +4806,16 @@ type ardrone3GPSSettingsStateHomeTypeChangedArguments struct {
 typeX uint32
 }
 
-func (a ardrone3GPSSettingsStateHomeTypeChanged) decode() {
+func (a ardrone3GPSSettingsStateHomeTypeChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3GPSSettingsStateHomeTypeChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.typeX)
+offset += 4
+
+return arg
 }
 
 var gPSSettingsStateHomeTypeChanged = ardrone3GPSSettingsStateHomeTypeChanged {
@@ -3668,10 +4836,16 @@ type ardrone3GPSSettingsStateReturnHomeDelayChangedArguments struct {
 delay uint16
 }
 
-func (a ardrone3GPSSettingsStateReturnHomeDelayChanged) decode() {
+func (a ardrone3GPSSettingsStateReturnHomeDelayChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3GPSSettingsStateReturnHomeDelayChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+2]), binary.LittleEndian, &arg.delay)
+offset += 2
+
+return arg
 }
 
 var gPSSettingsStateReturnHomeDelayChanged = ardrone3GPSSettingsStateReturnHomeDelayChanged {
@@ -3692,10 +4866,18 @@ latitude float64
 longitude float64
 }
 
-func (a ardrone3GPSSettingsStateGeofenceCenterChanged) decode() {
+func (a ardrone3GPSSettingsStateGeofenceCenterChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3GPSSettingsStateGeofenceCenterChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+8]), binary.LittleEndian, &arg.latitude)
+offset += 8
+binary.Read(bytes.NewReader(b[offset:offset+8]), binary.LittleEndian, &arg.longitude)
+offset += 8
+
+return arg
 }
 
 var gPSSettingsStateGeofenceCenterChanged = ardrone3GPSSettingsStateGeofenceCenterChanged {
@@ -3717,10 +4899,20 @@ min float32
 max float32
 }
 
-func (a ardrone3GPSSettingsStateReturnHomeMinAltitudeChanged) decode() {
+func (a ardrone3GPSSettingsStateReturnHomeMinAltitudeChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3GPSSettingsStateReturnHomeMinAltitudeChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.value)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.min)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.max)
+offset += 4
+
+return arg
 }
 
 var gPSSettingsStateReturnHomeMinAltitudeChanged = ardrone3GPSSettingsStateReturnHomeMinAltitudeChanged {
@@ -3744,10 +4936,18 @@ tilt int8
 pan int8
 }
 
-func (a ardrone3CameraStateOrientation) decode() {
+func (a ardrone3CameraStateOrientation) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3CameraStateOrientationArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.tilt)
+offset++ 
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.pan)
+offset++ 
+
+return arg
 }
 
 var cameraStateOrientation = ardrone3CameraStateOrientation {
@@ -3769,10 +4969,18 @@ tilt int8
 pan int8
 }
 
-func (a ardrone3CameraStatedefaultCameraOrientation) decode() {
+func (a ardrone3CameraStatedefaultCameraOrientation) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3CameraStatedefaultCameraOrientationArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.tilt)
+offset++ 
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.pan)
+offset++ 
+
+return arg
 }
 
 var cameraStatedefaultCameraOrientation = ardrone3CameraStatedefaultCameraOrientation {
@@ -3794,10 +5002,18 @@ tilt float32
 pan float32
 }
 
-func (a ardrone3CameraStateOrientationV2) decode() {
+func (a ardrone3CameraStateOrientationV2) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3CameraStateOrientationV2Arguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.tilt)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.pan)
+offset += 4
+
+return arg
 }
 
 var cameraStateOrientationV2 = ardrone3CameraStateOrientationV2 {
@@ -3819,10 +5035,18 @@ tilt float32
 pan float32
 }
 
-func (a ardrone3CameraStatedefaultCameraOrientationV2) decode() {
+func (a ardrone3CameraStatedefaultCameraOrientationV2) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3CameraStatedefaultCameraOrientationV2Arguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.tilt)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.pan)
+offset += 4
+
+return arg
 }
 
 var cameraStatedefaultCameraOrientationV2 = ardrone3CameraStatedefaultCameraOrientationV2 {
@@ -3840,14 +5064,22 @@ const velocityRange cmdDef = 4
 type ardrone3CameraStateVelocityRange command
 
 type ardrone3CameraStateVelocityRangeArguments struct {
-max_tilt float32
-max_pan float32
+maxtilt float32
+maxpan float32
 }
 
-func (a ardrone3CameraStateVelocityRange) decode() {
+func (a ardrone3CameraStateVelocityRange) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3CameraStateVelocityRangeArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.maxtilt)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.maxpan)
+offset += 4
+
+return arg
 }
 
 var cameraStateVelocityRange = ardrone3CameraStateVelocityRange {
@@ -3870,10 +5102,16 @@ type ardrone3AntiflickeringelectricFrequencyArguments struct {
 frequency uint32
 }
 
-func (a ardrone3AntiflickeringelectricFrequency) decode() {
+func (a ardrone3AntiflickeringelectricFrequency) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3AntiflickeringelectricFrequencyArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.frequency)
+offset += 4
+
+return arg
 }
 
 var antiflickeringelectricFrequency = ardrone3AntiflickeringelectricFrequency {
@@ -3894,10 +5132,16 @@ type ardrone3AntiflickeringsetModeArguments struct {
 mode uint32
 }
 
-func (a ardrone3AntiflickeringsetMode) decode() {
+func (a ardrone3AntiflickeringsetMode) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3AntiflickeringsetModeArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.mode)
+offset += 4
+
+return arg
 }
 
 var antiflickeringsetMode = ardrone3AntiflickeringsetMode {
@@ -3920,10 +5164,16 @@ type ardrone3AntiflickeringStateelectricFrequencyChangedArguments struct {
 frequency uint32
 }
 
-func (a ardrone3AntiflickeringStateelectricFrequencyChanged) decode() {
+func (a ardrone3AntiflickeringStateelectricFrequencyChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3AntiflickeringStateelectricFrequencyChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.frequency)
+offset += 4
+
+return arg
 }
 
 var antiflickeringStateelectricFrequencyChanged = ardrone3AntiflickeringStateelectricFrequencyChanged {
@@ -3944,10 +5194,16 @@ type ardrone3AntiflickeringStatemodeChangedArguments struct {
 mode uint32
 }
 
-func (a ardrone3AntiflickeringStatemodeChanged) decode() {
+func (a ardrone3AntiflickeringStatemodeChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3AntiflickeringStatemodeChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.mode)
+offset += 4
+
+return arg
 }
 
 var antiflickeringStatemodeChanged = ardrone3AntiflickeringStatemodeChanged {
@@ -3970,10 +5226,16 @@ type ardrone3GPSStateNumberOfSatelliteChangedArguments struct {
 numberOfSatellite uint8
 }
 
-func (a ardrone3GPSStateNumberOfSatelliteChanged) decode() {
+func (a ardrone3GPSStateNumberOfSatelliteChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3GPSStateNumberOfSatelliteChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.numberOfSatellite)
+offset++ 
+
+return arg
 }
 
 var gPSStateNumberOfSatelliteChanged = ardrone3GPSStateNumberOfSatelliteChanged {
@@ -3995,10 +5257,18 @@ typeX uint32
 available uint8
 }
 
-func (a ardrone3GPSStateHomeTypeAvailabilityChanged) decode() {
+func (a ardrone3GPSStateHomeTypeAvailabilityChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3GPSStateHomeTypeAvailabilityChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.typeX)
+offset += 4
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.available)
+offset++ 
+
+return arg
 }
 
 var gPSStateHomeTypeAvailabilityChanged = ardrone3GPSStateHomeTypeAvailabilityChanged {
@@ -4019,10 +5289,16 @@ type ardrone3GPSStateHomeTypeChosenChangedArguments struct {
 typeX uint32
 }
 
-func (a ardrone3GPSStateHomeTypeChosenChanged) decode() {
+func (a ardrone3GPSStateHomeTypeChosenChanged) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3GPSStateHomeTypeChosenChangedArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.typeX)
+offset += 4
+
+return arg
 }
 
 var gPSStateHomeTypeChosenChanged = ardrone3GPSStateHomeTypeChosenChanged {
@@ -4043,10 +5319,16 @@ type ardrone3PROStateFeaturesArguments struct {
 features uint64
 }
 
-func (a ardrone3PROStateFeatures) decode() {
+func (a ardrone3PROStateFeatures) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3PROStateFeaturesArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+8]), binary.LittleEndian, &arg.features)
+offset += 8
+
+return arg
 }
 
 var pROStateFeatures = ardrone3PROStateFeatures {
@@ -4067,16 +5349,42 @@ type ardrone3AccessoryStateConnectedAccessories command
 
 type ardrone3AccessoryStateConnectedAccessoriesArguments struct {
 id uint8
-accessory_type uint32
+accessorytype uint32
 uid string
 swVersion string
-list_flags uint8
+listflags uint8
 }
 
-func (a ardrone3AccessoryStateConnectedAccessories) decode() {
+func (a ardrone3AccessoryStateConnectedAccessories) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+var stringEnd int
+var err error
+arg := ardrone3AccessoryStateConnectedAccessoriesArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.id)
+offset++ 
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.accessorytype)
+offset += 4
+
+				stringEnd, err = getLengthOfStringData(b[offset:])
+				if err != nil {
+					log.Println("error: ", err)
+				}
+arg.uid = string(b[offset:offset+stringEnd])
+offset += stringEnd
+
+				stringEnd, err = getLengthOfStringData(b[offset:])
+				if err != nil {
+					log.Println("error: ", err)
+				}
+arg.swVersion = string(b[offset:offset+stringEnd])
+offset += stringEnd
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.listflags)
+offset++ 
+
+return arg
 }
 
 var accessoryStateConnectedAccessories = ardrone3AccessoryStateConnectedAccessories {
@@ -4095,13 +5403,23 @@ type ardrone3AccessoryStateBattery command
 type ardrone3AccessoryStateBatteryArguments struct {
 id uint8
 batteryLevel uint8
-list_flags uint8
+listflags uint8
 }
 
-func (a ardrone3AccessoryStateBattery) decode() {
+func (a ardrone3AccessoryStateBattery) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3AccessoryStateBatteryArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.id)
+offset++ 
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.batteryLevel)
+offset++ 
+binary.Read(bytes.NewReader(b[offset:offset+1]), binary.LittleEndian, &arg.listflags)
+offset++ 
+
+return arg
 }
 
 var accessoryStateBattery = ardrone3AccessoryStateBattery {
@@ -4123,10 +5441,14 @@ type ardrone3SoundStartAlertSound command
 type ardrone3SoundStartAlertSoundArguments struct {
 }
 
-func (a ardrone3SoundStartAlertSound) decode() {
+func (a ardrone3SoundStartAlertSound) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3SoundStartAlertSoundArguments{}
+// No arguments to decode here !!
+
+return arg
 }
 
 var soundStartAlertSound = ardrone3SoundStartAlertSound {
@@ -4146,10 +5468,14 @@ type ardrone3SoundStopAlertSound command
 type ardrone3SoundStopAlertSoundArguments struct {
 }
 
-func (a ardrone3SoundStopAlertSound) decode() {
+func (a ardrone3SoundStopAlertSound) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3SoundStopAlertSoundArguments{}
+// No arguments to decode here !!
+
+return arg
 }
 
 var soundStopAlertSound = ardrone3SoundStopAlertSound {
@@ -4172,10 +5498,16 @@ type ardrone3SoundStateAlertSoundArguments struct {
 state uint32
 }
 
-func (a ardrone3SoundStateAlertSound) decode() {
+func (a ardrone3SoundStateAlertSound) decode(b []byte) interface{} {
 //TODO: .............
 fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)
 fmt.Printf("%+v\n", a)
+arg := ardrone3SoundStateAlertSoundArguments{}
+var offset = 0
+binary.Read(bytes.NewReader(b[offset:offset+4]), binary.LittleEndian, &arg.state)
+offset += 4
+
+return arg
 }
 
 var soundStateAlertSound = ardrone3SoundStateAlertSound {
@@ -4185,7 +5517,7 @@ cmd: alertSound,
 }
 
 type decoder interface {
-decode()
+decode([]byte) interface{}
 }
 
 var commandMap = map[command]decoder {
@@ -4379,6 +5711,26 @@ command(soundStateAlertSound) : soundStateAlertSound,
 
 		}
 
+		err := fmt.Errorf("no string bytes found, returning 0")
+		return 0, err
+	}
+	
+
+	func getLengthOfStringData(b []byte) (int, error) {
+		// Figure out the length of the string
+		for i := 0; i < cap(b); i++ {
+			//fmt.Printf("%+v, of type %T\n", b[i], b[i])
+	
+			//fmt.Println("i = ", i)
+			if b[i] == 0 {
+				//fmt.Println("lengthString = ", i)
+	
+				// add 1 to jump to the 0
+				return i + 1, nil
+			}
+	
+		}
+	
 		err := fmt.Errorf("no string bytes found, returning 0")
 		return 0, err
 	}

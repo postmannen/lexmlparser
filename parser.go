@@ -62,7 +62,7 @@ type parser struct {
 
 type goType struct {
 	name   string
-	length int
+	length string
 }
 
 /*
@@ -90,18 +90,18 @@ func newParser() *parser {
 		tagStack:         newTagStack(),
 		depth:            0,
 		droneTypesToGoTypes: map[string]goType{
-			"u8":     goType{name: "uint8", length: 1},
-			"i8":     goType{name: "int8", length: 1},
-			"u16":    goType{name: "uint16", length: 2},
-			"i16":    goType{name: "int16", length: 2},
-			"u32":    goType{name: "uint32", length: 4},
-			"i32":    goType{name: "int32", length: 4},
-			"u64":    goType{name: "uint64", length: 8},
-			"i64":    goType{name: "int64", length: 8},
-			"float":  goType{name: "float32", length: 4},
-			"double": goType{name: "float64", length: 8},
-			"string": goType{name: "string", length: 0},
-			"enum":   goType{name: "uint32", length: 4},
+			"u8":     goType{name: "uint8", length: "1"},
+			"i8":     goType{name: "int8", length: "1"},
+			"u16":    goType{name: "uint16", length: "2"},
+			"i16":    goType{name: "int16", length: "2"},
+			"u32":    goType{name: "uint32", length: "4"},
+			"i32":    goType{name: "int32", length: "4"},
+			"u64":    goType{name: "uint64", length: "8"},
+			"i64":    goType{name: "int64", length: "8"},
+			"float":  goType{name: "float32", length: "4"},
+			"double": goType{name: "float64", length: "8"},
+			"string": goType{name: "string", length: "0"},
+			"enum":   goType{name: "uint32", length: "4"},
 		},
 	}
 }
@@ -152,6 +152,8 @@ func Start(tCh chan lexml.Token) {
 	p.printMapDeclaration()
 
 	printBuiltinFunctions()
+
+	printFuncgetLengthOfStringData()
 
 }
 
@@ -223,7 +225,7 @@ func (p *parser) doTagProject(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id s
 	}
 
 	name := tmpBuf1[2]
-	fmt.Printf("	const %v projectDef = %v\n", lowerFirstCharacter(name.TokenText), id)
+	fmt.Printf("const %v projectDef = %v\n", lowerFirstCharacter(name.TokenText), id)
 }
 
 // doTagClass will do all the parsing of a class tag.
@@ -312,15 +314,65 @@ func (p *parser) doTagCommand(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id s
 	// TODO: Write out the name of the arguments and the Go equivalent of the type for the fields.
 
 	// ----------------------------------------------------------------------------------
-
 	// Create the decode function for the command type
-	fmt.Printf("func (a %v) decode() {\n", concatenateSlice(p.tagStack.data))
+	fmt.Printf("func (a %v) decode(b []byte) interface{} {\n", concatenateSlice(p.tagStack.data))
 	fmt.Printf("//TODO: .............\n")
 	txt := `fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)`
 	fmt.Println(txt)
 	txt = `fmt.Printf("%+v\n", a)`
 	fmt.Println(txt)
-	// TODO: ------------Create an argument struct, and parser here----------------------
+
+	txt = "arg := " + concatenateSlice(p.tagStack.data) + "Arguments" + "{}"
+
+	//if there is a string argument, add variables needed
+	foundStringArg := false
+	for _, v := range argBuf {
+		if v.goType == "string" {
+			foundStringArg = true
+		}
+	}
+
+	if foundStringArg {
+		fmt.Println("var stringEnd int")
+		fmt.Println("var err error")
+	}
+
+	fmt.Println(txt)
+
+	if len(argBuf) != 0 {
+		fmt.Println("var offset = 0")
+		// Print the parsing of the types for the decode method
+		for _, v := range argBuf {
+
+			// The parsing of everything except a string is the same. Check if string...
+			if v.goType != "string" {
+				txt := "binary.Read(bytes.NewReader(b[offset:offset+" + v.length + "]), binary.LittleEndian, &arg." + v.name + ")"
+				fmt.Println(txt)
+
+				// the linter complains for ´arg += 1´, so we add a check and replace it
+				// with arg++ if the length == 1.
+				if v.length != "1" {
+					fmt.Println("offset += " + string(v.length))
+				} else {
+					fmt.Println("offset++ ")
+				}
+			} else if v.goType == "string" {
+				fmt.Println(`
+				stringEnd, err = getLengthOfStringData(b[offset:])
+				if err != nil {
+					log.Println("error: ", err)
+				}`)
+				fmt.Printf("arg.%v = string(b[offset:offset+stringEnd])\n", v.name)
+				fmt.Println("offset += stringEnd")
+			}
+
+		}
+	} else {
+		fmt.Println("// No arguments to decode here !!")
+	}
+	fmt.Println()
+
+	fmt.Println("return arg")
 
 	// ----------------------------------------------------------------------------------
 	fmt.Printf("}\n")
@@ -385,6 +437,9 @@ func printBuiltinFunctions() {
 func printTopDeclarations() {
 	fmt.Println("import (")
 	fmt.Println(`	"fmt"`)
+	fmt.Println(`	"bytes"`)
+	fmt.Println(`	"log"`)
+	fmt.Println(`	"encoding/binary"`)
 	fmt.Println(")")
 	fmt.Println()
 	fmt.Println("type projectDef uint8 ")
@@ -404,7 +459,7 @@ func printTopDeclarations() {
 func (p *parser) printMapDeclaration() {
 	// Map for storing the different commands for lookup.
 	fmt.Println("type decoder interface {")
-	fmt.Println("decode()")
+	fmt.Println("decode([]byte) interface{}")
 	fmt.Println("}")
 	fmt.Println()
 	fmt.Println("var commandMap = map[command]decoder {")
@@ -416,6 +471,30 @@ func (p *parser) printMapDeclaration() {
 	}
 	fmt.Println("}")
 	fmt.Println()
+}
+
+func printFuncgetLengthOfStringData() {
+	txt := `
+	func getLengthOfStringData(b []byte) (int, error) {
+		// Figure out the length of the string
+		for i := 0; i < cap(b); i++ {
+			//fmt.Printf("%+v, of type %T\n", b[i], b[i])
+	
+			//fmt.Println("i = ", i)
+			if b[i] == 0 {
+				//fmt.Println("lengthString = ", i)
+	
+				// add 1 to jump to the 0
+				return i + 1, nil
+			}
+	
+		}
+	
+		err := fmt.Errorf("no string bytes found, returning 0")
+		return 0, err
+	}
+	`
+	fmt.Println(txt)
 }
 
 // concatenateSlice will take all the string elements of
@@ -434,7 +513,7 @@ type argument struct {
 	name    string
 	xmlType string
 	goType  string
-	length  int
+	length  string
 }
 
 // newArgBufferForCmd Will create a buffer starting at a cmd startTag, and ending
@@ -464,7 +543,17 @@ func (p *parser) newArgBufferForCmd(buf *Buffer) (argBuffer []argument, err erro
 			if a.name == "type" {
 				a.name += "X"
 			}
+
+			// check if the name contains underscores, and if it does, remove them.
+			underScore := strings.Contains(a.name, "_")
+			if underScore {
+				s := strings.Split(a.name, "_")
+				a.name = concatenateSlice(s)
+			}
+
 			typ := buf.Slice[i+4].TokenText
+
+			// lookup, and pick the needed values from the type specification map.
 			v, ok := p.droneTypesToGoTypes[typ]
 			if ok {
 				a.xmlType = typ
@@ -511,7 +600,7 @@ func newPartialBuffer(buf *Buffer) (firstBuffer []lexml.Token, secondBuffer []le
 
 	buf2 := buf1[endTagPosition1:]
 
-	// Get next series of tokens betweem a start and stop tag
+	// Get next series of tokens between a start and stop tag
 	for i, v := range buf2 {
 		// If it is the first position in slice, just continue with the next iteration.
 		if i == 0 {
@@ -580,4 +669,23 @@ func (s *tagStack) pop() {
 	s.data = append(s.data[0:0], s.data[:last-1]...)
 	//*fmt.Println("DEBUG: After pop:", s)
 
+}
+
+func getLengthOfStringData(b []byte) (int, error) {
+	// Figure out the length of the string
+	for i := 0; i < cap(b); i++ {
+		//fmt.Printf("%+v, of type %T\n", b[i], b[i])
+
+		//fmt.Println("i = ", i)
+		if b[i] == 0 {
+			//fmt.Println("lengthString = ", i)
+
+			// add 1 to jump to the 0
+			return i + 1, nil
+		}
+
+	}
+
+	err := fmt.Errorf("no string bytes found, returning 0")
+	return 0, err
 }
