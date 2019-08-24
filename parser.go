@@ -90,7 +90,7 @@ enum 4 Per command defined enum
 
 // newParser will return a new *parser struct that will hold the state of the
 // parsing while parsing.
-func newParser() *parser {
+func newParser(outFh *os.File) *parser {
 	return &parser{
 		variablesForMap:  []string{},
 		commandConstants: map[string]bool{},
@@ -112,14 +112,14 @@ func newParser() *parser {
 			"enum":   goType{name: "uint32", length: "4"},
 		},
 		duplicateClassCh: make(chan bool, 2),
-		output:           os.Stdout,
+		output:           outFh,
 	}
 }
 
 // Start will start the lexml parser. Takes a channel of tokens as it's input.
-func Start(tCh chan lexml.Token) {
+func Start(tCh chan lexml.Token, outFh *os.File) {
 	// Create a new parser
-	p := newParser()
+	p := newParser(outFh)
 
 	// Create a buffered reader of the channel. The .Next method will move to
 	// the next value from input channel. The buffered reader will let us
