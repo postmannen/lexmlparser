@@ -267,6 +267,8 @@ func (p *parser) doTagClass(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id str
 
 // doTagCommand will do all the parsing of a command tag
 func (p *parser) doTagCommand(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id string, argBuf []argument) {
+	// TODO: Add parsing of buffer="NON_ACK", and add a field in the command struct
+	// that we can check to know when to send an ack or not.
 
 	// -------------------------CREATE COMMENTS------------------------------------------
 
@@ -342,12 +344,12 @@ func (p *parser) doTagCommand(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id s
 	// Create the decode function for the command type
 	fmt.Printf("func (a %v) decode(b []byte) interface{} {\n", concatenateSlice(p.tagStack.data))
 	fmt.Printf("//TODO: .............\n")
-	txt := `fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)`
-	fmt.Println(txt)
-	txt = `fmt.Printf("%+v\n", a)`
-	fmt.Println(txt)
+	//txt := `fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)`
+	//fmt.Println(txt)
+	//txt = `fmt.Printf("%+v\n", a)`
+	//fmt.Println(txt)
 
-	txt = "arg := " + concatenateSlice(p.tagStack.data) + "Arguments" + "{}"
+	txt := "arg := " + concatenateSlice(p.tagStack.data) + "Arguments" + "{}"
 
 	//if there is a string argument, add variables needed
 	foundStringArg := false
