@@ -495,6 +495,21 @@ func (p *parser) printTopDeclarations() {
 	fmt.Fprintln(p.output)
 }
 
+// TODO/NB: In the XML there is a tag value for NON_ACK and HIGH_PRIO.
+// With the specification as follows:
+/*
+	4.4.1 buffer
+	The value of this attribute can be either NON_ACK, ACK or HIGH_PRIO, defaulting to ACK if not given. It gives a hint about the destination buffer for the command.
+	For the Bebop Drone, the NON_ACK buffers are 10 (c2d) and 127 (d2c),
+	the ACK buffers are 11 (c2d) and 126 (d2c), and the HIGH_PRIO buffer is the
+	12 (c2d).
+	This is only a hint, and the product will decode any ARCommand on any
+	ARNetwork buffer, as long as the buffer is not used for ARStream.
+*/
+// Based on the text above I find no reason to parse the ACK flag, since that need to
+// be handled on the protocol level in the drone driver code based on what buffer the
+// command was received on, and the info in the XML is for description.
+
 // printMapDeclaration will print the whole map structure which
 // maps all the command variables to it's type.
 func (p *parser) printMapDeclaration() {
