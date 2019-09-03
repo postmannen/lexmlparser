@@ -275,6 +275,12 @@ func (p *parser) doTagClass(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id str
 func (p *parser) doTagCommand(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id string, argBuf []argument) {
 	// TODO: Add parsing of buffer="NON_ACK", and add a field in the command struct
 	// that we can check to know when to send an ack or not.
+	// NB: I'm not really sure if the parsing of NON_ACK is actually needed, since
+	// it seems that the protocol specification says that if an ACK should be sent
+	// is dependant of the buffer in use.
+	// For the Bebop Drone, the NON_ACK buffers are 10 (c2d) and 127 (d2c),
+	// the ACK buffers are 11 (c2d) and 126 (d2c), and the HIGH_PRIO buffer is the
+	// 12 (c2d).
 
 	// ----------------------------------------------------------------------------------
 	// -------------------------CREATE COMMENTS------------------------------------------
