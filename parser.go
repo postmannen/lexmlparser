@@ -276,6 +276,7 @@ func (p *parser) doTagCommand(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id s
 	// TODO: Add parsing of buffer="NON_ACK", and add a field in the command struct
 	// that we can check to know when to send an ack or not.
 
+	// ----------------------------------------------------------------------------------
 	// -------------------------CREATE COMMENTS------------------------------------------
 
 	// Check if there are comments to be printed for the command.
@@ -297,8 +298,8 @@ func (p *parser) doTagCommand(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id s
 		}
 	}
 
-	// -------------------------CREATE COMMENTS, END------------------------------------------
-
+	// ---------------------------------------------------------------------------------------
+	// -------------------------CREATE CONST AND TYPES----------------------------------------
 	// Create the variable name of the current project->class->command
 	// content in the tagStack.
 	var variableName string
@@ -346,8 +347,10 @@ func (p *parser) doTagCommand(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id s
 	fmt.Fprintln(p.output)
 	// TODO: Write out the name of the arguments and the Go equivalent of the type for the fields.
 
-	// ----------------------------DECODE METHOD--------------------------------------------------
+	// -------------------------------------------------------------------------------------------
+	// ----------------------------CREATE DECODE METHOD-------------------------------------------
 	// Create the decode function for the command type
+
 	fmt.Fprintf(p.output, "func (a %v) decode(b []byte) interface{} {\n", concatenateSlice(p.tagStack.data))
 	fmt.Fprintf(p.output, "//TODO: .............\n")
 	//txt := `fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)`
@@ -408,9 +411,9 @@ func (p *parser) doTagCommand(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id s
 	fmt.Fprintln(p.output, "return arg")
 	fmt.Fprintf(p.output, "}\n")
 
-	// ----------------------------DECODE METHOD, END--------------------------------------------------
+	// -------------------------------------------------------------------------------------------
+	// ----------------------------CREATE VAR BASED ON TYPE---------------------------------------
 
-	// ----------------------------CREATE VAR--------------------------------------------------
 	project := p.tagStack.data[0]
 	class := p.tagStack.data[1]
 	command := p.tagStack.data[2]
@@ -431,8 +434,6 @@ func (p *parser) doTagCommand(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id s
 	// store the variable name in a slice so we can use it
 	// to create the map[command]decoder map later.
 	p.variablesForMap = append(p.variablesForMap, variableName)
-
-	// ----------------------------CREATE VAR, END--------------------------------------------------
 }
 
 // lowerFirstCharacer, turns the first character of a string
