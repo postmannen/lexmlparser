@@ -388,6 +388,14 @@ func (p *parser) doTagCommand(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id s
 
 			// The parsing of everything except a string is the same. Check if string...
 			if v.goType != "string" {
+				// NB: Decoding the bytes to binary with binary.Read is slow compared to
+				// running binary.LittleEndian directly. But the advantage of of Binary.Read
+				// is that it converts the output into the type of the variable you pass into
+				// it.
+				// Binary.LittleEndian need to specify by a mathod what type to convert into,
+				// and that makes it harder to make the parser logic, since it only have uint16,
+				// uint32, and uint64. If we where to use this we would need to make the logic
+				// to translate all values needed by the drone into those 3 types.
 				txt := "binary.Read(bytes.NewReader(b[offset:offset+" + v.length + "]), binary.LittleEndian, &arg." + v.name + ")"
 				fmt.Fprintln(p.output, txt)
 
