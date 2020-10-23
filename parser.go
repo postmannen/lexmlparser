@@ -165,6 +165,8 @@ func Start(tCh chan lexml.Token, outFh *os.File) {
 
 	p.printFuncgetLengthOfStringData()
 
+	p.printEndianDecoder()
+
 }
 
 // doTokenTagStart will do all the parsing of a tagStart.
@@ -396,7 +398,11 @@ func (p *parser) doTagCommand(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id s
 				// and that makes it harder to make the parser logic, since it only have uint16,
 				// uint32, and uint64. If we where to use this we would need to make the logic
 				// to translate all values needed by the drone into those 3 types.
-				txt := "binary.Read(bytes.NewReader(b[offset:offset+" + v.length + "]), binary.LittleEndian, &arg." + v.name + ")"
+
+				// HERE: Changing
+				//txt := "binary.Read(bytes.NewReader(b[offset:offset+" + v.length + "]), binary.LittleEndian, &arg." + v.name + ")"
+
+				txt := "convLittleEndian(b[offset:offset+" + v.length + "]," + "&arg." + v.name + ")"
 				fmt.Fprintln(p.output, txt)
 
 				// the linter complains for ´arg += 1´, so we add a check and replace it
@@ -450,6 +456,45 @@ func (p *parser) doTagCommand(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id s
 	p.variablesForMap = append(p.variablesForMap, variableName)
 }
 
+// ---------------------------------------------------------------------------------------
+
+func (p *parser) printEndianDecoder() {
+	text := `
+	// convLittleEndian takes a []byte, and an *out variable of type
+	// uint8/int8/uint16/int16/uint32/int32/uint64/int64/float32/float64
+	// and convert the []byte, and places the result into the *out variable.
+	func convLittleEndian(in []byte, out interface{}) {
+		switch out := out.(type) {
+		case *uint8:
+			*out = uint8(in[0])
+		case *int8:
+			*out = int8(in[0])
+		case *uint16:
+			*out = binary.LittleEndian.Uint16(in)
+		case *int16:
+			*out = int16(binary.LittleEndian.Uint16(in))
+		case *uint32:
+			*out = binary.LittleEndian.Uint32(in)
+		case *int32:
+			*out = int32(binary.LittleEndian.Uint32(in))
+		case *uint64:
+			*out = binary.LittleEndian.Uint64(in)
+		case *int64:
+			*out = int64(binary.LittleEndian.Uint32(in))
+		case *float32:
+			bits := binary.LittleEndian.Uint32(in)
+			*out = math.Float32frombits(bits)
+		case *float64:
+			bits := binary.LittleEndian.Uint64(in)
+			*out = math.Float64frombits(bits)
+		case *string:
+			*out = string(in)
+		}
+	}
+	`
+	fmt.Fprintln(p.output, text)
+}
+
 // lowerFirstCharacer, turns the first character of a string
 // to lowercase.
 func lowerFirstCharacter(s string) string {
@@ -493,7 +538,7 @@ func (p *parser) printBuiltinFunctions() {
 func (p *parser) printTopDeclarations() {
 	fmt.Fprintln(p.output, "import (")
 	fmt.Fprintln(p.output, `	"fmt"`)
-	fmt.Fprintln(p.output, `	"bytes"`)
+	fmt.Fprintln(p.output, `	"math"`)
 	fmt.Fprintln(p.output, `	"log"`)
 	fmt.Fprintln(p.output, `	"encoding/binary"`)
 	fmt.Fprintln(p.output, ")")

@@ -1,0 +1,31 @@
+// convLittleEndian takes a []byte, and an *out variable of type
+// uint8/int8/uint16/int16/uint32/int32/uint64/int64/float32/float64
+// and convert the []byte, and places the result into the *out variable.
+func convLittleEndian(in []byte, out interface{}) {
+	switch out := out.(type) {
+	case *uint8:
+		*out = uint8(in[0])
+	case *int8:
+		*out = int8(in[0])
+	case *uint16:
+		*out = binary.LittleEndian.Uint16(in)
+	case *int16:
+		*out = int16(binary.LittleEndian.Uint16(in))
+	case *uint32:
+		*out = binary.LittleEndian.Uint32(in)
+	case *int32:
+		*out = int32(binary.LittleEndian.Uint32(in))
+	case *uint64:
+		*out = binary.LittleEndian.Uint64(in)
+	case *int64:
+		*out = int64(binary.LittleEndian.Uint32(in))
+	case *float32:
+		bits := binary.LittleEndian.Uint32(in)
+		*out = math.Float32frombits(bits)
+	case *float64:
+		bits := binary.LittleEndian.Uint64(in)
+		*out = math.Float64frombits(bits)
+	case *string:
+		*out = string(in)
+	}
+}

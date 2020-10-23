@@ -1,5 +1,8 @@
 module github.com/postmannen/lexmlparser
 
-go 1.12
+go 1.15
 
-require golang.org/x/tools/gopls v0.1.3 // indirect
+require (
+	github.com/go-acme/lego v2.7.2+incompatible
+	github.com/postmannen/lexml v0.0.0-20190413205615-d34a5a4dafef
+)
