@@ -165,9 +165,9 @@ func Start(tCh chan lexml.Token, outFh *os.File) {
 
 	p.printFuncgetLengthOfStringData()
 
-	p.printconvLittleEndianSliceToNumeric()
+	p.printConvLittleEndianSliceToNumeric()
 
-	p.printconvLittleEndianNumericToSlice()
+	p.printConvLittleEndianNumericToSlice()
 
 }
 
@@ -364,6 +364,12 @@ func (p *parser) doTagCommand(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id s
 	p.createDecodeMethod(argBuf)
 
 	// -------------------------------------------------------------------------------------------
+	// ----------------------------CREATE ENCODE METHOD-------------------------------------------
+	// Create the encode function for the command type
+
+	p.createEncodeMethod(argBuf)
+
+	// -------------------------------------------------------------------------------------------
 	// ----------------------------CREATE VAR BASED ON TYPE---------------------------------------
 
 	project := p.tagStack.data[0]
@@ -473,84 +479,33 @@ func (p *parser) createEncodeMethod(argBuf []argument) {
 	// ----------------------------CREATE Encode METHOD-------------------------------------------
 	// Create the encode function for the command type
 
-	fmt.Fprintf(p.output, "func (a %v) Decode(b []byte) interface{} {\n", upperFirstCharacter(concatenateSlice(p.tagStack.data)))
+	fmt.Fprintf(p.output, "func (a %v) Encode(commandStruct interface{}) []byte {\n", upperFirstCharacter(concatenateSlice(p.tagStack.data)))
 	fmt.Fprintf(p.output, "//TODO: .............\n")
-	//txt := `fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)`
-	//fmt.Println(txt)
-	//txt = `fmt.Printf("%+v\n", a)`
-	//fmt.Println(txt)
 
-	txt := "arg := " + upperFirstCharacter(concatenateSlice(p.tagStack.data)) + "Arguments" + "{}"
-
-	//if there is a string argument, add variables needed
-	foundStringArg := false
-	for _, v := range argBuf {
-		if v.goType == "string" {
-			foundStringArg = true
+	txt := `
+		var bs []byte
+		valueOf := reflect.ValueOf(commandStruct)
+	
+		fmt.Printf("Number of fields in the struct: %v\n", valueOf.NumField())
+		fmt.Println("--------------Iterating fields-----------------")
+		for i := 0; i < valueOf.NumField(); i++ {
+			b := ConvLittleEndianNumericToSlice(valueOf.Field(i))
+			fmt.Printf("mySlice = %#v\n", b)
+	
+			bs = append(bs, b...)
 		}
+	
+		return bs
 	}
 
-	if foundStringArg {
-		fmt.Fprintln(p.output, "var stringEnd int")
-		fmt.Fprintln(p.output, "var err error")
-	}
+	`
 
-	fmt.Fprintln(p.output, txt)
-
-	if len(argBuf) != 0 {
-		fmt.Fprintln(p.output, "var offset = 0")
-		// Print the parsing of the types for the decode method
-		for _, v := range argBuf {
-
-			// The parsing of everything except a string is the same. Check if string...
-			if v.goType != "string" {
-				// NB: Decoding the bytes to binary with binary.Read is slow compared to
-				// running binary.LittleEndian directly. But the advantage of of Binary.Read
-				// is that it converts the output into the type of the variable you pass into
-				// it.
-				// Binary.LittleEndian need to specify by a mathod what type to convert into,
-				// and that makes it harder to make the parser logic, since it only have uint16,
-				// uint32, and uint64. If we where to use this we would need to make the logic
-				// to translate all values needed by the drone into those 3 types.
-
-				// HERE: Changing
-				//txt := "binary.Read(bytes.NewReader(b[offset:offset+" + v.length + "]), binary.LittleEndian, &arg." + v.name + ")"
-
-				txt := "ConvLittleEndianSliceToNumeric(b[offset:offset+" + v.length + "]," + "&arg." + upperFirstCharacter(v.name) + ")"
-				fmt.Fprintln(p.output, txt)
-
-				// the linter complains for ´arg += 1´, so we add a check and replace it
-				// with arg++ if the length == 1.
-				if v.length != "1" {
-					fmt.Fprintln(p.output, "offset += "+string(v.length))
-				} else {
-					fmt.Fprintln(p.output, "offset++ ")
-				}
-			} else if v.goType == "string" {
-				fmt.Fprintln(p.output, `
-				stringEnd, err = getLengthOfStringData(b[offset:])
-				if err != nil {
-					log.Println("error: ", err)
-				}`)
-
-				fmt.Fprintf(p.output, "arg.%v = string(b[offset:offset+stringEnd])\n", upperFirstCharacter(v.name))
-				fmt.Fprintln(p.output, "offset += stringEnd")
-			}
-
-		}
-	} else {
-		fmt.Fprintln(p.output, "// No arguments to decode here !!")
-	}
-
-	fmt.Fprintln(p.output)
-	fmt.Fprintln(p.output, "return arg")
-	fmt.Fprintf(p.output, "}\n")
-
+	fmt.Fprintf(p.output, "%v\n", txt)
 }
 
 // ---------------------------------------------------------------------------------------
 
-func (p *parser) printconvLittleEndianNumericToSlice() {
+func (p *parser) printConvLittleEndianNumericToSlice() {
 	text := `
 	// ConvLittleEndianNumericToSlice takes a a value of any of the standard types
 	// uint8/int8/uint16/int16/uint32/int32/uint64/int64/float32/float64
@@ -599,7 +554,7 @@ func (p *parser) printconvLittleEndianNumericToSlice() {
 	fmt.Fprintln(p.output, text)
 }
 
-func (p *parser) printconvLittleEndianSliceToNumeric() {
+func (p *parser) printConvLittleEndianSliceToNumeric() {
 	text := `
 	// ConvLittleEndianSliceToNumeric takes a []byte, and an *out variable of type
 	// uint8/int8/uint16/int16/uint32/int32/uint64/int64/float32/float64
@@ -692,6 +647,7 @@ func (p *parser) printTopDeclarations() {
 	fmt.Fprintln(p.output, `	"math"`)
 	fmt.Fprintln(p.output, `	"log"`)
 	fmt.Fprintln(p.output, `	"encoding/binary"`)
+	fmt.Fprintln(p.output, `	"reflect"`)
 	fmt.Fprintln(p.output, ")")
 	fmt.Fprintln(p.output)
 	fmt.Fprintln(p.output, "type ProjectDef uint8 ")
