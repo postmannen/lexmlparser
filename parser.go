@@ -361,6 +361,38 @@ func (p *parser) doTagCommand(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id s
 	// ----------------------------CREATE DECODE METHOD-------------------------------------------
 	// Create the decode function for the command type
 
+	p.createDecodeMethod(argBuf)
+
+	// -------------------------------------------------------------------------------------------
+	// ----------------------------CREATE VAR BASED ON TYPE---------------------------------------
+
+	project := p.tagStack.data[0]
+	class := p.tagStack.data[1]
+	command := p.tagStack.data[2]
+
+	fmt.Fprintln(p.output)
+	fmt.Fprintf(p.output, "var %v = %v {\n", upperFirstCharacter(variableName), upperFirstCharacter(concatenateSlice(p.tagStack.data)))
+	fmt.Fprintf(p.output, "Project: Project%v,\n", upperFirstCharacter(project))
+	select {
+	case <-p.duplicateClassCh:
+		fmt.Fprintf(p.output, "Class: Class%vDUPLICATE,\n", upperFirstCharacter(class))
+	default:
+		fmt.Fprintf(p.output, "Class: Class%v,\n", upperFirstCharacter(class))
+	}
+	fmt.Fprintf(p.output, "Cmd: Cmd%v,\n", upperFirstCharacter(command))
+	fmt.Fprintf(p.output, "}\n")
+	fmt.Fprintln(p.output)
+
+	// store the variable name in a slice so we can use it
+	// to create the map[command]decoder map later.
+	p.variablesForMap = append(p.variablesForMap, variableName)
+}
+
+func (p *parser) createDecodeMethod(argBuf []argument) {
+	// -------------------------------------------------------------------------------------------
+	// ----------------------------CREATE DECODE METHOD-------------------------------------------
+	// Create the decode function for the command type
+
 	fmt.Fprintf(p.output, "func (a %v) Decode(b []byte) interface{} {\n", upperFirstCharacter(concatenateSlice(p.tagStack.data)))
 	fmt.Fprintf(p.output, "//TODO: .............\n")
 	//txt := `fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)`
@@ -434,29 +466,86 @@ func (p *parser) doTagCommand(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id s
 	fmt.Fprintln(p.output, "return arg")
 	fmt.Fprintf(p.output, "}\n")
 
+}
+
+func (p *parser) createEncodeMethod(argBuf []argument) {
 	// -------------------------------------------------------------------------------------------
-	// ----------------------------CREATE VAR BASED ON TYPE---------------------------------------
+	// ----------------------------CREATE Encode METHOD-------------------------------------------
+	// Create the encode function for the command type
 
-	project := p.tagStack.data[0]
-	class := p.tagStack.data[1]
-	command := p.tagStack.data[2]
+	fmt.Fprintf(p.output, "func (a %v) Decode(b []byte) interface{} {\n", upperFirstCharacter(concatenateSlice(p.tagStack.data)))
+	fmt.Fprintf(p.output, "//TODO: .............\n")
+	//txt := `fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)`
+	//fmt.Println(txt)
+	//txt = `fmt.Printf("%+v\n", a)`
+	//fmt.Println(txt)
 
-	fmt.Fprintln(p.output)
-	fmt.Fprintf(p.output, "var %v = %v {\n", upperFirstCharacter(variableName), upperFirstCharacter(concatenateSlice(p.tagStack.data)))
-	fmt.Fprintf(p.output, "Project: Project%v,\n", upperFirstCharacter(project))
-	select {
-	case <-p.duplicateClassCh:
-		fmt.Fprintf(p.output, "Class: Class%vDUPLICATE,\n", upperFirstCharacter(class))
-	default:
-		fmt.Fprintf(p.output, "Class: Class%v,\n", upperFirstCharacter(class))
+	txt := "arg := " + upperFirstCharacter(concatenateSlice(p.tagStack.data)) + "Arguments" + "{}"
+
+	//if there is a string argument, add variables needed
+	foundStringArg := false
+	for _, v := range argBuf {
+		if v.goType == "string" {
+			foundStringArg = true
+		}
 	}
-	fmt.Fprintf(p.output, "Cmd: Cmd%v,\n", upperFirstCharacter(command))
-	fmt.Fprintf(p.output, "}\n")
-	fmt.Fprintln(p.output)
 
-	// store the variable name in a slice so we can use it
-	// to create the map[command]decoder map later.
-	p.variablesForMap = append(p.variablesForMap, variableName)
+	if foundStringArg {
+		fmt.Fprintln(p.output, "var stringEnd int")
+		fmt.Fprintln(p.output, "var err error")
+	}
+
+	fmt.Fprintln(p.output, txt)
+
+	if len(argBuf) != 0 {
+		fmt.Fprintln(p.output, "var offset = 0")
+		// Print the parsing of the types for the decode method
+		for _, v := range argBuf {
+
+			// The parsing of everything except a string is the same. Check if string...
+			if v.goType != "string" {
+				// NB: Decoding the bytes to binary with binary.Read is slow compared to
+				// running binary.LittleEndian directly. But the advantage of of Binary.Read
+				// is that it converts the output into the type of the variable you pass into
+				// it.
+				// Binary.LittleEndian need to specify by a mathod what type to convert into,
+				// and that makes it harder to make the parser logic, since it only have uint16,
+				// uint32, and uint64. If we where to use this we would need to make the logic
+				// to translate all values needed by the drone into those 3 types.
+
+				// HERE: Changing
+				//txt := "binary.Read(bytes.NewReader(b[offset:offset+" + v.length + "]), binary.LittleEndian, &arg." + v.name + ")"
+
+				txt := "ConvLittleEndianSliceToNumeric(b[offset:offset+" + v.length + "]," + "&arg." + upperFirstCharacter(v.name) + ")"
+				fmt.Fprintln(p.output, txt)
+
+				// the linter complains for ´arg += 1´, so we add a check and replace it
+				// with arg++ if the length == 1.
+				if v.length != "1" {
+					fmt.Fprintln(p.output, "offset += "+string(v.length))
+				} else {
+					fmt.Fprintln(p.output, "offset++ ")
+				}
+			} else if v.goType == "string" {
+				fmt.Fprintln(p.output, `
+				stringEnd, err = getLengthOfStringData(b[offset:])
+				if err != nil {
+					log.Println("error: ", err)
+				}`)
+
+				fmt.Fprintf(p.output, "arg.%v = string(b[offset:offset+stringEnd])\n", upperFirstCharacter(v.name))
+				fmt.Fprintln(p.output, "offset += stringEnd")
+			}
+
+		}
+	} else {
+		fmt.Fprintln(p.output, "// No arguments to decode here !!")
+	}
+
+	fmt.Fprintln(p.output)
+	fmt.Fprintln(p.output, "return arg")
+	fmt.Fprintf(p.output, "}\n")
+
 }
 
 // ---------------------------------------------------------------------------------------
