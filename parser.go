@@ -237,7 +237,7 @@ func (p *parser) doTagProject(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id s
 	}
 
 	name := tmpBuf1[2]
-	fmt.Fprintf(p.output, "const project%v projectDef = %v\n", name.TokenText, id)
+	fmt.Fprintf(p.output, "const Project%v ProjectDef = %v\n", upperFirstCharacter(name.TokenText), id)
 }
 
 // doTagClass will do all the parsing of a class tag.
@@ -269,7 +269,7 @@ func (p *parser) doTagClass(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id str
 	// Store the const to check for duplicates on later iterations.
 	p.classConstants[classConstName.TokenText] = true
 	//--
-	fmt.Fprintf(p.output, "const class%v classDef = %v\n", classConstName.TokenText, id)
+	fmt.Fprintf(p.output, "const Class%v ClassDef = %v\n", upperFirstCharacter(classConstName.TokenText), id)
 
 }
 
@@ -333,12 +333,12 @@ func (p *parser) doTagCommand(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id s
 	p.commandConstants[cmdConstname.TokenText] = true
 
 	constName := cmdConstname.TokenText
-	fmt.Fprintf(p.output, "const cmd%v cmdDef = %v\n", constName, id)
+	fmt.Fprintf(p.output, "const Cmd%v CmdDef = %v\n", upperFirstCharacter(constName), id)
 	fmt.Fprintln(p.output)
 
 	// Create the struct type command which will hold the decode methods
 	// for the command
-	fmt.Fprintf(p.output, "type %v command\n", concatenateSlice(p.tagStack.data))
+	fmt.Fprintf(p.output, "type %v Command\n", upperFirstCharacter(concatenateSlice(p.tagStack.data)))
 	fmt.Fprintln(p.output)
 
 	// TODO: -----------Put in the argument checking and parsing here--------------------
@@ -347,9 +347,9 @@ func (p *parser) doTagCommand(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id s
 	//
 	// Create a specific struct for a specific command, by adding Arguments to the end of the
 	// command name.
-	fmt.Fprintf(p.output, "type %v struct {\n", concatenateSlice(p.tagStack.data)+"Arguments")
+	fmt.Fprintf(p.output, "type %v struct {\n", upperFirstCharacter(concatenateSlice(p.tagStack.data))+"Arguments")
 	for _, v := range argBuf {
-		fmt.Fprintf(p.output, "%v %v\n", v.name, v.goType)
+		fmt.Fprintf(p.output, "%v %v\n", upperFirstCharacter(v.name), v.goType)
 	}
 	fmt.Fprintln(p.output, "}")
 	fmt.Fprintln(p.output)
@@ -359,14 +359,14 @@ func (p *parser) doTagCommand(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id s
 	// ----------------------------CREATE DECODE METHOD-------------------------------------------
 	// Create the decode function for the command type
 
-	fmt.Fprintf(p.output, "func (a %v) decode(b []byte) interface{} {\n", concatenateSlice(p.tagStack.data))
+	fmt.Fprintf(p.output, "func (a %v) Decode(b []byte) interface{} {\n", upperFirstCharacter(concatenateSlice(p.tagStack.data)))
 	fmt.Fprintf(p.output, "//TODO: .............\n")
 	//txt := `fmt.Printf(".....we are now decoding the payload %v, which is of type %T\n", a, a)`
 	//fmt.Println(txt)
 	//txt = `fmt.Printf("%+v\n", a)`
 	//fmt.Println(txt)
 
-	txt := "arg := " + concatenateSlice(p.tagStack.data) + "Arguments" + "{}"
+	txt := "arg := " + upperFirstCharacter(concatenateSlice(p.tagStack.data)) + "Arguments" + "{}"
 
 	//if there is a string argument, add variables needed
 	foundStringArg := false
@@ -402,7 +402,7 @@ func (p *parser) doTagCommand(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id s
 				// HERE: Changing
 				//txt := "binary.Read(bytes.NewReader(b[offset:offset+" + v.length + "]), binary.LittleEndian, &arg." + v.name + ")"
 
-				txt := "convLittleEndian(b[offset:offset+" + v.length + "]," + "&arg." + v.name + ")"
+				txt := "convLittleEndian(b[offset:offset+" + v.length + "]," + "&arg." + upperFirstCharacter(v.name) + ")"
 				fmt.Fprintln(p.output, txt)
 
 				// the linter complains for ´arg += 1´, so we add a check and replace it
@@ -418,7 +418,8 @@ func (p *parser) doTagCommand(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id s
 				if err != nil {
 					log.Println("error: ", err)
 				}`)
-				fmt.Fprintf(p.output, "arg.%v = string(b[offset:offset+stringEnd])\n", v.name)
+
+				fmt.Fprintf(p.output, "arg.%v = string(b[offset:offset+stringEnd])\n", upperFirstCharacter(v.name))
 				fmt.Fprintln(p.output, "offset += stringEnd")
 			}
 
@@ -439,15 +440,15 @@ func (p *parser) doTagCommand(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id s
 	command := p.tagStack.data[2]
 
 	fmt.Fprintln(p.output)
-	fmt.Fprintf(p.output, "var %v = %v {\n", lowerFirstCharacter(variableName), concatenateSlice(p.tagStack.data))
-	fmt.Fprintf(p.output, "project: project%v,\n", project)
+	fmt.Fprintf(p.output, "var %v = %v {\n", upperFirstCharacter(variableName), upperFirstCharacter(concatenateSlice(p.tagStack.data)))
+	fmt.Fprintf(p.output, "Project: Project%v,\n", upperFirstCharacter(project))
 	select {
 	case <-p.duplicateClassCh:
-		fmt.Fprintf(p.output, "class: class%vDUPLICATE,\n", class)
+		fmt.Fprintf(p.output, "Class: Class%vDUPLICATE,\n", upperFirstCharacter(class))
 	default:
-		fmt.Fprintf(p.output, "class: class%v,\n", class)
+		fmt.Fprintf(p.output, "Class: Class%v,\n", upperFirstCharacter(class))
 	}
-	fmt.Fprintf(p.output, "cmd: cmd%v,\n", command)
+	fmt.Fprintf(p.output, "Cmd: Cmd%v,\n", upperFirstCharacter(command))
 	fmt.Fprintf(p.output, "}\n")
 	fmt.Fprintln(p.output)
 
@@ -505,6 +506,16 @@ func lowerFirstCharacter(s string) string {
 	return string(unicode.ToLower(r)) + s[n:]
 }
 
+// upperFirstCharacer, turns the first character of a string
+// to uppercase.
+func upperFirstCharacter(s string) string {
+	if s == "" {
+		return ""
+	}
+	r, n := utf8.DecodeRuneInString(s)
+	return string(unicode.ToUpper(r)) + s[n:]
+}
+
 func (p *parser) printBuiltinFunctions() {
 	text := `
 	// lenStringData takes a []byte which is the data for the arguments, and returns
@@ -543,14 +554,14 @@ func (p *parser) printTopDeclarations() {
 	fmt.Fprintln(p.output, `	"encoding/binary"`)
 	fmt.Fprintln(p.output, ")")
 	fmt.Fprintln(p.output)
-	fmt.Fprintln(p.output, "type projectDef uint8 ")
-	fmt.Fprintln(p.output, "type classDef uint8")
-	fmt.Fprintln(p.output, "type cmdDef uint16")
+	fmt.Fprintln(p.output, "type ProjectDef uint8 ")
+	fmt.Fprintln(p.output, "type ClassDef uint8")
+	fmt.Fprintln(p.output, "type CmdDef uint16")
 	fmt.Fprintln(p.output)
-	fmt.Fprintln(p.output, "type command struct {")
-	fmt.Fprintln(p.output, "	project projectDef")
-	fmt.Fprintln(p.output, "	class   classDef")
-	fmt.Fprintln(p.output, "	cmd     cmdDef")
+	fmt.Fprintln(p.output, "type Command struct {")
+	fmt.Fprintln(p.output, "	Project ProjectDef")
+	fmt.Fprintln(p.output, "	Class   ClassDef")
+	fmt.Fprintln(p.output, "	Cmd     CmdDef")
 	fmt.Fprintln(p.output, "}")
 	fmt.Fprintln(p.output)
 }
@@ -574,16 +585,16 @@ func (p *parser) printTopDeclarations() {
 // maps all the command variables to it's type.
 func (p *parser) printMapDeclaration() {
 	// Map for storing the different commands for lookup.
-	fmt.Fprintln(p.output, "type decoder interface {")
-	fmt.Fprintln(p.output, "decode([]byte) interface{}")
+	fmt.Fprintln(p.output, "type Decoder interface {")
+	fmt.Fprintln(p.output, "Decode([]byte) interface{}")
 	fmt.Fprintln(p.output, "}")
 	fmt.Fprintln(p.output)
-	fmt.Fprintln(p.output, "var commandMap = map[command]decoder {")
+	fmt.Fprintln(p.output, "var CommandMap = map[Command]Decoder {")
 
 	// Will go through the slice and pick out one variable
 	// at a time and create the map value
 	for _, v := range p.variablesForMap {
-		fmt.Fprintf(p.output, "command(%v) : %v,\n", lowerFirstCharacter(v), lowerFirstCharacter(v))
+		fmt.Fprintf(p.output, "Command(%v) : %v,\n", upperFirstCharacter(v), upperFirstCharacter(v))
 	}
 	fmt.Fprintln(p.output, "}")
 	fmt.Fprintln(p.output)
