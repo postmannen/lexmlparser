@@ -165,7 +165,9 @@ func Start(tCh chan lexml.Token, outFh *os.File) {
 
 	p.printFuncgetLengthOfStringData()
 
-	p.printEndianDecoder()
+	p.printconvLittleEndianSliceToNumeric()
+
+	p.printconvLittleEndianNumericToSlice()
 
 }
 
@@ -402,7 +404,7 @@ func (p *parser) doTagCommand(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id s
 				// HERE: Changing
 				//txt := "binary.Read(bytes.NewReader(b[offset:offset+" + v.length + "]), binary.LittleEndian, &arg." + v.name + ")"
 
-				txt := "convLittleEndian(b[offset:offset+" + v.length + "]," + "&arg." + upperFirstCharacter(v.name) + ")"
+				txt := "ConvLittleEndianSliceToNumeric(b[offset:offset+" + v.length + "]," + "&arg." + upperFirstCharacter(v.name) + ")"
 				fmt.Fprintln(p.output, txt)
 
 				// the linter complains for ´arg += 1´, so we add a check and replace it
@@ -459,12 +461,61 @@ func (p *parser) doTagCommand(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id s
 
 // ---------------------------------------------------------------------------------------
 
-func (p *parser) printEndianDecoder() {
+func (p *parser) printconvLittleEndianNumericToSlice() {
 	text := `
-	// convLittleEndian takes a []byte, and an *out variable of type
+	// ConvLittleEndianNumericToSlice takes a a value of any of the standard types
+	// uint8/int8/uint16/int16/uint32/int32/uint64/int64/float32/float64
+	// and convert to a []byte.
+	func ConvLittleEndianNumericToSlice(value interface{}) []byte {
+		var b []byte
+
+		switch v := value.(type) {
+		case uint8:
+			b = []byte{byte(v)}
+		case int8:
+			b = []byte{byte(v)}
+		case uint16:
+			b = make([]byte, 2)
+			binary.LittleEndian.PutUint16(b, v)
+		case int16:
+			b = make([]byte, 2)
+			binary.LittleEndian.PutUint16(b, uint16(v))
+		case uint32:
+			b = make([]byte, 4)
+			binary.LittleEndian.PutUint32(b, v)
+		case int32:
+			b = make([]byte, 4)
+			binary.LittleEndian.PutUint32(b, uint32(v))
+		case uint64:
+			b = make([]byte, 8)
+			binary.LittleEndian.PutUint64(b, v)
+		case int64:
+			b = make([]byte, 8)
+			binary.LittleEndian.PutUint64(b, uint64(v))
+		case float32:
+			b = make([]byte, 4)
+			binary.LittleEndian.PutUint32(b, math.Float32bits(v))
+		case float64:
+			b = make([]byte, 8)
+			binary.LittleEndian.PutUint64(b, math.Float64bits(v))
+		case string:
+			b = []byte(v)
+
+		}
+
+		return b
+	}
+	`
+
+	fmt.Fprintln(p.output, text)
+}
+
+func (p *parser) printconvLittleEndianSliceToNumeric() {
+	text := `
+	// ConvLittleEndianSliceToNumeric takes a []byte, and an *out variable of type
 	// uint8/int8/uint16/int16/uint32/int32/uint64/int64/float32/float64
 	// and convert the []byte, and places the result into the *out variable.
-	func convLittleEndian(in []byte, out interface{}) {
+	func ConvLittleEndianSliceToNumeric(in []byte, out interface{}) {
 		switch out := out.(type) {
 		case *uint8:
 			*out = uint8(in[0])
