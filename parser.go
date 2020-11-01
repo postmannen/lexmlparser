@@ -479,19 +479,25 @@ func (p *parser) createEncodeMethod(argBuf []argument) {
 	// ----------------------------CREATE Encode METHOD-------------------------------------------
 	// Create the encode function for the command type
 
-	fmt.Fprintf(p.output, "func (a %v) Encode(commandStruct interface{}) []byte {\n", upperFirstCharacter(concatenateSlice(p.tagStack.data)))
+	fmt.Fprintf(p.output, "func (a %vArguments) Encode() []byte {\n", upperFirstCharacter(concatenateSlice(p.tagStack.data)))
 	fmt.Fprintf(p.output, "//TODO: .............\n")
 
 	txt := `
+		//TODO: .............
+
 		var bs []byte
-		valueOf := reflect.ValueOf(commandStruct)
-	
+		valueOf := reflect.ValueOf(a)
+		log.Printf("valueOf: %#v\n", valueOf)
+
 		fmt.Printf("Number of fields in the struct: %v\n", valueOf.NumField())
 		fmt.Println("--------------Iterating fields-----------------")
+		log.Printf("valueOf.NumField(): %#v\n", valueOf.NumField())
 		for i := 0; i < valueOf.NumField(); i++ {
-			b := ConvLittleEndianNumericToSlice(valueOf.Field(i))
+			b := ConvLittleEndianNumericToSlice(valueOf.Field(i).Interface())
 			fmt.Printf("mySlice = %#v\n", b)
-	
+		
+			log.Printf("b: %#v\n", b)
+		
 			bs = append(bs, b...)
 		}
 	
@@ -683,6 +689,10 @@ func (p *parser) printMapDeclaration() {
 	// Map for storing the different commands for lookup.
 	fmt.Fprintln(p.output, "type Decoder interface {")
 	fmt.Fprintln(p.output, "Decode([]byte) interface{}")
+	fmt.Fprintln(p.output, "}")
+	fmt.Fprintln(p.output)
+	fmt.Fprintln(p.output, "type Encoder interface {")
+	fmt.Fprintln(p.output, "Encode() []byte")
 	fmt.Fprintln(p.output, "}")
 	fmt.Fprintln(p.output)
 	fmt.Fprintln(p.output, "var CommandMap = map[Command]Decoder {")
