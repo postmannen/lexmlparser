@@ -43,11 +43,6 @@ type parser struct {
 	// Essentially it will contains a command variable, and will be used at the end of the
 	// code to create the key/values of the map structure in the output.
 	variablesForMap []string
-	// commandConstants/classConstants is a store for all the constants parsed, and are used in the code
-	// to check if a constant with the same name has previosly beeing parsed to avoid
-	// duplicated
-	commandConstants map[string]bool
-	classConstants   map[string]bool
 	// tagStack , are a push/pop storage for stack values.
 	// The contents of the tag stack is used to create names
 	// that consists of several tag names.
@@ -60,9 +55,6 @@ type parser struct {
 	// droneTypesToGoTypes is a map used to know how to map the types found in the xml like
 	// u8/i8/float etc to they're go equivalent.
 	droneTypesToGoTypes map[string]goType
-	// duplicateClassCh is used to send a signal to printing functions for class variables
-	// that there is a duplicate to make the variable unique.
-	duplicateClassCh chan bool
 	// output is where to redirect the output of the printing.
 	output *os.File
 }
@@ -92,11 +84,9 @@ enum 4 Per command defined enum
 // parsing while parsing.
 func newParser(outFh *os.File) *parser {
 	return &parser{
-		variablesForMap:  []string{},
-		commandConstants: map[string]bool{},
-		classConstants:   map[string]bool{},
-		tagStack:         newTagStack(),
-		depth:            0,
+		variablesForMap: []string{},
+		tagStack:        newTagStack(),
+		depth:           0,
 		droneTypesToGoTypes: map[string]goType{
 			"u8":     goType{name: "uint8", length: "1"},
 			"i8":     goType{name: "int8", length: "1"},
@@ -111,8 +101,7 @@ func newParser(outFh *os.File) *parser {
 			"string": goType{name: "string", length: "0"},
 			"enum":   goType{name: "uint32", length: "4"},
 		},
-		duplicateClassCh: make(chan bool, 2),
-		output:           outFh,
+		output: outFh,
 	}
 }
 
@@ -127,7 +116,7 @@ func Start(tCh chan lexml.Token, outFh *os.File) {
 	buf := NewBuffer(tokenChannelbufferSize)
 	buf.Start(tCh)
 
-	fmt.Fprintln(p.output, "package main")
+	fmt.Fprintln(p.output, "package parrotbebop")
 	fmt.Fprintln(p.output)
 
 	p.printTopDeclarations()

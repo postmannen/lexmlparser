@@ -7,6 +7,8 @@ import (
 	"flag"
 	"log"
 	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/postmannen/lexmlparser"
 
@@ -25,9 +27,12 @@ func main() {
 
 	inFileName := flag.String("inFile", "", "file name to read from")
 	writeMode := flag.String("writeMode", "stdout", "stdout/file")
-	outFileName := flag.String("outFile", "", "file name to write to")
 
 	flag.Parse()
+
+	fn := filepath.Base(*inFileName)
+	fileName := strings.Split(fn, ".")
+	log.Printf("fileName = %v\n", fileName)
 
 	// Open the file to read from.
 	inFh, err := os.Open(*inFileName)
@@ -38,12 +43,7 @@ func main() {
 	var outFh *os.File
 
 	if *writeMode == "file" {
-		if *outFileName == "" {
-			log.Println("error: You have to specify a filename with the -outFile parameter")
-			os.Exit(1)
-		}
-
-		outFh, err = os.Create(*outFileName)
+		outFh, err = os.Create(fileName[0] + ".go")
 		if err != nil {
 			log.Println("error: failed to open file for writing: ", err)
 		}
