@@ -257,21 +257,8 @@ func (p *parser) doTagClass(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id str
 	// The name of the command const is found at slice pos [2].
 	classConstName := tmpBuf1[2]
 
-	// Check if there have been any previous use of the same const.
-	// If seen before, add DUPLICATE at the end of const name.
-	_, ok := p.classConstants[classConstName.TokenText]
-	if ok {
-		classConstName.TokenText = classConstName.TokenText + "DUPLICATE"
-		// put a true value on the channel so we can signal to the function
-		// writing out the variable that the class field name should be
-		// postfixed with DUPLICATE
-		p.duplicateClassCh <- true
-	}
-
-	// Store the const to check for duplicates on later iterations.
-	p.classConstants[classConstName.TokenText] = true
-	//--
-	fmt.Fprintf(p.output, "const Class%v ClassDef = %v\n", upperFirstCharacter(classConstName.TokenText), id)
+	fmt.Fprintf(p.output, "const %v%vClass%v ClassDef = %v\n", upperFirstCharacter(p.tagStack.data[0]), upperFirstCharacter(p.tagStack.data[1]), upperFirstCharacter(classConstName.TokenText), id)
+	fmt.Fprintf(p.output, "// *** %v\n", p.tagStack.data)
 
 }
 
@@ -324,18 +311,8 @@ func (p *parser) doTagCommand(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id s
 	// The name of the command const is found at slice pos [2].
 	cmdConstname := tmpBuf1[2]
 
-	// Check if there have been any previous use of the same const.
-	// If seen before, add DUPLICATE at the end of const name.
-	_, ok := p.commandConstants[cmdConstname.TokenText]
-	if ok {
-		cmdConstname.TokenText = cmdConstname.TokenText + "DUPLICATE"
-	}
-
-	// Store the const to check for duplicates on later iterations.
-	p.commandConstants[cmdConstname.TokenText] = true
-
 	constName := cmdConstname.TokenText
-	fmt.Fprintf(p.output, "const Cmd%v CmdDef = %v\n", upperFirstCharacter(constName), id)
+	fmt.Fprintf(p.output, "const %v%vCmd%v CmdDef = %v\n", upperFirstCharacter(p.tagStack.data[0]), upperFirstCharacter(p.tagStack.data[1]), upperFirstCharacter(constName), id)
 	fmt.Fprintln(p.output)
 
 	// Create the struct type command which will hold the decode methods
@@ -379,13 +356,9 @@ func (p *parser) doTagCommand(tmpBuf1 []lexml.Token, tmpBuf2 []lexml.Token, id s
 	fmt.Fprintln(p.output)
 	fmt.Fprintf(p.output, "var %v = %v {\n", upperFirstCharacter(variableName), upperFirstCharacter(concatenateSlice(p.tagStack.data)))
 	fmt.Fprintf(p.output, "Project: Project%v,\n", upperFirstCharacter(project))
-	select {
-	case <-p.duplicateClassCh:
-		fmt.Fprintf(p.output, "Class: Class%vDUPLICATE,\n", upperFirstCharacter(class))
-	default:
-		fmt.Fprintf(p.output, "Class: Class%v,\n", upperFirstCharacter(class))
-	}
-	fmt.Fprintf(p.output, "Cmd: Cmd%v,\n", upperFirstCharacter(command))
+
+	fmt.Fprintf(p.output, "Class: %v%vClass%v,\n", upperFirstCharacter(p.tagStack.data[0]), upperFirstCharacter(p.tagStack.data[1]), upperFirstCharacter(class))
+	fmt.Fprintf(p.output, "Cmd: %v%vCmd%v,\n", upperFirstCharacter(p.tagStack.data[0]), upperFirstCharacter(p.tagStack.data[1]), upperFirstCharacter(command))
 	fmt.Fprintf(p.output, "}\n")
 	fmt.Fprintln(p.output)
 
